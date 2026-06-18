@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Маркетплейсы — полный цикл работ</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg:      #0d0f14;
+    --surface: #151820;
+    --border:  #1e2330;
+    --gold:    #e8b84b;
+    --blue:    #4a9eff;
+    --green:   #3ecf7a;
+    --purple:  #a78bfa;
+    --red:     #f87171;
+    --text:    #e2e8f0;
+    --muted:   #64748b;
+  }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* ─── Slides ─── */
+  .slides { width: 100%; height: 100vh; position: relative; }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: opacity .45s ease, transform .45s ease;
+    pointer-events: none;
+  }
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all;
+  }
+  .slide.prev {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  /* ─── Nav ─── */
+  .nav {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(21,24,32,.85);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 10px 24px;
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+  .nav button {
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 20px;
+    cursor: pointer;
+    opacity: .7;
+    transition: opacity .2s;
+    padding: 4px 8px;
+  }
+  .nav button:hover { opacity: 1; color: var(--gold); }
+  .nav .counter { font-size: 13px; color: var(--muted); min-width: 50px; text-align: center; }
+  .dots { display: flex; gap: 6px; }
+  .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: background .3s, transform .3s;
+    cursor: pointer;
+  }
+  .dot.active { background: var(--gold); transform: scale(1.3); }
+
+  /* ─── Typography ─── */
+  .label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  h1 { font-size: clamp(32px, 5vw, 56px); font-weight: 700; line-height: 1.15; }
+  h2 { font-size: clamp(24px, 3.5vw, 38px); font-weight: 700; margin-bottom: 8px; }
+  h3 { font-size: 18px; font-weight: 600; }
+  p  { font-size: 16px; color: #94a3b8; line-height: 1.7; }
+
+  .gold  { color: var(--gold); }
+  .blue  { color: var(--blue); }
+  .green { color: var(--green); }
+  .purple{ color: var(--purple); }
+  .red   { color: var(--red); }
+
+  /* ─── Cards ─── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 28px;
+  }
+  .card-grid {
+    display: grid;
+    gap: 16px;
+    width: 100%;
+    max-width: 1000px;
+  }
+  .card-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .card-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .card-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+  /* ─── Pipeline / Flow ─── */
+  .pipeline {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+    max-width: 1100px;
+    flex-wrap: nowrap;
+  }
+  .pipe-step {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 14px;
+    text-align: center;
+    position: relative;
+  }
+  .pipe-step .num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: #000;
+    font-weight: 700;
+    font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 10px;
+  }
+  .pipe-step .title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .pipe-step .sub   { font-size: 11px; color: var(--muted); }
+  .pipe-arrow {
+    width: 28px;
+    text-align: center;
+    color: var(--gold);
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  /* ─── Big stat ─── */
+  .stat-big {
+    font-size: clamp(40px, 6vw, 72px);
+    font-weight: 800;
+    line-height: 1;
+  }
+  .stat-label { font-size: 14px; color: var(--muted); margin-top: 6px; }
+
+  /* ─── Tag ─── */
+  .tag {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 600;
+    margin: 3px;
+  }
+  .tag-gold   { background: rgba(232,184,75,.15);  color: var(--gold); }
+  .tag-blue   { background: rgba(74,158,255,.15);  color: var(--blue); }
+  .tag-green  { background: rgba(62,207,122,.15);  color: var(--green); }
+  .tag-purple { background: rgba(167,139,250,.15); color: var(--purple); }
+  .tag-red    { background: rgba(248,113,113,.15); color: var(--red); }
+
+  /* ─── Table ─── */
+  .nice-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  .nice-table th {
+    text-align: left; padding: 10px 16px;
+    color: var(--muted); font-size: 12px; letter-spacing: 1px;
+    border-bottom: 1px solid var(--border);
+  }
+  .nice-table td { padding: 11px 16px; border-bottom: 1px solid var(--border); }
+  .nice-table tr:last-child td { border-bottom: none; }
+  .nice-table tr:hover td { background: rgba(255,255,255,.03); }
+
+  /* ─── Icon block ─── */
+  .icon { font-size: 36px; margin-bottom: 12px; }
+
+  /* ─── Progress bar ─── */
+  .progress-wrap { width: 100%; background: var(--border); border-radius: 4px; height: 6px; }
+  .progress-bar  { height: 6px; border-radius: 4px; background: var(--gold); }
+
+  /* ─── Divider ─── */
+  .divider { width: 60px; height: 3px; background: var(--gold); border-radius: 2px; margin: 16px 0; }
+
+  /* ─── Slide 1 — cover ─── */
+  .cover { text-align: center; }
+  .cover .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(232,184,75,.12);
+    border: 1px solid rgba(232,184,75,.3);
+    border-radius: 50px;
+    padding: 8px 20px;
+    font-size: 13px;
+    color: var(--gold);
+    margin-bottom: 32px;
+  }
+
+  /* ─── Slide: cycle ─── */
+  .cycle-wrap {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    width: 100%;
+    max-width: 1100px;
+  }
+  .cycle-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 18px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cycle-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .cycle-card.c1::before { background: var(--blue); }
+  .cycle-card.c2::before { background: var(--gold); }
+  .cycle-card.c3::before { background: var(--green); }
+  .cycle-card.c4::before { background: var(--purple); }
+  .cycle-card .phase { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .cycle-card h3 { font-size: 16px; margin-bottom: 10px; }
+  .cycle-card ul { list-style: none; }
+  .cycle-card ul li { font-size: 13px; color: #94a3b8; padding: 3px 0; }
+  .cycle-card ul li::before { content: '→ '; color: var(--gold); }
+
+  /* ─── Two-column ─── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; width: 100%; max-width: 1100px; align-items: start; }
+
+  /* ─── List with icons ─── */
+  .icon-list { list-style: none; }
+  .icon-list li { display: flex; align-items: flex-start; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .icon-list li:last-child { border-bottom: none; }
+  .icon-list .ico { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+  .icon-list .text h4 { font-size: 15px; margin-bottom: 2px; }
+  .icon-list .text p  { font-size: 13px; }
+
+  /* ─── Slide header ─── */
+  .slide-header { text-align: center; margin-bottom: 36px; }
+  .slide-header h2 { margin-bottom: 6px; }
+  .slide-header p  { font-size: 15px; }
+
+  /* ─── Stats row ─── */
+  .stats-row { display: flex; gap: 24px; justify-content: center; }
+  .stat-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 32px;
+    text-align: center;
+    min-width: 160px;
+  }
+
+  /* ─── Keyboard hint ─── */
+  .kbd-hint {
+    position: fixed;
+    top: 20px; right: 24px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .kbd { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 2px 7px; font-size: 11px; }
+</style>
+</head>
+<body>
+
+<div class="kbd-hint">
+  <span class="kbd">←</span> <span class="kbd">→</span> навигация &nbsp;|&nbsp; <span class="kbd">F</span> полный экран
+</div>
+
+<div class="slides" id="slides">
+
+  <!-- ═══════════════════════════════ SLIDE 1 — COVER ═══════════════════════════════ -->
+  <div class="slide active">
+    <div class="cover">
+      <div class="badge">⚡ Полный цикл работ</div>
+      <div class="label">Маркетплейсы — системный подход</div>
+      <h1>От товара до<br><span class="gold">стабильных продаж</span></h1>
+      <div class="divider" style="margin: 24px auto;"></div>
+      <p style="max-width:600px; font-size:17px;">
+        Ozon · Wildberries · Полная автоматизация<br>
+        Парсинг · AI-контент · Аналитика · Прогнозирование
+      </p>
+      <div style="margin-top: 40px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+        <span class="tag tag-blue">Ozon</span>
+        <span class="tag tag-gold">Wildberries</span>
+        <span class="tag tag-green">AI-генерация</span>
+        <span class="tag tag-purple">Аналитика</span>
+        <span class="tag tag-red">Автоматизация</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ SLIDE 2 — OVERVIEW ═══════════════════════════════ -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="label">Архитектура</div>
+      <h2>4 фазы полного цикла</h2>
+      <p>От анализа рынка до оптимизации работающих продаж</p>
+    </div>
+    <div class="cycle-wrap">
+      <div class="cycle-card c1">
+        <div class="phase">Фаза 1</div>
+        <h3>🔍 Разведка</h3>
+        <ul>
+          <li>Анализ топов WB</li>
+          <li>Выбор категорий</li>
+          <li>Поиск поставщиков</li>
+          <li>Unit-экономика</li>
+        </ul>
+      </div>
+      <div class="cycle-card c2">
+        <div class="phase">Фаза 2</div>
+        <h3>🏗 Подготовка</h3>
+        <ul>
+          <li>Парсинг данных</li>
+          <li>Фото от поставщиков</li>
+          <li>AI-описания</li>
+          <li>Шаблоны Ozon/WB</li>
+        </ul>
+      </div>
+      <div class="cycle-card c3">
+        <div class="phase">Фаза 3</div>
+        <h3>🚀 Запуск</h3>
+        <ul>
+          <li>Загрузка карточек</li>
+          <li>Остатки FBO/FBS</li>
+          <li>Ценообразование</li>
+          <li>Старт рекламы</li>
+        </ul>
+      </div>
+      <div class="cycle-card c4">
+        <div class="phase">Фаза 4</div>
+        <h3>📊 Управление</h3>
+        <ul>
+          <li>Ежедневная аналитика</li>
+          <li>Прогноз спроса</li>
+          <li>Дозаказ товара</li>
+          <li>Оптимизация</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ SLIDE 3 — ФАЗА 1: РАЗВЕДКА ═══════════════════════════════ -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="label">Фаза 1</div>
+      <h2>🔍 Разведка рынка</h2>
+      <p>Прежде чем вложить рубль — понять, есть ли спрос и маржа</p>
+    </div>
+    <div class="two-col">
+      <div>
+        <ul class="icon-list">
+          <li>
+            <div class="ico">📈</div>
+            <div class="text">
+              <h4>Анализ топов Wildberries</h4>
+              <p>Выгрузка Топ-500 позиций по категории. Смотрим объём, конкурентов, средний чек</p>
+            </div>
+          </li>
+          <li>
+            <div class="ico">🏷</div>
+            <div class="text">
+              <h4>Категории Ozon</h4>
+              <p>Скачиваем шаблоны категорий через ozon_downloader — видим какие поля нужны</p>
+            </div>
+          </li>
+          <li>
+            <div class="ico">💰</div>
+            <div class="text">
+              <h4>Unit-экономика</h4>
+              <p>Комиссия + логистика + себестоимость → считаем целевую цену и маржу</p>
+            </div>
+          </li>
+          <li>
+            <div class="ico">🔗</div>
+            <div class="text">
+              <h4>Поставщики</h4>
+              <p>Avtoliga, Autopiter, Stparts, Mikado — смотрим наличие и цены</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom: 16px;">Инструменты этой фазы</h3>
+        <div style="margin-bottom: 14px;">
+          <div style="font-size:13px; color: var(--muted); margin-bottom: 6px;">Анализ рынка</div>
+          <span class="tag tag-gold">wb_autoparts_categories.py</span>
+          <span class="tag tag-blue">ozon_downloader.py</span>
+        </div>
+        <div style="margin-bottom: 14px;">
+          <div style="font-size:13px; color: var(--muted); margin-bottom: 6px;">Тарифы маркетплейсов</div>
+          <span class="tag tag-green">fetch_wb_commissions.py</span>
+          <span class="tag tag-green">fetch_wb_tariffs.py</span>
+        </div>
+        <div style="margin-bottom: 14px;">
+          <div style="font-size:13px; color: var(--muted); margin-bottom: 6px;">Ценообразование</div>
+          <span class="tag tag-purple">ozon_pricing.py</span>
+          <span class="tag tag-purple">pricing_engine.py</span>
+        </div>
+        <div>
+          <div style="font-size:13px; color: var(--muted); margin-bottom: 6px;">Остатки и склад</div>
+          <span class="tag tag-red">check_ozon_stocks.py</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ SLIDE 4 — ФАЗА 2: ПОДГОТОВКА ═══════════════════════════════ -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="label">Фаза 2</div>
+      <h2>🏗 Подготовка контента</h2>
+      <p>Данные, фото, описания — весь контент карточки</p>
+    </div>
+    <div class="pipeline">
+      <div class="pipe-step">
+        <div class="num">1</div>
+        <div class="title">Mikado</div>
+        <div class="sub">Парсим данные:<br>OEM, размеры,<br>описания</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">
+        <div class="num">2</div>
+        <div class="title">Фото</div>
+        <div class="sub">Скачиваем с<br>Avtoliga, Autopiter,<br>Stparts, Mikado</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">
+        <div class="num">3</div>
+        <div class="title">AI-тексты</div>
+        <div class="sub">Gemini генерирует<br>описания и<br>характеристики</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">
+        <div class="num">4</div>
+        <div class="title">Проверка</div>
+        <div class="sub">Проверяем пустые<br>ячейки, заголовки,<br>фото</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">
+        <div class="num">5</div>
+        <div class="title">Excel-файл</div>
+        <div class="sub">Заполненный<br>шаблон готов<br>к загрузке</div>
+      </div>
+    </div>
+    <div style="margin-top: 28px; display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;">
+      <div class="card" style="text-align:center; min-width: 160px;">
+        <div style="font-size:28px; margin-bottom: 8px;">🤖</div>
+        <h3 style="font-size:15px;">Gemini 2.5 Flash</h3>
+        <p style="font-size:12px; margin-top:4px;">Описания товаров</p>
+      </div>
+      <div class="card" style="text-align:center; min-width: 160px;">
+        <div style="font-size:28px; margin-bottom: 8px;">🔩</div>
+        <h3 style="font-size:15px;">Mikado Parts</h3>
+        <p style="font-size:12px; margin-top:4px;">OEM, размеры</p>
+      </div>
+      <div class="card" style="text-align:center; min-width: 160px;">
+        <div style="font-size:28px; margin-bottom: 8px;">📸</div>
+        <h3 style="font-size:15px;">4 поставщика</h3>
+        <p style="font-size:12px; margin-top:4px;">Фото через Selenium</p>
+      </div>
+      <div class="card" style="text-align:center; min-width: 160px;">
+        <div style="font-size:28px; margin-bottom: 8px;">✅</div>
+        <h3 style="font-size:15px;">33 скрипта</h3>
+        <p style="font-size:12px; margin-top:4px;">Проверки и правки</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ SLIDE 5 — AI ═══════════════════════════════ -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="label">Технология</div>
+      <h2>🤖 AI в нашем пайплайне</h2>
+      <p>Не один ИИ — целый арсенал под разные задачи</p>
+    </div>
+    <div class="card-grid cols-2" style="max-width:900px;">
+      <div class="card">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+          <div style="font-size:28px;">✨</div>
+          <h3 class="gold">Gemini 2.5 Flash</h3>
+        </div>
+        <p style="font-size:14px; margin-bottom:12px;">Основной генератор контента. Пишет описания товаров "в стиле соседних строк" — результат однородный, читаемый.</p>
+        <span class="tag tag-gold">gen_descriptions.py</span>
+        <span class="tag tag-gold">gemini_dimensions_filler.py</span>
+      </div>
+      <div class="card">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+          <div style="font-size:28px;">🧠</div>
+          <h3 class="blue">ChatGPT / DeepSeek</h3>
+        </div>
+        <p style="font-size:14px; margin-bottom:12px;">Заполняют габариты и технические характеристики там, где Mikado не даёт данных.</p>
+        <span class="tag tag-blue">chatgpt_dimensions_filler.py</span>
+        <span class="tag tag-blue">deepseek_dimensions_filler.py</span>
+      </div>
+      <div class="card">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+          <div style="font-size:28px;">🇷🇺</div>
+          <h3 class="purple">GigaChat</h3>
+        </div>
+        <p style="font-size:14px; margin-bottom:12px;">Российская альтернатива. Используется когда нужен контент без западных AI (или как резерв).</p>
+        <span class="tag tag-purple">gigachat_dimensions_filler.py</span>
+      </div>
+      <div class="card">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+          <div style="font-size:28px;">🎯</div>
+          <h3 class="green">Промпты</h3>
+        </div>
+        <p style="font-size:14px; margin-bottom:12px;">В проекте 16 системных промптов под разные задачи: SEO, ТЗ фотографу, описания, совместимость.</p>
+        <span class="tag tag-green">prompts/ (16 файлов)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ SLIDE 6 — ФАЗА 3: ЗАПУСК ═══════════════════════════════ -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="label">Фаза 3</div>
+      <h2>🚀 Загрузка и запуск</h2>
+      <p>Карточки на маркетплейсах, остатки на складе, реклама включена</p>
+    </div>
+    <div class="two-col">
+      <div>
+        <h3 class="gold" style="margin-bottom: 20px;">Ozon</h3>
+        <ul class="icon-list">
+          <li>
+            <div class="ico">📥</div>
+            <div class="text">
+              <h4>Скачать шаблон категории</h4>
+              <p>ozon_downloader.py → автоматически скачивает нужный Excel с seller.ozon.ru</p>
+            </div>
+          </li>
+          <li>
+            <div class="ico">✍️</div>
+            <div class="text">
+              <h4>Заполнить шаблон</h4>
+              <p>fill_ozon_templates.py → данные + фото с Яндекс.Диска</p>
+            </div>
+          </li>
+          <li>
+            <div class="ico">📤</div>
+            <div class="text">
+              <h4>Загрузить файл</h4>
+              <p>Готовый Excel загружается в seller.ozon.ru → товары на модерацию</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="blue" style="margin-bottom: 20px;">Wildberries</h3>
+        <ul class="icon-list">
+          <li>
+            <div class="ico">📊</div>
+            <div class="text">
+              <h4>Подготовить Excel-батч</h4>
+              <p>Скрипты Топ ВБ 1306 → заполненный файл со всеми данными</p>
+            </div>
+          </li>
+          <li>
+            <div class="ico">🔄</div>
+            <div class="text">
+              <h4>Синхронизация остатков</h4>
+              <p>wb_stock_sync.py → автообновление остатков по API</p>
+            </div>
+          </li>
+          <li>
+            <div class="ico">📦</div>
+            <div class="text">
+              <h4>FBO / FBS</h4>
+              <p>ozon_fbo.py, ozon_fbs.py — оба формата, система понимает оба</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ SLIDE 7 — АНАЛИТИКА ═══════════════════════════════ -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="label">Фаза 4</div>
+      <h2>📊 Аналитическая система</h2>
+      <p>5-слойный пайплайн — от сырых данных до управленческих отчётов</p>
+    </div>
+    <div class="pipeline">
+      <div class="pipe-step" style="border-top: 3px solid var(--blue);">
+        <div class="num" style="background: var(--blue);">1</div>
+        <div class="title">Collect</div>
+        <div class="sub">Ozon FBO/FBS<br>WB финансы<br>Реклама</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step" style="border-top: 3px solid var(--gold);">
+        <div class="num">2</div>
+        <div class="title">Process</div>
+        <div class="sub">Нормализация<br>Единый формат<br>Ozon + WB</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step" style="border-top: 3px solid var(--green);">
+        <div class="num" style="background: var(--green); color:#000">3</div>
+        <div class="title">Analyze</div>
+        <div class="sub">Прибыль<br>Маржа / KPI<br>Остатки</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step" style="border-top: 3px solid var(--purple);">
+        <div class="num" style="background: var(--purple);">4</div>
+        <div class="title">Forecast</div>
+        <div class="sub">Спрос на 6 мес<br>ETS/Holt/MA<br>Нормы запасов</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step" style="border-top: 3px solid var(--red);">
+        <div class="num" style="background: var(--red);">5</div>
+        <div class="title">Report</div>
+        <div class="sub">Ежедневный<br>Управленческий<br>Power BI</div>
+      </div>
+    </div>
+    <div style="margin-top: 28px;" class="stats-row">
+      <div class="stat-box">
+        <div class="stat-big gold">2</div>
+        <div class="stat-label">маркетплейса</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-big blue">6</div>
+        <div class="stat-label">месяцев прогноза</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-big green">145+</div>
+        <div class="stat-label">скриптов</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-big purple">5</div>
+        <div class="stat-label">слоёв пайплайна</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ SLIDE 8 — ПРОЕКТЫ ═══════════════════════════════ -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="label">Репозиторий</div>
+      <h2>Все наши проекты</h2>
+      <p>7 проектов и инструментов в работе</p>
+    </div>
+    <table class="nice-table" style="max-width: 900px;">
+      <thead>
+        <tr>
+          <th>Проект</th>
+          <th>Назначение</th>
+          <th>Стек</th>
+          <th>Статус</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Autoparts Ecommerce</strong></td>
+          <td>Аналитика автозапчастей Ozon + WB</td>
+          <td><span class="tag tag-blue">Python</span></td>
+          <td><span class="tag tag-green">Активный</span></td>
+        </tr>
+        <tr>
+          <td><strong>IFOAM Ecommerce</strong></td>
+          <td>Аналитика IFOAM + генерация контента</td>
+          <td><span class="tag tag-blue">Python</span></td>
+          <td><span class="tag tag-green">Активный</span></td>
+        </tr>
+        <tr>
+          <td><strong>Ozon Downloader</strong></td>
+          <td>Скачивание + заполнение шаблонов Ozon</td>
+          <td><span class="tag tag-blue">Playwright</span></td>
+          <td><span class="tag tag-green">Активный</span></td>
+        </tr>
+        <tr>
+          <td><strong>Image Scrapers</strong></td>
+          <td>Фото с 4 поставщиков через Selenium</td>
+          <td><span class="tag tag-blue">Selenium</span></td>
+          <td><span class="tag tag-green">Активный</span></td>
+        </tr>
+        <tr>
+          <td><strong>Топ ВБ 1306</strong></td>
+          <td>Подготовка батча Топ-500 WB (июнь 2026)</td>
+          <td><span class="tag tag-gold">Gemini API</span></td>
+          <td><span class="tag tag-purple">Завершён</span></td>
+        </tr>
+        <tr>
+          <td><strong>SplitRouting</strong></td>
+          <td>Pirate Route-chan — VPN только для не-РУ</td>
+          <td><span class="tag tag-blue">Tkinter</span> <span class="tag tag-gold">Kotlin</span></td>
+          <td><span class="tag tag-purple">Завершён</span></td>
+        </tr>
+        <tr>
+          <td><strong>API Utilities</strong></td>
+          <td>Быстрые проверки Ozon/WB API</td>
+          <td><span class="tag tag-blue">requests</span></td>
+          <td><span class="tag tag-gold">Разовые</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ═══════════════════════════════ SLIDE 9 — СТЕК ═══════════════════════════════ -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="label">Технологии</div>
+      <h2>Технологический стек</h2>
+      <p>Весь инструментарий, который работает в связке</p>
+    </div>
+    <div class="card-grid cols-3" style="max-width: 960px;">
+      <div class="card">
+        <div class="icon">🐍</div>
+        <h3 style="margin-bottom: 10px;">Язык и запуск</h3>
+        <span class="tag tag-blue">Python 3.10+</span>
+        <span class="tag tag-gold">uv run</span>
+        <p style="font-size:13px; margin-top: 10px;">uv запускает скрипты без ручной установки зависимостей</p>
+      </div>
+      <div class="card">
+        <div class="icon">🌐</div>
+        <h3 style="margin-bottom: 10px;">Браузерная автоматизация</h3>
+        <span class="tag tag-blue">Playwright</span>
+        <span class="tag tag-gold">Selenium</span>
+        <p style="font-size:13px; margin-top: 10px;">Ozon Downloader, парсинг поставщиков</p>
+      </div>
+      <div class="card">
+        <div class="icon">📊</div>
+        <h3 style="margin-bottom: 10px;">Работа с данными</h3>
+        <span class="tag tag-green">openpyxl</span>
+        <span class="tag tag-green">pandas</span>
+        <span class="tag tag-green">requests</span>
+        <p style="font-size:13px; margin-top: 10px;">Excel-шаблоны, API-запросы</p>
+      </div>
+      <div class="card">
+        <div class="icon">🔌</div>
+        <h3 style="margin-bottom: 10px;">API маркетплейсов</h3>
+        <span class="tag tag-blue">Ozon Seller API</span>
+        <span class="tag tag-gold">WB API</span>
+        <p style="font-size:13px; margin-top: 10px;">Заказы, остатки, реклама, финансы</p>
+      </div>
+      <div class="card">
+        <div class="icon">🤖</div>
+        <h3 style="margin-bottom: 10px;">AI / LLM</h3>
+        <span class="tag tag-gold">Gemini</span>
+        <span class="tag tag-blue">ChatGPT</span>
+        <span class="tag tag-green">DeepSeek</span>
+        <span class="tag tag-purple">GigaChat</span>
+        <p style="font-size:13px; margin-top: 10px;">Генерация контента карточек</p>
+      </div>
+      <div class="card">
+        <div class="icon">📱</div>
+        <h3 style="margin-bottom: 10px;">Прочее</h3>
+        <span class="tag tag-blue">Tkinter</span>
+        <span class="tag tag-gold">Kotlin</span>
+        <span class="tag tag-green">PowerShell</span>
+        <p style="font-size:13px; margin-top: 10px;">GUI, Android app, автоматизация Windows</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ SLIDE 10 — ФИНАЛ ═══════════════════════════════ -->
+  <div class="slide">
+    <div class="cover">
+      <div style="font-size: 56px; margin-bottom: 24px;">🏴‍☠️</div>
+      <div class="label">Итог</div>
+      <h2 style="margin-bottom: 16px;">Полностью автоматизированный<br><span class="gold">цикл выхода на маркетплейсы</span></h2>
+      <div class="divider" style="margin: 24px auto;"></div>
+      <div class="stats-row" style="margin: 32px 0; justify-content:center;">
+        <div class="stat-box">
+          <div class="stat-big gold">7</div>
+          <div class="stat-label">проектов</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-big blue">200+</div>
+          <div class="stat-label">скриптов</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-big green">4</div>
+          <div class="stat-label">AI-модели</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-big purple">2</div>
+          <div class="stat-label">маркетплейса</div>
+        </div>
+      </div>
+      <p style="font-size: 15px; max-width: 500px; margin: 0 auto;">
+        Разведка → Подготовка → Запуск → Аналитика<br>
+        Весь цикл покрыт инструментами собственной разработки
+      </p>
+    </div>
+  </div>
+
+</div><!-- /slides -->
+
+<!-- ─── Navigation ─── -->
+<nav class="nav">
+  <button id="prev" title="Назад">←</button>
+  <div class="dots" id="dots"></div>
+  <div class="counter" id="counter">1 / 10</div>
+  <button id="next" title="Вперёд">→</button>
+</nav>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const dotsEl = document.getElementById('dots');
+  const counter = document.getElementById('counter');
+  let cur = 0;
+
+  // Build dots
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => go(i));
+    dotsEl.appendChild(d);
+  });
+
+  function go(n) {
+    slides[cur].classList.remove('active');
+    slides[cur].classList.add('prev');
+    setTimeout(() => slides[cur].classList.remove('prev'), 500);
+
+    cur = (n + slides.length) % slides.length;
+    slides[cur].classList.add('active');
+
+    dotsEl.querySelectorAll('.dot').forEach((d, i) =>
+      d.classList.toggle('active', i === cur)
+    );
+    counter.textContent = `${cur + 1} / ${slides.length}`;
+  }
+
+  document.getElementById('prev').addEventListener('click', () => go(cur - 1));
+  document.getElementById('next').addEventListener('click', () => go(cur + 1));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') go(cur + 1);
+    if (e.key === 'ArrowLeft')  go(cur - 1);
+    if (e.key === 'f' || e.key === 'F') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+  });
+
+  // Touch swipe
+  let tx = 0;
+  document.addEventListener('touchstart', e => tx = e.touches[0].clientX);
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 50) go(dx < 0 ? cur + 1 : cur - 1);
+  });
+</script>
+</body>
+</html>

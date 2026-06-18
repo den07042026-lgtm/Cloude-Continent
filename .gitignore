@@ -1,0 +1,36 @@
+# Секреты — никогда в git
+.env
+*.env
+*_secrets.*
+
+# Виртуальные окружения
+.venv/
+venv/
+env/
+
+# Python кеш
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Данные (могут быть большими)
+data/raw/
+data/processed/
+mikado_output/
+*.xlsx
+*.csv
+
+# Логи
+logs/
+*.log
+
+# Chrome профиль (содержит авторизацию)
+chrome_profile/
+
+# Временные файлы
+*.tmp
+*.bak
+screenshots/
+download_progress.json
