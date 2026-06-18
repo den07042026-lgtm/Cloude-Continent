@@ -1,0 +1,3 @@
+-keep class com.wireguard.** { *; }
+-keep class com.pirat.splittunnel.** { *; }
+-dontwarn com.wireguard.**

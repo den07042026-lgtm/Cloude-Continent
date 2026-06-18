@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Калькулятор прибыли Wildberries — Автозапчасти</title>
+<style>
+  :root{--wb:#CB11AB;--wb-dark:#9B0082;--wb-light:#F9EAF7;--green:#00A441;--red:#E05252;--orange:#F07823;--gray:#8C939D;--border:#D9DBE0;--bg:#F5F6F8;--card:#FFFFFF;--text:#1A1A2E;--text2:#5A5E6B}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+  .page{max-width:1120px;margin:0 auto;padding:24px 16px 48px}
+  header{margin-bottom:20px}
+  header h1{font-size:21px;font-weight:700;color:var(--wb)}
+  header p{color:var(--text2);margin-top:3px;font-size:13px}
+  .grid{display:grid;grid-template-columns:430px 1fr;gap:18px;align-items:start}
+  @media(max-width:860px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 1px 4px rgba(0,0,0,.08);margin-bottom:0}
+  .card h2{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;border-bottom:1px solid var(--border);padding-bottom:9px}
+  .field{margin-bottom:12px}
+  label{display:block;font-size:12px;color:var(--text2);margin-bottom:3px;font-weight:500}
+  input[type=number],input[type=text]{width:100%;padding:8px 11px;border:1px solid var(--border);border-radius:8px;font-size:14px;color:var(--text);background:#fff;-moz-appearance:textfield}
+  input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+  input:focus{outline:none;border-color:var(--wb);box-shadow:0 0 0 3px rgba(203,17,171,.1)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .sep{margin:14px 0 10px;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);padding-bottom:6px}
+  .radio-group{display:flex;gap:6px;flex-wrap:wrap}
+  .radio-group label{display:flex;align-items:center;gap:5px;cursor:pointer;padding:7px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-weight:500;color:var(--text);background:#fff;transition:all .15s;margin:0}
+  .radio-group input[type=radio]{display:none}
+  .radio-group label:has(input:checked){border-color:var(--wb);background:var(--wb-light);color:var(--wb)}
+  .hint{font-size:11px;color:var(--gray);margin-top:3px}
+  .cat-hint{font-size:11px;color:var(--wb-dark);background:var(--wb-light);border-radius:6px;padding:4px 8px;margin-top:4px;display:none}
+  .note{background:#FFF8EB;border:1px solid #FFD980;border-radius:8px;padding:8px 11px;font-size:12px;color:#7A5C00;margin-top:10px}
+  .note-red{background:#FFF0F0;border:1px solid #FFB0B0;border-radius:8px;padding:8px 11px;font-size:12px;color:#8B0000;margin-top:10px}
+  /* Прибыль */
+  .profit-box{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#CB11AB,#7B006B);border-radius:12px;padding:18px;color:#fff;margin-bottom:14px}
+  .profit-text{flex:1;text-align:center}
+  .profit-box .plabel{font-size:11px;opacity:.8;text-transform:uppercase;letter-spacing:.5px}
+  .profit-box .pvalue{font-size:34px;font-weight:800;margin:5px 0}
+  .profit-box .psub{font-size:12px;opacity:.85}
+  .profit-box.loss{background:linear-gradient(135deg,#E05252,#A83030)}
+  .profit-box.warn{background:linear-gradient(135deg,#F07823,#B85A10)}
+  #profitCat{flex-shrink:0;width:120px;height:140px;transition:opacity .4s}
+  /* Метрики */
+  .metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+  .metric{background:var(--bg);border-radius:8px;padding:10px;text-align:center}
+  .metric .mv{font-size:20px;font-weight:700}
+  .metric .ml{font-size:11px;color:var(--text2);margin-top:2px}
+  /* Разбивка */
+  .breakdown table{width:100%;border-collapse:collapse}
+  .breakdown td{padding:5px 0;font-size:13px;border-bottom:1px solid #F0F1F4}
+  .breakdown td:last-child{text-align:right;font-weight:600}
+  .breakdown tr.total td{border-bottom:none;font-weight:700;font-size:14px;padding-top:8px}
+  .breakdown tr.promo-row td{color:var(--orange)}
+  /* Инфобокс */
+  .info-box{background:var(--wb-light);border:1px solid #E0A0D8;border-radius:8px;padding:8px 12px;font-size:13px;color:var(--wb-dark);margin-bottom:12px}
+  /* Таблица цен */
+  .price-table table{width:100%;border-collapse:collapse;font-size:13px}
+  .price-table th{background:var(--bg);padding:6px 8px;text-align:left;font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+  .price-table td{padding:6px 8px;border-bottom:1px solid #F0F1F4}
+  .price-table tr.cur td{background:var(--wb-light);font-weight:600}
+  .pos{color:var(--green)} .neg{color:var(--red)} .wrn{color:var(--orange)}
+  .apply-btn{padding:4px 10px;background:var(--wb);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer}
+  .apply-btn:hover{background:var(--wb-dark)}
+  /* Автокомплит */
+  .ac-wrap{position:relative}
+  .ac-row{display:flex;gap:6px}
+  .ac-arrow{background:none;border:1px solid var(--border);border-radius:8px;padding:0 10px;cursor:pointer;color:var(--gray);font-size:14px;flex-shrink:0;height:38px}
+  .ac-arrow:hover{border-color:var(--wb)}
+  .dropdown-list{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:8px;max-height:220px;overflow-y:auto;z-index:200;display:none;box-shadow:0 4px 16px rgba(0,0,0,.12)}
+  .dropdown-list.open{display:block}
+  .dl-item{padding:8px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid #F5F6F8;display:flex;justify-content:space-between;align-items:center}
+  .dl-item:hover{background:var(--wb-light);color:var(--wb)}
+  .dl-badge{background:#EEE;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:600;color:var(--text2)}
+  /* Слайдер коэффициента */
+  .slider-row{display:flex;align-items:center;gap:10px}
+  input[type=range]{flex:1;accent-color:var(--wb);height:4px;cursor:pointer}
+  .slider-val{font-size:15px;font-weight:700;color:var(--wb);min-width:36px;text-align:right}
+  /* Прочее */
+  .promo-eff{font-size:12px;color:var(--orange);font-weight:600;margin-top:4px}
+  .section-badge{display:inline-block;background:var(--wb);color:#fff;font-size:10px;padding:1px 6px;border-radius:6px;margin-left:6px;vertical-align:middle;font-weight:600}
+</style>
+</head>
+<body>
+<div class="page">
+<header>
+  <h1>🛒 Калькулятор прибыли Wildberries — Автозапчасти</h1>
+  <p>Тарифы ВБ 2026 · коэффициент склада · FBO/FBS · акции · платная приёмка</p>
+</header>
+
+<div class="grid">
+<!-- ═══════════════════ ЛЕВАЯ КОЛОНКА ═══════════════════ -->
+<div>
+<div class="card">
+  <h2>Параметры товара</h2>
+
+  <!-- Категория -->
+  <div class="field">
+    <label>Категория Wildberries</label>
+    <div class="ac-wrap">
+      <div class="ac-row">
+        <input type="text" id="catSearch" placeholder="Введите категорию..." autocomplete="off">
+        <button class="ac-arrow" id="acBtn" type="button">▼</button>
+      </div>
+      <div id="catList" class="dropdown-list"></div>
+    </div>
+    <div id="catHint" class="cat-hint"></div>
+  </div>
+
+  <div class="row2">
+    <div class="field">
+      <label>Комиссия ВБ, %</label>
+      <input type="number" id="commission" value="17" min="0" max="50" step="0.5" oninput="calculate()">
+    </div>
+    <div class="field">
+      <label>Эквайринг, %</label>
+      <input type="number" id="acquiring" value="1.5" min="0" max="5" step="0.1" oninput="calculate()">
+    </div>
+  </div>
+
+  <!-- Модель -->
+  <div class="field">
+    <label>Модель доставки</label>
+    <div class="radio-group">
+      <label><input type="radio" name="model" value="fbo" checked onchange="onModelChange()"><span>FBO</span></label>
+      <label><input type="radio" name="model" value="fbs" onchange="onModelChange()"><span>FBS</span></label>
+    </div>
+    <p class="hint" id="modelHint">FBO — склад ВБ, включает платную приёмку и хранение</p>
+  </div>
+
+  <div class="sep">Цены</div>
+  <div class="row2">
+    <div class="field">
+      <label>Закупочная цена, ₽</label>
+      <input type="number" id="purchase" value="500" min="0" step="10" oninput="calculate()">
+    </div>
+    <div class="field">
+      <label>Цена продажи на ВБ, ₽</label>
+      <input type="number" id="sell" value="1200" min="0" step="10" oninput="calculate()">
+    </div>
+  </div>
+
+  <!-- Акции -->
+  <div class="field">
+    <label>Скидка в акциях ВБ, % <span class="section-badge">NEW</span></label>
+    <input type="number" id="promo" value="0" min="0" max="80" step="1" oninput="calculate()">
+    <div id="promoEff" class="promo-eff" style="display:none"></div>
+    <p class="hint">ВБ часто принудительно включает в акции — скидка режет вашу выручку</p>
+  </div>
+
+  <div class="sep">Логистика</div>
+  <div class="row2">
+    <div class="field">
+      <label>Доставка к клиенту, ₽</label>
+      <input type="number" id="logTo" value="100" min="0" step="5" oninput="calculate()">
+    </div>
+    <div class="field">
+      <label>Возврат к складу, ₽</label>
+      <input type="number" id="logBack" value="60" min="0" step="5" oninput="calculate()">
+    </div>
+  </div>
+
+  <!-- Коэффициент склада -->
+  <div class="field">
+    <label>Коэффициент склада ВБ <span class="section-badge">NEW</span></label>
+    <div class="slider-row">
+      <input type="range" id="wcoef" min="1" max="3.5" step="0.1" value="1.5" oninput="onCoefChange()">
+      <span class="slider-val" id="wcoefVal">1.5×</span>
+    </div>
+    <p class="hint">Умножает стоимость доставки. Проверяйте актуальный коэффициент в ЛК ВБ.</p>
+  </div>
+
+  <div id="logInfo" class="info-box"></div>
+
+  <!-- % выкупа -->
+  <div class="field">
+    <label>Процент выкупа, %</label>
+    <input type="number" id="buyout" value="65" min="1" max="100" step="1" oninput="calculate()">
+    <p class="hint" id="buyoutHint">Авто в среднем: 55–75%. Устанавливается автоматически по категории.</p>
+  </div>
+
+  <div class="sep">Расходы</div>
+  <div class="row2">
+    <div class="field">
+      <label>Упаковка, ₽</label>
+      <input type="number" id="packaging" value="30" min="0" step="5" oninput="calculate()">
+    </div>
+    <div class="field">
+      <label>ДРР — реклама, %</label>
+      <input type="number" id="drr" value="8" min="0" max="50" step="0.5" oninput="calculate()">
+      <p class="hint" id="drrHint">% от цены продажи</p>
+    </div>
+  </div>
+  <div class="row2">
+    <div class="field">
+      <label>Налог, % (от выплаты ВБ)</label>
+      <input type="number" id="tax" value="6" min="0" max="30" step="1" oninput="calculate()">
+    </div>
+    <div class="field" id="storageFld">
+      <label>Хранение FBO, ₽/ед·мес</label>
+      <input type="number" id="storage" value="0" min="0" step="1" oninput="calculate()">
+    </div>
+  </div>
+  <div class="field" id="acceptFld">
+    <label>Платная приёмка FBO, ₽/ед <span class="section-badge">NEW</span></label>
+    <input type="number" id="accept" value="0" min="0" step="1" oninput="calculate()">
+    <p class="hint">ВБ периодически вводит платную приёмку на ряде складов (5–50 ₽/ед)</p>
+  </div>
+
+  <div class="note">
+    <b>Коэффициент склада</b> умножает стоимость доставки к клиенту.<br>
+    <b>% выкупа</b> определяет эффективную логистику: чем ниже выкуп, тем дороже каждая продажа.<br>
+    <b>Налог УСН 6%</b> — от суммы выплаты ВБ (выручка − комиссия − логистика − эквайринг).
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════ ПРАВАЯ КОЛОНКА ═══════════════════ -->
+<div>
+<div class="card">
+  <h2>Результат расчёта</h2>
+
+  <div class="profit-box" id="profitBox">
+    <div class="profit-text">
+      <div class="plabel">Прибыль с единицы (с учётом выкупа)</div>
+      <div class="pvalue" id="profitVal">—</div>
+      <div class="psub" id="profitSub"></div>
+    </div>
+    <div id="profitCat"></div>
+  </div>
+
+  <div class="metrics">
+    <div class="metric">
+      <div class="mv" id="mMargin">—</div>
+      <div class="ml">Маржинальность</div>
+    </div>
+    <div class="metric">
+      <div class="mv" id="mROI">—</div>
+      <div class="ml">ROI</div>
+    </div>
+    <div class="metric">
+      <div class="mv" id="mBuyout">—</div>
+      <div class="ml">% выкупа</div>
+    </div>
+  </div>
+
+  <!-- Разбивка -->
+  <div class="breakdown" style="margin-bottom:14px">
+    <table>
+      <tbody>
+        <tr><td>Цена на ВБ</td><td id="bSell">—</td></tr>
+        <tr id="promoRow" class="promo-row" style="display:none"><td>− Скидка акции ВБ</td><td id="bPromo">—</td></tr>
+        <tr><td id="bEffLabel">Эффективная выручка</td><td id="bEff">—</td></tr>
+        <tr><td>− Закупка</td><td id="bCost">—</td></tr>
+        <tr><td>− Комиссия ВБ</td><td id="bComm">—</td></tr>
+        <tr><td>− Эквайринг</td><td id="bAcq">—</td></tr>
+        <tr><td>− Логистика (эфф.)</td><td id="bLog">—</td></tr>
+        <tr><td>− Упаковка</td><td id="bPack">—</td></tr>
+        <tr><td>− Реклама (ДРР)</td><td id="bDRR">—</td></tr>
+        <tr><td>− Налог</td><td id="bTax">—</td></tr>
+        <tr><td>− Хранение</td><td id="bStore">—</td></tr>
+        <tr><td>− Платная приёмка</td><td id="bAccept">—</td></tr>
+        <tr class="total"><td><b>= Прибыль</b></td><td id="bProfit">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Инфо по логистике -->
+  <div class="info-box" id="logDetail" style="margin-bottom:14px"></div>
+
+  <!-- Точка безубыточности -->
+  <div class="info-box" id="beBox" style="margin-bottom:14px"></div>
+
+  <!-- Таблица цен -->
+  <div class="price-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Цена ВБ, ₽</th>
+          <th>Прибыль/ед.</th>
+          <th>Маржа</th>
+          <th>ROI</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="priceRows"></tbody>
+    </table>
+  </div>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+// ─── Категории ВБ — Автозапчасти ─────────────────────────────────────────────
+// pct=комиссия%, buyout=% выкупа, drr=ДРР%, logFBO=логистика FBO, logFBS=FBS, logBack=возврат, hint=подсказка
+const WB_CATS = [
+  {name:"Аккумуляторы",                    pct:10, buyout:85, drr:5,  logFBO:150, logFBS:120, logBack:70,  hint:"Выкуп высокий — назначение товара понятно покупателю"},
+  {name:"Шины",                             pct:8,  buyout:90, drr:4,  logFBO:380, logFBS:300, logBack:160, hint:"Крупногабарит — логистика значительно выше среднего"},
+  {name:"Диски колёсные",                   pct:12, buyout:82, drr:5,  logFBO:260, logFBS:200, logBack:120, hint:""},
+  {name:"Масла моторные",                   pct:12, buyout:80, drr:9,  logFBO:120, logFBS:90,  logBack:60,  hint:"Высокий ДРР — жёсткая конкуренция"},
+  {name:"Масла трансмиссионные",            pct:12, buyout:78, drr:8,  logFBO:110, logFBS:85,  logBack:55,  hint:""},
+  {name:"Антифриз, охлаждающие жидкости",  pct:12, buyout:80, drr:7,  logFBO:110, logFBS:85,  logBack:55,  hint:""},
+  {name:"Тормозная жидкость",               pct:12, buyout:79, drr:7,  logFBO:95,  logFBS:75,  logBack:50,  hint:""},
+  {name:"Фильтры воздушные",                pct:15, buyout:72, drr:11, logFBO:90,  logFBS:72,  logBack:50,  hint:"Топ категория ВБ — конкуренция высокая, ДРР до 15%"},
+  {name:"Фильтры масляные",                 pct:15, buyout:72, drr:11, logFBO:85,  logFBS:68,  logBack:48,  hint:"Топ категория ВБ — конкуренция высокая, ДРР до 15%"},
+  {name:"Фильтры топливные",                pct:15, buyout:70, drr:9,  logFBO:90,  logFBS:72,  logBack:50,  hint:""},
+  {name:"Фильтры салонные",                 pct:15, buyout:76, drr:9,  logFBO:78,  logFBS:62,  logBack:44,  hint:"Малогабарит, хороший выкуп"},
+  {name:"Тормозные колодки",                pct:15, buyout:65, drr:8,  logFBO:105, logFBS:82,  logBack:56,  hint:"Покупают под конкретный авто — часть возвращает при несовпадении"},
+  {name:"Тормозные диски",                  pct:15, buyout:63, drr:7,  logFBO:155, logFBS:120, logBack:72,  hint:"Часто заказывают пару, один возвращают — учитывай в выкупе"},
+  {name:"Суппорты тормозные",               pct:17, buyout:60, drr:7,  logFBO:165, logFBS:130, logBack:76,  hint:""},
+  {name:"Амортизаторы",                     pct:15, buyout:57, drr:7,  logFBO:185, logFBS:148, logBack:86,  hint:"Высокий % возвратов — подбор по авто сложный"},
+  {name:"Пружины подвески",                 pct:15, buyout:60, drr:7,  logFBO:165, logFBS:130, logBack:76,  hint:""},
+  {name:"Опоры и подшипники амортизатора",  pct:17, buyout:63, drr:8,  logFBO:112, logFBS:88,  logBack:56,  hint:""},
+  {name:"Сайлентблоки",                     pct:17, buyout:63, drr:8,  logFBO:90,  logFBS:72,  logBack:50,  hint:""},
+  {name:"Рычаги подвески",                  pct:17, buyout:58, drr:7,  logFBO:155, logFBS:120, logBack:72,  hint:""},
+  {name:"Стойки стабилизатора",             pct:17, buyout:63, drr:7,  logFBO:112, logFBS:88,  logBack:56,  hint:""},
+  {name:"Рулевые наконечники и тяги",       pct:17, buyout:60, drr:7,  logFBO:112, logFBS:88,  logBack:56,  hint:""},
+  {name:"Рулевые рейки и механизмы",        pct:17, buyout:54, drr:6,  logFBO:210, logFBS:165, logBack:95,  hint:"Крупногабарит, сложный подбор — низкий выкуп"},
+  {name:"ШРУСы и привода",                  pct:17, buyout:58, drr:7,  logFBO:165, logFBS:130, logBack:76,  hint:""},
+  {name:"Свечи зажигания",                  pct:15, buyout:78, drr:9,  logFBO:75,  logFBS:60,  logBack:44,  hint:"Малогабарит, хороший выкуп"},
+  {name:"Высоковольтные провода",            pct:15, buyout:72, drr:8,  logFBO:90,  logFBS:72,  logBack:50,  hint:""},
+  {name:"Катушки зажигания",                pct:17, buyout:65, drr:8,  logFBO:102, logFBS:80,  logBack:56,  hint:""},
+  {name:"Генераторы",                       pct:17, buyout:54, drr:6,  logFBO:210, logFBS:165, logBack:95,  hint:"Крупногабарит, возвраты из-за несовместимости"},
+  {name:"Стартеры",                         pct:17, buyout:56, drr:6,  logFBO:195, logFBS:154, logBack:88,  hint:""},
+  {name:"Ремни и цепи ГРМ",                pct:15, buyout:70, drr:8,  logFBO:90,  logFBS:72,  logBack:50,  hint:""},
+  {name:"Ремни приводные (генератор)",      pct:15, buyout:73, drr:8,  logFBO:80,  logFBS:64,  logBack:46,  hint:""},
+  {name:"Ролики и натяжители ремня",        pct:17, buyout:65, drr:7,  logFBO:92,  logFBS:74,  logBack:50,  hint:""},
+  {name:"Помпы (водяные насосы)",           pct:17, buyout:62, drr:7,  logFBO:132, logFBS:105, logBack:66,  hint:""},
+  {name:"Термостаты",                       pct:17, buyout:66, drr:7,  logFBO:92,  logFBS:74,  logBack:50,  hint:""},
+  {name:"Радиаторы охлаждения",             pct:17, buyout:59, drr:6,  logFBO:260, logFBS:205, logBack:115, hint:"Крупногабарит"},
+  {name:"Прокладки (ГБЦ, двигатель)",      pct:17, buyout:68, drr:8,  logFBO:80,  logFBS:64,  logBack:46,  hint:""},
+  {name:"Сальники и уплотнители",           pct:17, buyout:69, drr:7,  logFBO:75,  logFBS:60,  logBack:42,  hint:""},
+  {name:"Насосы масляные",                  pct:17, buyout:60, drr:6,  logFBO:132, logFBS:105, logBack:66,  hint:""},
+  {name:"Насосы топливные",                 pct:17, buyout:60, drr:6,  logFBO:132, logFBS:105, logBack:66,  hint:""},
+  {name:"Форсунки топливные",               pct:17, buyout:58, drr:7,  logFBO:102, logFBS:80,  logBack:56,  hint:""},
+  {name:"Датчики и сенсоры",               pct:17, buyout:63, drr:8,  logFBO:92,  logFBS:74,  logBack:50,  hint:""},
+  {name:"Оптика (фары, фонари)",           pct:17, buyout:54, drr:6,  logFBO:210, logFBS:165, logBack:95,  hint:"Высокий % возвратов — несовместимость с конкретной комплектацией"},
+  {name:"Лампы автомобильные",              pct:17, buyout:76, drr:8,  logFBO:75,  logFBS:60,  logBack:42,  hint:""},
+  {name:"Кузовные детали",                  pct:17, buyout:51, drr:5,  logFBO:295, logFBS:230, logBack:128, hint:"Крупногабарит, часто не подходят по VIN — выкуп низкий"},
+  {name:"Бамперы",                          pct:17, buyout:49, drr:5,  logFBO:360, logFBS:285, logBack:155, hint:""},
+  {name:"Зеркала",                          pct:17, buyout:58, drr:6,  logFBO:132, logFBS:105, logBack:66,  hint:""},
+  {name:"Щётки стеклоочистителя",           pct:15, buyout:78, drr:9,  logFBO:80,  logFBS:64,  logBack:46,  hint:""},
+  {name:"Автохимия (полироли, очистители)", pct:15, buyout:80, drr:8,  logFBO:92,  logFBS:74,  logBack:50,  hint:""},
+  {name:"Инструменты автомобильные",        pct:15, buyout:72, drr:7,  logFBO:122, logFBS:96,  logBack:62,  hint:""},
+  {name:"Автоаксессуары",                   pct:17, buyout:68, drr:8,  logFBO:102, logFBS:80,  logBack:56,  hint:""},
+  {name:"Прочие автозапчасти",              pct:17, buyout:58, drr:8,  logFBO:112, logFBS:88,  logBack:56,  hint:""},
+];
+
+// ─── Автокомплит ────────────────────────────────────────────────────────────
+const catSearchEl = document.getElementById('catSearch');
+const catListEl   = document.getElementById('catList');
+const catHintEl   = document.getElementById('catHint');
+
+function renderCatList(filter) {
+  const q = filter.trim().toLowerCase();
+  const items = q ? WB_CATS.filter(c => c.name.toLowerCase().includes(q)) : WB_CATS;
+  catListEl.innerHTML = items.map(c =>
+    `<div class="dl-item" onclick="selectCat(${WB_CATS.indexOf(c)})">${c.name}<span class="dl-badge">${c.pct}%</span></div>`
+  ).join('');
+  catListEl.classList.toggle('open', items.length > 0);
+}
+
+function selectCat(idx) {
+  const c = WB_CATS[idx];
+  catSearchEl.value = c.name;
+  // Заполняем поля из категории
+  document.getElementById('commission').value = c.pct;
+  document.getElementById('buyout').value     = c.buyout;
+  document.getElementById('drr').value        = c.drr;
+  // Логистика в зависимости от модели
+  const isFBO = document.querySelector('input[name=model]:checked').value === 'fbo';
+  document.getElementById('logTo').value   = isFBO ? c.logFBO : c.logFBS;
+  document.getElementById('logBack').value = c.logBack;
+  // Подсказки
+  if (c.hint) {
+    catHintEl.textContent = '💡 ' + c.hint;
+    catHintEl.style.display = 'block';
+  } else {
+    catHintEl.style.display = 'none';
+  }
+  document.getElementById('buyoutHint').textContent =
+    `Типичный выкуп для "${c.name}": ${c.buyout}%`;
+  document.getElementById('drrHint').textContent =
+    `Типичный ДРР для "${c.name}": ${c.drr}%`;
+  catListEl.classList.remove('open');
+  calculate();
+}
+
+catSearchEl.addEventListener('input', () => renderCatList(catSearchEl.value));
+catSearchEl.addEventListener('focus', () => renderCatList(catSearchEl.value));
+document.getElementById('acBtn').addEventListener('click', () => {
+  catListEl.classList.contains('open') ? catListEl.classList.remove('open') : renderCatList('');
+});
+document.addEventListener('click', e => {
+  if (!e.target.closest('.ac-wrap')) catListEl.classList.remove('open');
+});
+
+// ─── FBO/FBS переключение ───────────────────────────────────────────────────
+function onModelChange() {
+  const isFBO  = document.querySelector('input[name=model]:checked').value === 'fbo';
+  const stoFld = document.getElementById('storageFld');
+  const accFld = document.getElementById('acceptFld');
+  stoFld.style.display = isFBO ? '' : 'none';
+  accFld.style.display = isFBO ? '' : 'none';
+  document.getElementById('modelHint').textContent = isFBO
+    ? 'FBO — склад ВБ, включает платную приёмку и хранение'
+    : 'FBS — ваш склад, ВБ делает только доставку последней мили';
+  // Обновляем логистику из текущей категории если выбрана
+  const catName = catSearchEl.value.trim();
+  const cat = WB_CATS.find(c => c.name === catName);
+  if (cat) {
+    document.getElementById('logTo').value = isFBO ? cat.logFBO : cat.logFBS;
+  }
+  calculate();
+}
+
+// ─── Коэффициент склада ─────────────────────────────────────────────────────
+function onCoefChange() {
+  const v = parseFloat(document.getElementById('wcoef').value).toFixed(1);
+  document.getElementById('wcoefVal').textContent = v + '×';
+  calculate();
+}
+
+// ─── Вспомогательные ────────────────────────────────────────────────────────
+const n   = id => parseFloat(document.getElementById(id).value) || 0;
+const el  = id => document.getElementById(id);
+const fmt = v => (v >= 0 ? '+' : '') + v.toFixed(0) + ' ₽';
+const fmtR = v => v.toFixed(0) + ' ₽';
+
+// ─── Основной расчёт ────────────────────────────────────────────────────────
+function calcProfit(sell, purchase, commPct, acqPct, logTo, logBack, wcoef, buyoutPct,
+                    packaging, drrPct, taxPct, storage, accept, promoPct) {
+  const buyout      = Math.max(1, buyoutPct) / 100;
+  const effSell     = sell * (1 - promoPct / 100);          // цена с учётом акции
+  const commission  = effSell * commPct / 100;
+  const acquiring   = effSell * acqPct  / 100;
+  const logToEff    = logTo * wcoef;                        // логистика × коэффициент склада
+  const logEff      = (logToEff + (1 - buyout) * logBack) / buyout;  // на 1 проданный
+  const advertising = effSell * drrPct  / 100;
+  const wbPayout    = effSell - commission - acquiring - logEff;
+  const taxAmount   = Math.max(0, wbPayout) * taxPct / 100;
+  const total       = purchase + commission + acquiring + logEff + packaging + advertising + taxAmount + storage + accept;
+  return {
+    profit: effSell - total,
+    commission, acquiring, logToEff, logEff, advertising, taxAmount,
+    effSell, promoDiff: sell - effSell,
+  };
+}
+
+function calculate() {
+  const sell    = n('sell');
+  const purchase= n('purchase');
+  const commPct = n('commission');
+  const acqPct  = n('acquiring');
+  const logTo   = n('logTo');
+  const logBack = n('logBack');
+  const wcoef   = parseFloat(document.getElementById('wcoef').value) || 1;
+  const buyoutPct = Math.max(1, n('buyout'));
+  const packaging = n('packaging');
+  const drrPct  = n('drr');
+  const taxPct  = n('tax');
+  const storage = n('storage');
+  const accept  = n('accept');
+  const promoPct= n('promo');
+
+  if (!sell) return;
+
+  const r = calcProfit(sell, purchase, commPct, acqPct, logTo, logBack, wcoef,
+                       buyoutPct, packaging, drrPct, taxPct, storage, accept, promoPct);
+
+  const buyout = buyoutPct / 100;
+  const margin = sell > 0 ? r.profit / sell * 100 : 0;
+  const roi    = purchase > 0 ? r.profit / purchase * 100 : 0;
+
+  // Кошкодевочка
+  updateCatGirl(r.profit);
+
+  // Акция — подпись
+  if (promoPct > 0) {
+    el('promoEff').style.display = 'block';
+    el('promoEff').textContent   = `Эффективная цена продажи: ${r.effSell.toFixed(0)} ₽ (−${r.promoDiff.toFixed(0)} ₽)`;
+    el('promoRow').style.display = '';
+  } else {
+    el('promoEff').style.display = 'none';
+    el('promoRow').style.display = 'none';
+  }
+
+  // Profit box
+  const pb = el('profitBox');
+  pb.className = 'profit-box' + (r.profit < 0 ? ' loss' : r.profit < sell * 0.08 ? ' warn' : '');
+  el('profitVal').textContent = fmtR(r.profit);
+  el('profitSub').textContent =
+    `Маржа ${margin.toFixed(1)}%  ·  ROI ${roi.toFixed(0)}%  ·  Цена: ${sell} ₽`;
+
+  // Метрики
+  el('mMargin').textContent = margin.toFixed(1) + '%';
+  el('mMargin').style.color = margin < 0 ? 'var(--red)' : margin < 10 ? 'var(--orange)' : 'var(--green)';
+  el('mROI').textContent    = roi.toFixed(0) + '%';
+  el('mROI').style.color    = roi < 0 ? 'var(--red)' : roi < 20 ? 'var(--orange)' : 'var(--green)';
+  el('mBuyout').textContent = buyoutPct + '%';
+
+  // Логистика — инфобокс слева
+  el('logInfo').textContent =
+    `Доставка к клиенту × коэф. ${wcoef.toFixed(1)}: ${r.logToEff.toFixed(0)} ₽  |  ` +
+    `Заказов на 1 продажу: ${(1/buyout).toFixed(2)}  |  ` +
+    `Эфф. логистика: ${r.logEff.toFixed(0)} ₽/ед.`;
+
+  // Разбивка
+  el('bSell').textContent   = '+' + fmtR(sell);
+  el('bPromo').textContent  = '−' + fmtR(r.promoDiff);
+  el('bEff').textContent    = promoPct > 0 ? fmtR(r.effSell) : '—';
+  el('bEffLabel').textContent = promoPct > 0 ? 'Выручка после скидки' : 'Цена продажи';
+  if (promoPct === 0) el('bEff').textContent = fmtR(sell);
+  el('bCost').textContent   = '−' + fmtR(purchase);
+  el('bComm').textContent   = `−${fmtR(r.commission)} (${commPct}%)`;
+  el('bAcq').textContent    = `−${fmtR(r.acquiring)} (${acqPct}%)`;
+  el('bLog').textContent    = `−${fmtR(r.logEff)}`;
+  el('bPack').textContent   = `−${fmtR(packaging)}`;
+  el('bDRR').textContent    = `−${fmtR(r.advertising)} (${drrPct}%)`;
+  el('bTax').textContent    = `−${fmtR(r.taxAmount)} (${taxPct}%)`;
+  el('bStore').textContent  = `−${fmtR(storage)}`;
+  el('bAccept').textContent = `−${fmtR(accept)}`;
+  el('bProfit').textContent = fmt(r.profit);
+  el('bProfit').style.color = r.profit < 0 ? 'var(--red)' : 'var(--green)';
+
+  // Логистика — детали справа
+  el('logDetail').innerHTML =
+    `<b>Логистика подробно:</b> ` +
+    `доставка ${logTo} ₽ × коэф. ${wcoef.toFixed(1)} = ${r.logToEff.toFixed(0)} ₽ · ` +
+    `возвратов на 100 заказов: ${((1-buyout)*100).toFixed(0)} шт. · ` +
+    `стоимость возвратов/ед.: ${((1-buyout)/buyout * logBack).toFixed(0)} ₽ · ` +
+    `<b>итого: ${r.logEff.toFixed(0)} ₽/ед.</b>`;
+
+  // Точка безубыточности
+  const be = calcBE(purchase, commPct, acqPct, logTo, logBack, wcoef,
+                    buyoutPct, packaging, drrPct, taxPct, storage, accept, promoPct);
+  el('beBox').innerHTML = be > 0
+    ? `<b>Точка безубыточности:</b> ${be.toFixed(0)} ₽ &nbsp;|&nbsp; ` +
+      `Текущая цена выше на <b>${(sell - be).toFixed(0)} ₽</b> ` +
+      `(${((sell - be) / be * 100).toFixed(1)}%)`
+    : '<b style="color:var(--red)">Цена ниже точки безубыточности!</b>';
+
+  // Таблица цен
+  renderPriceTable(sell, purchase, commPct, acqPct, logTo, logBack, wcoef,
+                   buyoutPct, packaging, drrPct, taxPct, storage, accept, promoPct);
+}
+
+function calcBE(purchase, commPct, acqPct, logTo, logBack, wcoef,
+                buyoutPct, packaging, drrPct, taxPct, storage, accept, promoPct) {
+  let lo = 0, hi = 200000;
+  for (let i = 0; i < 64; i++) {
+    const mid = (lo + hi) / 2;
+    calcProfit(mid, purchase, commPct, acqPct, logTo, logBack, wcoef,
+               buyoutPct, packaging, drrPct, taxPct, storage, accept, promoPct).profit < 0
+      ? lo = mid : hi = mid;
+  }
+  return (lo + hi) / 2;
+}
+
+function renderPriceTable(curSell, purchase, commPct, acqPct, logTo, logBack, wcoef,
+                           buyoutPct, packaging, drrPct, taxPct, storage, accept, promoPct) {
+  const steps = [-0.3, -0.2, -0.1, -0.05, 0, 0.05, 0.1, 0.2, 0.3, 0.5];
+  const prices = [...new Set(steps.map(s => Math.round(curSell * (1 + s) / 10) * 10))].sort((a,b)=>a-b);
+  el('priceRows').innerHTML = prices.filter(p => p > 0).map(price => {
+    const r   = calcProfit(price, purchase, commPct, acqPct, logTo, logBack, wcoef,
+                           buyoutPct, packaging, drrPct, taxPct, storage, accept, promoPct);
+    const mg  = price > 0 ? r.profit / price * 100 : 0;
+    const roi = purchase > 0 ? r.profit / purchase * 100 : 0;
+    const isCur = Math.abs(price - curSell) < 5;
+    const pc  = r.profit < 0 ? 'neg' : r.profit < price * 0.08 ? 'wrn' : 'pos';
+    return `<tr${isCur ? ' class="cur"' : ''}>
+      <td>${price}</td>
+      <td class="${pc}">${fmt(r.profit)}</td>
+      <td class="${pc}">${mg.toFixed(1)}%</td>
+      <td class="${pc}">${roi.toFixed(0)}%</td>
+      <td><button class="apply-btn" onclick="el('sell').value=${price};calculate()">↑</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// Инит
+onCoefChange();
+calculate();
+
+// ── Cat-girl SVGs ────────────────────────────────────────────────────────
+const SVG_HAPPY = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 160" width="120" height="148">
+  <ellipse cx="65" cy="156" rx="38" ry="5" fill="rgba(0,0,0,.12)"/>
+  <path d="M24,118 Q65,106 106,118 L110,160 L20,160Z" fill="#F0E8FF"/>
+  <path d="M50,114 L65,134 L80,114" fill="white"/>
+  <path d="M58,117 Q65,122 72,117 Q68,119 65,124 Q62,119 58,117Z" fill="#E080B0"/>
+  <ellipse cx="65" cy="118" rx="4" ry="3" fill="#E080B0"/>
+  <rect x="56" y="104" width="18" height="16" rx="7" fill="#FFE2C8"/>
+  <ellipse cx="65" cy="62" rx="42" ry="46" fill="#9B6FE0"/>
+  <path d="M23,60 Q16,95 20,126 Q28,112 33,98" fill="#9B6FE0"/>
+  <path d="M107,60 Q114,95 110,126 Q102,112 97,98" fill="#9B6FE0"/>
+  <path d="M28,36 L18,6 L48,30" fill="#9B6FE0"/>
+  <path d="M30,34 L22,10 L46,29" fill="#FFB8D0"/>
+  <path d="M102,36 L112,6 L82,30" fill="#9B6FE0"/>
+  <path d="M100,34 L108,10 L84,29" fill="#FFB8D0"/>
+  <ellipse cx="65" cy="70" rx="38" ry="40" fill="#FFE8D6"/>
+  <path d="M27,64 Q30,36 46,26 Q54,21 65,21 Q76,21 84,26 Q100,36 103,64" fill="#9B6FE0"/>
+  <path d="M27,66 Q29,50 37,43 Q41,39 44,48" fill="#9B6FE0"/>
+  <path d="M103,66 Q101,50 93,43 Q89,39 86,48" fill="#9B6FE0"/>
+  <path d="M27,66 Q21,84 23,104 Q27,92 31,82" fill="#9B6FE0"/>
+  <path d="M103,66 Q109,84 107,104 Q103,92 99,82" fill="#9B6FE0"/>
+  <path d="M36,68 Q48,56 60,68" stroke="#3A1560" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <line x1="36" y1="68" x2="31" y2="65" stroke="#3A1560" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="43" y1="62" x2="40" y2="57" stroke="#3A1560" stroke-width="2" stroke-linecap="round"/>
+  <line x1="60" y1="68" x2="65" y2="65" stroke="#3A1560" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M70,68 Q82,56 94,68" stroke="#3A1560" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <line x1="70" y1="68" x2="65" y2="65" stroke="#3A1560" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="87" y1="62" x2="90" y2="57" stroke="#3A1560" stroke-width="2" stroke-linecap="round"/>
+  <line x1="94" y1="68" x2="99" y2="65" stroke="#3A1560" stroke-width="2.5" stroke-linecap="round"/>
+  <ellipse cx="42" cy="76" rx="12" ry="7" fill="#FFB0C0" opacity=".6"/>
+  <ellipse cx="88" cy="76" rx="12" ry="7" fill="#FFB0C0" opacity=".6"/>
+  <path d="M62,80 Q65,83 68,80" stroke="#C87860" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M48,90 Q65,108 82,90" stroke="#D05870" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M53,92 Q65,104 77,92 Q65,100 53,92" fill="white"/>
+  <path d="M8,28 L10.5,20 L13,28 L21,25.5 L13,31 L15.5,39 L10.5,32.5 L5.5,39 L8,31 L0,25.5Z" fill="#FFD700"/>
+  <path d="M116,14 L117.8,8 L119.6,14 L126,11.8 L119.6,16.6 L121.4,22.6 L117.8,17.4 L114.2,22.6 L116,16.6 L109.6,11.8Z" fill="#FFD700"/>
+  <path d="M114,82 L117,78 L120,82 L117,86Z" fill="#C0AAFF"/>
+  <path d="M4,90 L7,86 L10,90 L7,94Z" fill="#FFD700"/>
+  <path d="M118,50 L120,47 L122,50 L120,53Z" fill="#FFB0D0"/>
+  <path d="M6,55 L6,46 L12,44 L12,53 M6,53 Q4,56 6,57 Q8,58 8,56 Q8,54 6,53Z M12,51 Q10,54 12,55 Q14,56 14,54 Q14,52 12,51Z" fill="#FFB0D0" stroke="none"/>
+</svg>`;
+
+const SVG_SAD = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 160" width="120" height="148">
+  <ellipse cx="65" cy="156" rx="38" ry="5" fill="rgba(0,0,0,.12)"/>
+  <path d="M24,118 Q65,106 106,118 L110,160 L20,160Z" fill="#D8E4F8"/>
+  <path d="M50,114 L65,134 L80,114" fill="white"/>
+  <path d="M58,117 Q65,122 72,117 Q68,119 65,124 Q62,119 58,117Z" fill="#8090B8"/>
+  <ellipse cx="65" cy="118" rx="4" ry="3" fill="#8090B8"/>
+  <rect x="56" y="104" width="18" height="16" rx="7" fill="#FFE2C8"/>
+  <ellipse cx="65" cy="62" rx="42" ry="46" fill="#7860C0"/>
+  <path d="M23,60 Q16,95 20,126 Q28,112 33,98" fill="#7860C0"/>
+  <path d="M107,60 Q114,95 110,126 Q102,112 97,98" fill="#7860C0"/>
+  <path d="M30,38 L16,10 L48,32" fill="#7860C0"/>
+  <path d="M32,37 L20,14 L46,31" fill="#FFB8D0"/>
+  <path d="M100,38 L114,10 L82,32" fill="#7860C0"/>
+  <path d="M98,37 L110,14 L84,31" fill="#FFB8D0"/>
+  <ellipse cx="65" cy="70" rx="38" ry="40" fill="#FFE8D6"/>
+  <path d="M27,64 Q30,36 46,26 Q54,21 65,21 Q76,21 84,26 Q100,36 103,64" fill="#7860C0"/>
+  <path d="M27,66 Q29,50 37,43 Q41,39 44,48" fill="#7860C0"/>
+  <path d="M103,66 Q101,50 93,43 Q89,39 86,48" fill="#7860C0"/>
+  <path d="M27,66 Q21,84 23,104 Q27,92 31,82" fill="#7860C0"/>
+  <path d="M103,66 Q109,84 107,104 Q103,92 99,82" fill="#7860C0"/>
+  <path d="M33,52 Q46,58 57,54" stroke="#3A1560" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M73,54 Q84,58 97,52" stroke="#3A1560" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <ellipse cx="47" cy="68" rx="12" ry="13" fill="white"/>
+  <ellipse cx="47" cy="69" rx="8.5" ry="9.5" fill="#6090D8"/>
+  <ellipse cx="47" cy="69" rx="5.5" ry="6.5" fill="#1A3A80"/>
+  <ellipse cx="43" cy="64" rx="3.5" ry="3.5" fill="white" opacity=".95"/>
+  <ellipse cx="51" cy="73" rx="2" ry="1.5" fill="white" opacity=".7"/>
+  <ellipse cx="47" cy="79" rx="10" ry="3.5" fill="#B0D8FF" opacity=".75"/>
+  <path d="M35,62 Q47,56 59,62" stroke="#3A1560" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <line x1="35" y1="62" x2="32" y2="59" stroke="#3A1560" stroke-width="2" stroke-linecap="round"/>
+  <line x1="40" y1="59" x2="38" y2="55" stroke="#3A1560" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="47" y1="57" x2="47" y2="53" stroke="#3A1560" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="59" y1="62" x2="62" y2="59" stroke="#3A1560" stroke-width="2" stroke-linecap="round"/>
+  <ellipse cx="83" cy="68" rx="12" ry="13" fill="white"/>
+  <ellipse cx="83" cy="69" rx="8.5" ry="9.5" fill="#6090D8"/>
+  <ellipse cx="83" cy="69" rx="5.5" ry="6.5" fill="#1A3A80"/>
+  <ellipse cx="87" cy="64" rx="3.5" ry="3.5" fill="white" opacity=".95"/>
+  <ellipse cx="79" cy="73" rx="2" ry="1.5" fill="white" opacity=".7"/>
+  <ellipse cx="83" cy="79" rx="10" ry="3.5" fill="#B0D8FF" opacity=".75"/>
+  <path d="M71,62 Q83,56 95,62" stroke="#3A1560" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <line x1="71" y1="62" x2="68" y2="59" stroke="#3A1560" stroke-width="2" stroke-linecap="round"/>
+  <line x1="83" y1="57" x2="83" y2="53" stroke="#3A1560" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="95" y1="62" x2="98" y2="59" stroke="#3A1560" stroke-width="2" stroke-linecap="round"/>
+  <ellipse cx="42" cy="78" rx="12" ry="7" fill="#FF8090" opacity=".38"/>
+  <ellipse cx="88" cy="78" rx="12" ry="7" fill="#FF8090" opacity=".38"/>
+  <path d="M62,84 Q65,87 68,84" stroke="#C87860" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M50,97 Q65,90 80,97" stroke="#B05868" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+  <line x1="55" y1="97" x2="55" y2="99.5" stroke="#B05868" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="62" y1="95" x2="62" y2="97.5" stroke="#B05868" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="68" y1="95" x2="68" y2="97.5" stroke="#B05868" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="75" y1="97" x2="75" y2="99.5" stroke="#B05868" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M44,82 Q40,96 41,112" stroke="#78C0E8" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".85"/>
+  <path d="M49,83 Q47,98 48,114" stroke="#78C0E8" stroke-width="2" fill="none" stroke-linecap="round" opacity=".7"/>
+  <path d="M86,82 Q90,96 89,112" stroke="#78C0E8" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".85"/>
+  <path d="M81,83 Q83,98 82,114" stroke="#78C0E8" stroke-width="2" fill="none" stroke-linecap="round" opacity=".7"/>
+  <path d="M41,112 Q37,116 39,120 Q41,124 44,120 Q47,116 43,112 Q42,114 41,112Z" fill="#90D0F0" opacity=".85"/>
+  <path d="M89,112 Q93,116 91,120 Q89,124 86,120 Q83,116 87,112 Q88,114 89,112Z" fill="#90D0F0" opacity=".85"/>
+  <path d="M8,40 Q5,46 5,50 Q5,56 8,58 Q11,56 11,50 Q11,46 8,40Z" fill="#90C8F0" opacity=".75"/>
+  <path d="M122,40 Q119,46 119,50 Q119,56 122,58 Q125,56 125,50 Q125,46 122,40Z" fill="#90C8F0" opacity=".75"/>
+  <ellipse cx="14" cy="28" rx="3" ry="4" fill="#A8D8F8" opacity=".65"/>
+  <ellipse cx="116" cy="28" rx="3" ry="4" fill="#A8D8F8" opacity=".65"/>
+  <ellipse cx="6" cy="70" rx="2.5" ry="3.5" fill="#A8D8F8" opacity=".6"/>
+  <ellipse cx="124" cy="70" rx="2.5" ry="3.5" fill="#A8D8F8" opacity=".6"/>
+</svg>`;
+
+function updateCatGirl(profit) {
+  const catEl = document.getElementById('profitCat');
+  if (!catEl) return;
+  catEl.style.opacity = '0';
+  setTimeout(() => {
+    catEl.innerHTML = profit >= 0 ? SVG_HAPPY : SVG_SAD;
+    catEl.style.opacity = '1';
+  }, 150);
+}
+</script>
+</body>
+</html>

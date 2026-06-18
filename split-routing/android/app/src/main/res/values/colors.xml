@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg">#09090f</color>
+    <color name="surface">#050508</color>
+    <color name="fg">#ddd5bc</color>
+    <color name="muted">#4a4560</color>
+    <color name="gold">#c8a432</color>
+    <color name="coral">#cc5544</color>
+    <color name="mint">#6cbd78</color>
+    <color name="teal">#00c8d8</color>
+</resources>

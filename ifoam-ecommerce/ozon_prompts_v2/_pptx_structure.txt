@@ -1,0 +1,2868 @@
+================================================================================
+СТРУКТУРА ПРЕЗЕНТАЦИИ: 07_designer_tz_119105_v3.pptx
+================================================================================
+Общее количество слайдов: 15
+Размер слайда: 25.4 x 33.9 cm
+
+Автор: 1
+Тема: 
+
+================================================================================
+СЛАЙД 1
+================================================================================
+  [ФОН] тип заливки: SOLID (1)
+  [ФОН] цвет: #2D2D2D
+  [ФОН] theme_color: NOT_THEME_COLOR (0)
+  [LAYOUT] Blank
+  Количество shapes: 38
+
+  БЛОКИ (shapes):
+    [1] name='TextBox 1' type=TEXT_BOX (17)
+         pos: left=0.8cm top=0.6cm w=23.9cm h=2.3cm
+         зона: верх-центр
+         текст:
+           > ОБЩИЕ ТРЕБОВАНИЯ [Arial 36pt bold #FF6B00]
+    [2] name='Rectangle 2' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=3.0cm w=23.9cm h=0.1cm
+         зона: верх-центр
+         [нет текста]
+    [3] name='TextBox 3' type=TEXT_BOX (17)
+         pos: left=0.8cm top=3.4cm w=11.4cm h=1.3cm
+         зона: верх-лево
+         текст:
+           > Формат изображений: [Arial 20pt bold #FF6B00]
+    [4] name='TextBox 4' type=TEXT_BOX (17)
+         pos: left=0.8cm top=4.8cm w=11.4cm h=0.9cm
+         зона: верх-лево
+         текст:
+           > Размер: 1200×1600 px (главное фото) [Arial 16pt #F2F2F2]
+    [5] name='TextBox 5' type=TEXT_BOX (17)
+         pos: left=0.8cm top=5.8cm w=11.4cm h=1.0cm
+         зона: верх-лево
+         текст:
+           > 1200×1600 px (инфографика / вертикаль) [Arial 16pt #F2F2F2]
+    [6] name='TextBox 6' type=TEXT_BOX (17)
+         pos: left=0.8cm top=7.4cm w=11.4cm h=1.0cm
+         зона: верх-лево
+         текст:
+           > Формат: JPG / PNG [Arial 16pt #F2F2F2]
+    [7] name='TextBox 7' type=TEXT_BOX (17)
+         pos: left=0.8cm top=8.2cm w=11.4cm h=1.0cm
+         зона: верх-лево
+         текст:
+           > Качество: не менее 300 dpi [Arial 16pt #F2F2F2]
+    [8] name='TextBox 8' type=TEXT_BOX (17)
+         pos: left=0.8cm top=9.2cm w=11.4cm h=1.0cm
+         зона: верх-лево
+         текст:
+           > Цветовое пространство: RGB [Arial 16pt #F2F2F2]
+    [9] name='TextBox 9' type=TEXT_BOX (17)
+         pos: left=13.2cm top=3.2cm w=11.4cm h=1.3cm
+         зона: верх-право
+         текст:
+           > Стиль: [Arial 20pt bold #FF6B00]
+    [10] name='TextBox 10' type=TEXT_BOX (17)
+         pos: left=13.2cm top=4.1cm w=11.4cm h=1.0cm
+         зона: верх-право
+         текст:
+           > • Тёмный премиальный фон (чёрный/тёмно-серый) [Arial 16pt #F2F2F2]
+    [11] name='TextBox 11' type=TEXT_BOX (17)
+         pos: left=13.2cm top=5.6cm w=11.4cm h=1.6cm
+         зона: верх-право
+         текст:
+           > • Акцент — оранжевый под цвет жидкости [Arial 16pt #F2F2F2]
+    [12] name='TextBox 12' type=TEXT_BOX (17)
+         pos: left=13.2cm top=6.8cm w=11.4cm h=1.6cm
+         зона: верх-право
+         текст:
+           > • Крупная белая типографика, читаемая      	на мобильном [Arial 16pt #F2F2F2]
+    [13] name='TextBox 13' type=TEXT_BOX (17)
+         pos: left=13.2cm top=8.1cm w=11.4cm h=1.0cm
+         зона: верх-право
+         текст:
+           > • Продукт всегда виден в кадре [Arial 16pt #F2F2F2]
+    [14] name='TextBox 14' type=TEXT_BOX (17)
+         pos: left=13.2cm top=8.9cm w=11.4cm h=1.0cm
+         зона: верх-право
+         текст:
+           > • Профессиональный, технический образ [Arial 16pt #F2F2F2]
+    [15] name='TextBox 15' type=TEXT_BOX (17)
+         pos: left=13.2cm top=9.7cm w=11.4cm h=1.0cm
+         зона: верх-право
+         текст:
+           > • Атмосфера: «мойка как у профи, дома» [Arial 16pt #F2F2F2]
+    [16] name='Rectangle 16' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=10.8cm w=23.9cm h=0.1cm
+         зона: верх-центр
+         [нет текста]
+    [17] name='TextBox 17' type=TEXT_BOX (17)
+         pos: left=0.8cm top=11.2cm w=23.9cm h=1.3cm
+         зона: середина-центр
+         текст:
+           > Требования к тексту на изображениях: [Arial 20pt bold #FF6B00]
+    [18] name='TextBox 18' type=TEXT_BOX (17)
+         pos: left=0.8cm top=12.4cm w=23.9cm h=0.9cm
+         зона: середина-центр
+         текст:
+           > • Заголовки — жирный, без засечек [Arial 16pt #F2F2F2]
+    [19] name='TextBox 19' type=TEXT_BOX (17)
+         pos: left=0.8cm top=13.4cm w=23.9cm h=1.0cm
+         зона: середина-центр
+         текст:
+           > • Минимальный размер текста — 24 px (читаемость на мобильном) [Arial 16pt #F2F2F2]
+    [20] name='TextBox 20' type=TEXT_BOX (17)
+         pos: left=0.8cm top=14.4cm w=23.9cm h=1.0cm
+         зона: середина-центр
+         текст:
+           > • Текст не перекрывает логотип и ключевые элементы этикетки [Arial 16pt #F2F2F2]
+    [21] name='TextBox 21' type=TEXT_BOX (17)
+         pos: left=0.8cm top=15.3cm w=23.9cm h=1.0cm
+         зона: середина-центр
+         текст:
+           > • На каждом изображении — не более 2–3 смысловых блоков [Arial 16pt #F2F2F2]
+    [22] name='Rectangle 22' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=16.6cm w=23.9cm h=0.1cm
+         зона: середина-центр
+         [нет текста]
+    [23] name='TextBox 23' type=TEXT_BOX (17)
+         pos: left=0.8cm top=17.0cm w=23.9cm h=1.3cm
+         зона: середина-центр
+         текст:
+           > Цветовая палитра: [Arial 20pt bold #FF6B00]
+    [24] name='Rectangle 24' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=18.4cm w=5.1cm h=1.1cm
+         зона: середина-лево
+         [нет текста]
+    [25] name='TextBox 25' type=TEXT_BOX (17)
+         pos: left=0.8cm top=19.7cm w=5.1cm h=1.4cm
+         зона: середина-лево
+         текст:
+           > Основной фон [Arial 13pt #F2F2F2]
+    [26] name='Rectangle 26' type=AUTO_SHAPE (1)
+         pos: left=6.7cm top=18.4cm w=5.1cm h=1.1cm
+         зона: середина-центр
+         [нет текста]
+    [27] name='TextBox 27' type=TEXT_BOX (17)
+         pos: left=6.7cm top=19.7cm w=5.1cm h=1.4cm
+         зона: середина-центр
+         текст:
+           > Акцент [Arial 13pt #F2F2F2]
+    [28] name='Rectangle 28' type=AUTO_SHAPE (1)
+         pos: left=12.7cm top=18.4cm w=5.1cm h=1.1cm
+         зона: середина-центр
+         [нет текста]
+    [29] name='TextBox 29' type=TEXT_BOX (17)
+         pos: left=12.7cm top=19.6cm w=5.1cm h=1.4cm
+         зона: середина-центр
+         текст:
+           > ¿Текст? [Courier New 14pt bold]
+    [30] name='Rectangle 30' type=AUTO_SHAPE (1)
+         pos: left=18.7cm top=18.4cm w=5.1cm h=1.1cm
+         зона: середина-право
+         [нет текста]
+    [31] name='TextBox 31' type=TEXT_BOX (17)
+         pos: left=18.7cm top=19.7cm w=5.1cm h=1.4cm
+         зона: середина-право
+         текст:
+           > Вспомогательный [Arial 13pt #F2F2F2]
+    [32] name='Rectangle 32' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=21.7cm w=23.9cm h=0.1cm
+         зона: середина-центр
+         [нет текста]
+    [33] name='TextBox 33' type=TEXT_BOX (17)
+         pos: left=0.8cm top=22.1cm w=23.9cm h=1.3cm
+         зона: низ-центр
+         текст:
+           > Запрещено: [Arial 20pt bold #FF4444]
+    [34] name='TextBox 34' type=TEXT_BOX (17)
+         pos: left=0.8cm top=23.4cm w=23.9cm h=0.9cm
+         зона: низ-центр
+         текст:
+           > ✗  Пересечение текста(фона текста) с основным изображением товара [Arial 16pt #FF8888]
+    [35] name='TextBox 35' type=TEXT_BOX (17)
+         pos: left=0.8cm top=24.3cm w=23.9cm h=1.0cm
+         зона: низ-центр
+         текст:
+           > ✗  Использование зелёного цвета (ассоциация с конкурентами Grass) [Arial 16pt #FF8888]
+    [36] name='TextBox 36' type=TEXT_BOX (17)
+         pos: left=0.8cm top=25.3cm w=23.9cm h=1.0cm
+         зона: низ-центр
+         текст:
+           > ✗  Светлый / белый фон — продукт теряется на полке [Arial 16pt #FF8888]
+    [37] name='TextBox 37' type=TEXT_BOX (17)
+         pos: left=0.8cm top=26.3cm w=23.9cm h=1.0cm
+         зона: низ-центр
+         текст:
+           > ✗  Мелкий нечитаемый текст поверх сложного фона [Arial 16pt #FF8888]
+    [38] name='TextBox 38' type=TEXT_BOX (17)
+         pos: left=0.8cm top=32.8cm w=23.9cm h=0.9cm
+         зона: низ-центр
+         текст:
+           > ifoam AUTO  |  Orange Standard 5кг  |  Art. 119105 [Arial 12pt #808080]
+
+================================================================================
+СЛАЙД 2
+================================================================================
+  [ФОН] тип заливки: SOLID (1)
+  [ФОН] цвет: #1A1A1A
+  [ФОН] theme_color: NOT_THEME_COLOR (0)
+  [LAYOUT] Blank
+  Количество shapes: 32
+
+  БЛОКИ (shapes):
+    [1] name='TextBox 1' type=TEXT_BOX (17)
+         pos: left=0.8cm top=0.6cm w=1.8cm h=1.8cm
+         зона: верх-лево
+         текст:
+           > 1 [Arial 36pt bold #FF6B00]
+    [2] name='TextBox 2' type=TEXT_BOX (17)
+         pos: left=2.8cm top=0.8cm w=21.6cm h=1.7cm
+         зона: верх-центр
+         текст:
+           > ГЛАВНОЕ ФОТО [Arial 28pt bold #FFFFFF]
+    [3] name='Rectangle 3' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=2.7cm w=23.9cm h=0.1cm
+         зона: верх-центр
+         [нет текста]
+    [4] name='TextBox 4' type=TEXT_BOX (17)
+         pos: left=0.8cm top=3.0cm w=23.9cm h=1.1cm
+         зона: верх-центр
+         текст:
+           > Фон: [Arial 19pt bold #FF6B00]
+    [5] name='TextBox 5' type=TEXT_BOX (17)
+         pos: left=0.8cm top=4.2cm w=23.9cm h=0.9cm
+         зона: верх-центр
+         текст:
+           > • Основной цвет: насыщенный чёрный [Arial 16pt #F2F2F2]
+    [6] name='TextBox 6' type=TEXT_BOX (17)
+         pos: left=0.8cm top=5.2cm w=23.9cm h=1.6cm
+         зона: верх-центр
+         текст:
+           > • Дополнение: лёгкий оранжевый градиент в нижней трети — перекликается с цветом жидкости [Arial 16pt #F2F2F2]
+    [7] name='TextBox 7' type=TEXT_BOX (17)
+         pos: left=0.8cm top=6.6cm w=23.9cm h=1.0cm
+         зона: верх-центр
+         текст:
+           > • Ассоциация: профессиональная автохимия, сила, доверие [Arial 16pt #F2F2F2]
+    [8] name='TextBox 8' type=TEXT_BOX (17)
+         pos: left=0.8cm top=7.4cm w=23.9cm h=1.1cm
+         зона: верх-центр
+         текст:
+           > Композиция: [Arial 19pt bold #FF6B00]
+    [9] name='TextBox 9' type=TEXT_BOX (17)
+         pos: left=0.8cm top=8.5cm w=23.9cm h=1.0cm
+         зона: верх-центр
+         текст:
+           > • Канистра 5 кг по центру, лёгкий наклон 10–15° — динамика [Arial 16pt #F2F2F2]
+    [10] name='TextBox 10' type=TEXT_BOX (17)
+         pos: left=0.8cm top=9.5cm w=23.9cm h=1.0cm
+         зона: верх-центр
+         текст:
+           > • Этикетка Orange Standard чётко читается, повёрнута к зрителю [Arial 16pt #F2F2F2]
+    [11] name='TextBox 11' type=TEXT_BOX (17)
+         pos: left=0.8cm top=10.4cm w=23.9cm h=1.0cm
+         зона: верх-центр
+         текст:
+           > • Крышка закрыта, горловина запаяна — акцент на защите от подделок [Arial 16pt #F2F2F2]
+    [12] name='TextBox 12' type=TEXT_BOX (17)
+         pos: left=0.8cm top=11.4cm w=23.9cm h=1.0cm
+         зона: середина-центр
+         текст:
+           > • Лёгкий блик/свет сверху справа — объём, «живость» упаковки [Arial 16pt #F2F2F2]
+    [13] name='TextBox 13' type=TEXT_BOX (17)
+         pos: left=0.8cm top=12.4cm w=23.9cm h=1.0cm
+         зона: середина-центр
+         текст:
+           > • Фон без лишних предметов — фокус только на продукте [Arial 16pt #F2F2F2]
+    [14] name='TextBox 14' type=TEXT_BOX (17)
+         pos: left=0.8cm top=13.7cm w=23.9cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Текстовые блоки на фото: [Arial 19pt bold #FF6B00]
+    [15] name='TextBox 15' type=TEXT_BOX (17)
+         pos: left=0.8cm top=15.0cm w=8.9cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > "АВТОШАМПУНЬ" [Arial 16pt bold #FF6B00]
+    [16] name='TextBox 16' type=TEXT_BOX (17)
+         pos: left=9.9cm top=15.0cm w=14.7cm h=1.1cm
+         зона: середина-право
+         текст:
+           > Основной заголовок — крупно сверху, белый жирный [Arial 16pt #F2F2F2]
+    [17] name='TextBox 17' type=TEXT_BOX (17)
+         pos: left=0.8cm top=16.3cm w=8.9cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > "БЕСКОНТАКТНАЯ МОЙКА" [Arial 16pt bold #FF6B00]
+    [18] name='TextBox 18' type=TEXT_BOX (17)
+         pos: left=9.9cm top=16.3cm w=14.7cm h=1.1cm
+         зона: середина-право
+         текст:
+           > Подзаголовок — оранжевый, чуть меньше [Arial 16pt #F2F2F2]
+    [19] name='TextBox 19' type=TEXT_BOX (17)
+         pos: left=0.8cm top=17.6cm w=8.9cm h=0.9cm
+         зона: середина-лево
+         текст:
+           > "pH 12  |  концентрат 1:30-1:40" [Arial 15pt bold #FF6B00]
+    [20] name='TextBox 20' type=TEXT_BOX (17)
+         pos: left=9.9cm top=17.6cm w=14.7cm h=1.1cm
+         зона: середина-право
+         текст:
+           > Параметры — белый, строго под подзаголовком [Arial 16pt #F2F2F2]
+    [21] name='TextBox 21' type=TEXT_BOX (17)
+         pos: left=0.8cm top=18.9cm w=8.9cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > "5 кг" [Arial 16pt bold #FF6B00]
+    [22] name='TextBox 22' type=TEXT_BOX (17)
+         pos: left=9.9cm top=18.8cm w=14.7cm h=1.1cm
+         зона: середина-право
+         текст:
+           > Объём — круглый бейдж нижний левый угол, оранжевый фон [Arial 16pt #F2F2F2]
+    [23] name='TextBox 23' type=TEXT_BOX (17)
+         pos: left=0.8cm top=20.3cm w=8.9cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > "ОТ ПРОИЗВОДИТЕЛЯ" [Arial 16pt bold #FF6B00]
+    [24] name='TextBox 24' type=TEXT_BOX (17)
+         pos: left=9.9cm top=20.3cm w=14.7cm h=1.1cm
+         зона: середина-право
+         текст:
+           > Доп. метка нижний правый угол, небольшой шрифт [Arial 16pt #F2F2F2]
+    [25] name='Rectangle 25' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=24.5cm w=23.9cm h=0.1cm
+         зона: низ-центр
+         [нет текста]
+    [26] name='TextBox 26' type=TEXT_BOX (17)
+         pos: left=0.8cm top=24.9cm w=23.9cm h=1.1cm
+         зона: низ-центр
+         текст:
+           > Справка для дизайнера — что делают лидеры (GLITTER G10, GRASS Balance): [Arial 15pt bold #FFA040]
+    [27] name='TextBox 27' type=TEXT_BOX (17)
+         pos: left=0.8cm top=26.1cm w=23.9cm h=1.0cm
+         зона: низ-центр
+         текст:
+           > → GLITTER G10: чистый продакт-шот на светлом, весь текст на этикетке, минимум надписей на фото [Arial 14pt #CCCCCC]
+    [28] name='TextBox 28' type=TEXT_BOX (17)
+         pos: left=0.8cm top=27.2cm w=23.9cm h=1.0cm
+         зона: низ-центр
+         текст:
+           > → GRASS Balance: яркий жёлтый канистр + «Бренд №1» бейдж — доверие через статус [Arial 14pt #CCCCCC]
+    [29] name='TextBox 29' type=TEXT_BOX (17)
+         pos: left=0.8cm top=28.3cm w=23.9cm h=1.0cm
+         зона: низ-центр
+         текст:
+           > → ifoam: должен взять лучшее — тёмный фон (как DR.BERG/GLITTER) + яркий оранжевый акцент [Arial 14pt #CCCCCC]
+    [30] name='TextBox 30' type=TEXT_BOX (17)
+         pos: left=0.8cm top=32.8cm w=23.9cm h=0.9cm
+         зона: низ-центр
+         текст:
+           > ifoam AUTO  |  Orange Standard 5кг  |  Art. 119105 [Arial 12pt #808080]
+    [31] name='TextBox 31' type=TEXT_BOX (17)
+         pos: left=0.8cm top=22.3cm w=8.9cm h=0.9cm
+         зона: низ-лево
+         текст:
+           > "СДЕЛАНО В РОССИИ" [Arial 16pt bold #FF6B00]
+    [32] name='Рисунок 33' type=PICTURE (13)
+         pos: left=10.4cm top=21.6cm w=6.8cm h=2.4cm
+         зона: низ-центр
+         [IMAGE: Рисунок 33]
+
+================================================================================
+СЛАЙД 3
+================================================================================
+  [ФОН] тип заливки: SOLID (1)
+  [ФОН] цвет: #1A1A1A
+  [ФОН] theme_color: NOT_THEME_COLOR (0)
+  [LAYOUT] Blank
+  Количество shapes: 33
+
+  БЛОКИ (shapes):
+    [1] name='TextBox 1' type=TEXT_BOX (17)
+         pos: left=0.8cm top=0.6cm w=1.8cm h=1.8cm
+         зона: верх-лево
+         текст:
+           > 2 [Arial 36pt bold #FF6B00]
+    [2] name='TextBox 2' type=TEXT_BOX (17)
+         pos: left=2.8cm top=0.8cm w=21.6cm h=1.7cm
+         зона: верх-центр
+         текст:
+           > ФОТО "ХАРАКТЕРИСТИКИ / УТП" [Arial 28pt bold #FFFFFF]
+    [3] name='Rectangle 3' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=2.7cm w=23.9cm h=0.1cm
+         зона: верх-центр
+         [нет текста]
+    [4] name='TextBox 4' type=TEXT_BOX (17)
+         pos: left=0.8cm top=3.0cm w=23.9cm h=1.1cm
+         зона: верх-центр
+         текст:
+           > Фон: [Arial 19pt bold #FF6B00]
+    [5] name='TextBox 5' type=TEXT_BOX (17)
+         pos: left=0.8cm top=4.1cm w=23.9cm h=1.5cm
+         зона: верх-центр
+         текст:
+           > Тёмный с оранжевыми пузырями пены или брызгами воды — атмосфера мойки. Канистр в правом нижнем углу, занимает 30–35% кадра. [Arial 16pt #F2F2F2]
+    [6] name='TextBox 6' type=TEXT_BOX (17)
+         pos: left=0.8cm top=6.0cm w=23.9cm h=1.1cm
+         зона: верх-центр
+         текст:
+           > Текстовые блоки (✓ маркеры, белый + оранжевый): [Arial 19pt bold #FF6B00]
+    [7] name='TextBox 7' type=TEXT_BOX (17)
+         pos: left=0.8cm top=7.3cm w=1.3cm h=1.1cm
+         зона: верх-лево
+         текст:
+           > ✓ [Arial 17pt bold #FF6B00]
+    [8] name='TextBox 8' type=TEXT_BOX (17)
+         pos: left=2.0cm top=7.3cm w=22.1cm h=1.1cm
+         зона: верх-центр
+         текст:
+           > Щелочная формула pH 12 — растворяет самые стойкие загрязнения [Arial 17pt #FFFFFF]
+    [9] name='TextBox 9' type=TEXT_BOX (17)
+         pos: left=0.8cm top=8.4cm w=1.3cm h=1.1cm
+         зона: верх-лево
+         текст:
+           > ✓ [Arial 17pt bold #FF6B00]
+    [10] name='TextBox 10' type=TEXT_BOX (17)
+         pos: left=2.0cm top=8.4cm w=22.1cm h=1.1cm
+         зона: верх-центр
+         текст:
+           > Концентрат 1:30–1:40 — 5 кг = 150–200 литров рабочего раствора [Arial 17pt #FFFFFF]
+    [11] name='TextBox 11' type=TEXT_BOX (17)
+         pos: left=0.8cm top=9.6cm w=1.3cm h=1.1cm
+         зона: верх-лево
+         текст:
+           > ✓ [Arial 17pt bold #FF6B00]
+    [12] name='TextBox 12' type=TEXT_BOX (17)
+         pos: left=2.0cm top=9.6cm w=22.1cm h=1.1cm
+         зона: верх-центр
+         текст:
+           > Не повреждает ЛКП, хром, пластик и резину [Arial 17pt #FFFFFF]
+    [13] name='TextBox 13' type=TEXT_BOX (17)
+         pos: left=0.8cm top=10.7cm w=1.3cm h=1.1cm
+         зона: верх-лево
+         текст:
+           > ✓ [Arial 17pt bold #FF6B00]
+    [14] name='TextBox 14' type=TEXT_BOX (17)
+         pos: left=2.0cm top=10.7cm w=22.1cm h=1.1cm
+         зона: верх-центр
+         текст:
+           > Работает с мягкой и жёсткой водой [Arial 17pt #FFFFFF]
+    [15] name='TextBox 15' type=TEXT_BOX (17)
+         pos: left=0.8cm top=11.8cm w=1.3cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 17pt bold #FF6B00]
+    [16] name='TextBox 16' type=TEXT_BOX (17)
+         pos: left=2.0cm top=11.8cm w=22.1cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Густая активная пена держится 1–2 минуты [Arial 17pt #FFFFFF]
+    [17] name='TextBox 17' type=TEXT_BOX (17)
+         pos: left=0.8cm top=12.9cm w=1.3cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 17pt bold #FF6B00]
+    [18] name='TextBox 18' type=TEXT_BOX (17)
+         pos: left=2.0cm top=12.9cm w=22.1cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Легко смывается водой без разводов [Arial 17pt #FFFFFF]
+    [19] name='Rectangle 19' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=14.4cm w=23.9cm h=0.1cm
+         зона: середина-центр
+         [нет текста]
+    [20] name='TextBox 20' type=TEXT_BOX (17)
+         pos: left=0.8cm top=14.8cm w=23.9cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Акцентный блок (выделить рамкой / плашкой): [Arial 19pt bold #FF6B00]
+    [21] name='Rectangle 21' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=16.1cm w=23.9cm h=4.1cm
+         зона: середина-центр
+         [нет текста]
+    [22] name='TextBox 22' type=TEXT_BOX (17)
+         pos: left=2.5cm top=16.4cm w=5.6cm h=1.3cm
+         зона: середина-лево
+         текст:
+           > pH 12 [Arial 24pt bold #FF6B00]
+    [23] name='TextBox 23' type=TEXT_BOX (17)
+         pos: left=2.5cm top=18.2cm w=5.6cm h=1.5cm
+         зона: середина-лево
+         текст:
+           > Щелочная
+формула [Arial 14pt #F2F2F2]
+    [24] name='TextBox 24' type=TEXT_BOX (17)
+         pos: left=9.7cm top=16.4cm w=5.6cm h=1.3cm
+         зона: середина-центр
+         текст:
+           > 1:30–1:40 [Arial 24pt bold #FF6B00]
+    [25] name='TextBox 25' type=TEXT_BOX (17)
+         pos: left=9.7cm top=18.3cm w=5.6cm h=1.5cm
+         зона: середина-центр
+         текст:
+           > Пеногенератор [Arial 14pt #F2F2F2]
+    [26] name='TextBox 26' type=TEXT_BOX (17)
+         pos: left=17.0cm top=16.4cm w=5.6cm h=1.3cm
+         зона: середина-право
+         текст:
+           > 1:3–1:4 [Arial 24pt bold #FF6B00]
+    [27] name='TextBox 27' type=TEXT_BOX (17)
+         pos: left=16.8cm top=18.2cm w=5.6cm h=1.5cm
+         зона: середина-право
+         текст:
+           > Пенокомплект [Arial 14pt #F2F2F2]
+    [28] name='Rectangle 28' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=20.6cm w=23.9cm h=0.1cm
+         зона: середина-центр
+         [нет текста]
+    [29] name='TextBox 29' type=TEXT_BOX (17)
+         pos: left=0.8cm top=21.0cm w=23.9cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Справка — что используют конкуренты на этом слайде: [Arial 15pt bold #FFA040]
+    [30] name='TextBox 30' type=TEXT_BOX (17)
+         pos: left=0.8cm top=22.3cm w=23.9cm h=1.0cm
+         зона: низ-центр
+         текст:
+           > → GLITTER G10: «работает с мягкой и жёсткой водой / густая пена / не оставляет разводов» + иконки [Arial 14pt #CCCCCC]
+    [31] name='TextBox 31' type=TEXT_BOX (17)
+         pos: left=0.8cm top=23.4cm w=23.9cm h=1.0cm
+         зона: низ-центр
+         текст:
+           > → DR.BERG ACE: «активная пена / эффективное удаление / плотная пена / безопасно» на тёмном фоне [Arial 14pt #CCCCCC]
+    [32] name='TextBox 32' type=TEXT_BOX (17)
+         pos: left=0.8cm top=24.4cm w=23.9cm h=0.9cm
+         зона: низ-центр
+         текст:
+           > → ifoam: добавить уникальное — pH 12 и пропорции разбавления крупно (это наше УТП) [Arial 14pt #CCCCCC]
+    [33] name='TextBox 33' type=TEXT_BOX (17)
+         pos: left=0.8cm top=32.8cm w=23.9cm h=0.9cm
+         зона: низ-центр
+         текст:
+           > ifoam AUTO  |  Orange Standard 5кг  |  Art. 119105 [Arial 12pt #808080]
+
+================================================================================
+СЛАЙД 4
+================================================================================
+  [ФОН] тип заливки: SOLID (1)
+  [ФОН] цвет: #1A1A1A
+  [ФОН] theme_color: NOT_THEME_COLOR (0)
+  [LAYOUT] Blank
+  Количество shapes: 25
+
+  БЛОКИ (shapes):
+    [1] name='TextBox 1' type=TEXT_BOX (17)
+         pos: left=0.8cm top=0.6cm w=1.8cm h=1.8cm
+         зона: верх-лево
+         текст:
+           > 3 [Arial 36pt bold #FF6B00]
+    [2] name='TextBox 2' type=TEXT_BOX (17)
+         pos: left=2.8cm top=0.8cm w=21.6cm h=1.7cm
+         зона: верх-центр
+         текст:
+           > ФОТО "ПРИМЕНЕНИЕ" [Arial 28pt bold #FFFFFF]
+    [3] name='Rectangle 3' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=2.7cm w=23.9cm h=0.1cm
+         зона: верх-центр
+         [нет текста]
+    [4] name='TextBox 4' type=TEXT_BOX (17)
+         pos: left=0.8cm top=3.0cm w=23.9cm h=1.4cm
+         зона: верх-центр
+         текст:
+           > Формат: пошаговая инструкция с реальными фотографиями или иконками (4 шага) [Arial 17pt #F2F2F2]
+    [5] name='TextBox 5' type=TEXT_BOX (17)
+         pos: left=0.8cm top=4.7cm w=23.9cm h=1.1cm
+         зона: верх-центр
+         текст:
+           > Заголовок слайда (крупно, сверху): [Arial 19pt bold #FF6B00]
+    [6] name='TextBox 6' type=TEXT_BOX (17)
+         pos: left=0.8cm top=5.8cm w=23.9cm h=1.1cm
+         зона: верх-центр
+         текст:
+           > "4 ШАГА ДО ЧИСТОГО КУЗОВА"  или  "ИНСТРУКЦИЯ ПО ПРИМЕНЕНИЮ" [Arial 17pt bold #FFFFFF]
+    [7] name='Rectangle 7' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=7.4cm w=23.9cm h=0.1cm
+         зона: верх-центр
+         [нет текста]
+    [8] name='Rectangle 8' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=7.7cm w=23.9cm h=5.3cm
+         зона: верх-центр
+         [нет текста]
+    [9] name='TextBox 9' type=TEXT_BOX (17)
+         pos: left=1.1cm top=8.1cm w=2.2cm h=2.8cm
+         зона: верх-лево
+         текст:
+           > 1 [Arial 52pt bold #FF6B00]
+    [10] name='TextBox 10' type=TEXT_BOX (17)
+         pos: left=3.7cm top=8.3cm w=20.1cm h=1.5cm
+         зона: верх-центр
+         текст:
+           > ОСТУДИТЕ КУЗОВ [Arial 22pt bold #FFFFFF]
+    [11] name='TextBox 11' type=TEXT_BOX (17)
+         pos: left=3.7cm top=9.8cm w=20.1cm h=2.4cm
+         зона: верх-центр
+         текст:
+           > Сбейте сильные загрязнения струёй воды
+при необходимости [Arial 16pt #F2F2F2]
+    [12] name='Rectangle 12' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=13.6cm w=23.9cm h=5.3cm
+         зона: середина-центр
+         [нет текста]
+    [13] name='TextBox 13' type=TEXT_BOX (17)
+         pos: left=1.1cm top=14.0cm w=2.2cm h=2.8cm
+         зона: середина-лево
+         текст:
+           > 2 [Arial 52pt bold #FF6B00]
+    [14] name='TextBox 14' type=TEXT_BOX (17)
+         pos: left=3.7cm top=14.1cm w=20.1cm h=1.5cm
+         зона: середина-центр
+         текст:
+           > РАЗВЕДИТЕ СОСТАВ [Arial 22pt bold #FFFFFF]
+    [15] name='TextBox 15' type=TEXT_BOX (17)
+         pos: left=3.7cm top=15.7cm w=20.1cm h=2.4cm
+         зона: середина-центр
+         текст:
+           > Пеногенератор: 20–25 г/л (1:30–1:40)
+Пенокомплект: 200–250 г/л (1:3–1:4) [Arial 16pt #F2F2F2]
+    [16] name='Rectangle 16' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=19.4cm w=23.9cm h=5.3cm
+         зона: середина-центр
+         [нет текста]
+    [17] name='TextBox 17' type=TEXT_BOX (17)
+         pos: left=1.1cm top=19.8cm w=2.2cm h=2.8cm
+         зона: середина-лево
+         текст:
+           > 3 [Arial 52pt bold #FF6B00]
+    [18] name='TextBox 18' type=TEXT_BOX (17)
+         pos: left=3.7cm top=19.9cm w=20.1cm h=1.5cm
+         зона: середина-центр
+         текст:
+           > НАНЕСИТЕ ПЕНУ [Arial 22pt bold #FFFFFF]
+    [19] name='TextBox 19' type=TEXT_BOX (17)
+         pos: left=3.7cm top=21.5cm w=20.1cm h=2.4cm
+         зона: низ-центр
+         текст:
+           > Равномерно покройте весь кузов снизу вверх
+Выдержите 1–2 минуты [Arial 16pt #F2F2F2]
+    [20] name='Rectangle 20' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=25.3cm w=23.9cm h=5.3cm
+         зона: низ-центр
+         [нет текста]
+    [21] name='TextBox 21' type=TEXT_BOX (17)
+         pos: left=1.1cm top=25.7cm w=2.2cm h=2.8cm
+         зона: низ-лево
+         текст:
+           > 4 [Arial 52pt bold #FF6B00]
+    [22] name='TextBox 22' type=TEXT_BOX (17)
+         pos: left=3.7cm top=25.8cm w=20.1cm h=1.5cm
+         зона: низ-центр
+         текст:
+           > СМОЙТЕ ВОДОЙ [Arial 22pt bold #FFFFFF]
+    [23] name='TextBox 23' type=TEXT_BOX (17)
+         pos: left=3.7cm top=27.4cm w=20.1cm h=2.4cm
+         зона: низ-центр
+         текст:
+           > Сбейте пену под давлением снизу вверх
+НЕ допускайте высыхания на поверхности [Arial 16pt #F2F2F2]
+    [24] name='TextBox 24' type=TEXT_BOX (17)
+         pos: left=0.8cm top=31.0cm w=23.9cm h=1.3cm
+         зона: низ-центр
+         текст:
+           > ⚠  НЕ ДОПУСКАЙТЕ ВЫСЫХАНИЯ НА ПОВЕРХНОСТИ [Arial 17pt bold #FFCC00]
+    [25] name='TextBox 25' type=TEXT_BOX (17)
+         pos: left=0.8cm top=32.8cm w=23.9cm h=0.9cm
+         зона: низ-центр
+         текст:
+           > ifoam AUTO  |  Orange Standard 5кг  |  Art. 119105 [Arial 12pt #808080]
+
+================================================================================
+СЛАЙД 5
+================================================================================
+  [ФОН] тип заливки: SOLID (1)
+  [ФОН] цвет: #1A1A1A
+  [ФОН] theme_color: NOT_THEME_COLOR (0)
+  [LAYOUT] Blank
+  Количество shapes: 51
+
+  БЛОКИ (shapes):
+    [1] name='TextBox 0' type=TEXT_BOX (17)
+         pos: left=0.8cm top=0.6cm w=1.8cm h=1.8cm
+         зона: верх-лево
+         текст:
+           > 4 [Arial 36pt bold #FF6B00]
+    [2] name='TextBox 26' type=TEXT_BOX (17)
+         pos: left=2.8cm top=0.8cm w=21.6cm h=1.7cm
+         зона: верх-центр
+         текст:
+           > ФОТО "ЭКОНОМИКА РАСХОДА" [Arial 28pt bold #FFFFFF]
+    [3] name='Rectangle 2' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=2.7cm w=24.4cm h=0.1cm
+         зона: верх-центр
+         [нет текста]
+    [4] name='TextBox 29' type=TEXT_BOX (17)
+         pos: left=0.8cm top=4.4cm w=23.9cm h=1.1cm
+         зона: верх-центр
+         текст:
+           > Заголовок слайда (крупно, центр): [Arial 19pt bold #FF6B00]
+    [5] name='TextBox 30' type=TEXT_BOX (17)
+         pos: left=0.8cm top=5.6cm w=23.9cm h=1.5cm
+         зона: верх-центр
+         текст:
+           > " 5 КГ = 210 ЧИСТЫХ АВТОМОБИЛЕЙ С ПЕНОГЕНЕРАТОРОМ" или "5 КГ = 21 ЧИСТЫХ АВТОМОБИЛЕЙ С ПЕНОКОМПЛЕКТОМ" [Arial 15pt bold #FFFFFF]
+    [6] name='Rectangle 6' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=7.4cm w=24.4cm h=0.1cm
+         зона: верх-центр
+         [нет текста]
+    [7] name='TextBox 32' type=TEXT_BOX (17)
+         pos: left=0.8cm top=7.7cm w=23.9cm h=1.1cm
+         зона: верх-центр
+         текст:
+           > Визуальная цепочка (3 блока + стрелки): [Arial 19pt bold #FF6B00]
+    [8] name='Rectangle 8' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=9.1cm w=6.7cm h=5.3cm
+         зона: середина-лево
+         [нет текста]
+    [9] name='TextBox 34' type=TEXT_BOX (17)
+         pos: left=0.8cm top=10.5cm w=6.7cm h=1.6cm
+         зона: середина-лево
+         текст:
+           > 5 кг
+концентрата [Arial 16pt bold #FF6B00]
+    [10] name='TextBox 35' type=TEXT_BOX (17)
+         pos: left=0.8cm top=12.4cm w=6.7cm h=1.7cm
+         зона: середина-лево
+         текст:
+           > Исходный объём
+упаковки [Arial 13pt #F2F2F2]
+    [11] name='TextBox 36' type=TEXT_BOX (17)
+         pos: left=7.7cm top=10.7cm w=1.1cm h=1.7cm
+         зона: середина-лево
+         текст:
+           > → [Arial 26pt bold #FFFFFF]
+    [12] name='Rectangle 13' type=AUTO_SHAPE (1)
+         pos: left=9.0cm top=9.1cm w=6.7cm h=5.3cm
+         зона: середина-центр
+         [нет текста]
+    [13] name='TextBox 38' type=TEXT_BOX (17)
+         pos: left=9.0cm top=10.5cm w=6.7cm h=1.6cm
+         зона: середина-центр
+         текст:
+           > 150–200 л
+рабочего раствора [Arial 16pt bold #FF6B00]
+    [14] name='TextBox 39' type=TEXT_BOX (17)
+         pos: left=9.0cm top=12.4cm w=6.7cm h=1.7cm
+         зона: середина-центр
+         текст:
+           > При разведении
+1:30–1:40 [Arial 13pt #F2F2F2]
+    [15] name='TextBox 40' type=TEXT_BOX (17)
+         pos: left=16.0cm top=10.7cm w=1.1cm h=1.7cm
+         зона: середина-центр
+         текст:
+           > → [Arial 26pt bold #FFFFFF]
+    [16] name='Rectangle 18' type=AUTO_SHAPE (1)
+         pos: left=17.3cm top=9.1cm w=6.7cm h=5.3cm
+         зона: середина-право
+         [нет текста]
+    [17] name='TextBox 42' type=TEXT_BOX (17)
+         pos: left=17.3cm top=9.2cm w=6.7cm h=3.8cm
+         зона: верх-право
+         текст:
+           > ≥ 210
+автомобилей с пеногенератором [Arial 14pt bold #FF6B00]
+           > /≥ 21
+автомобилей с пенокомплектом [Arial 14pt bold #FF6B00]
+    [18] name='TextBox 43' type=TEXT_BOX (17)
+         pos: left=17.3cm top=13.0cm w=6.7cm h=1.7cm
+         зона: середина-право
+         текст:
+           > Количество
+полных моек [Arial 13pt #F2F2F2]
+    [19] name='Rectangle 22' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=14.9cm w=24.4cm h=0.1cm
+         зона: середина-центр
+         [нет текста]
+    [20] name='TextBox 45' type=TEXT_BOX (17)
+         pos: left=0.8cm top=15.4cm w=23.9cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Таблица пропорций разбавления: [Arial 19pt bold #FF6B00]
+    [21] name='Rectangle 24' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=16.6cm w=23.9cm h=1.3cm
+         зона: середина-центр
+         [нет текста]
+    [22] name='TextBox 47' type=TEXT_BOX (17)
+         pos: left=1.0cm top=16.8cm w=8.9cm h=1.0cm
+         зона: середина-лево
+         текст:
+           > Способ нанесения [Arial 15pt bold #FF6B00]
+    [23] name='TextBox 48' type=TEXT_BOX (17)
+         pos: left=10.0cm top=16.8cm w=7.1cm h=1.0cm
+         зона: середина-центр
+         текст:
+           > Пропорция [Arial 15pt bold #FF6B00]
+    [24] name='TextBox 49' type=TEXT_BOX (17)
+         pos: left=14.8cm top=16.8cm w=7.1cm h=1.0cm
+         зона: середина-право
+         текст:
+           > Расход на 1 л воды [Arial 15pt bold #FF6B00]
+    [25] name='Rectangle 28' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=18.0cm w=23.9cm h=1.4cm
+         зона: середина-центр
+         [нет текста]
+    [26] name='TextBox 52' type=TEXT_BOX (17)
+         pos: left=1.0cm top=18.2cm w=8.9cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > Пеногенератор (профи / автомойка) [Arial 15pt #F2F2F2]
+    [27] name='TextBox 53' type=TEXT_BOX (17)
+         pos: left=10.0cm top=18.2cm w=7.1cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > 1:30 – 1:40 [Arial 15pt bold #FF6B00]
+    [28] name='TextBox 54' type=TEXT_BOX (17)
+         pos: left=14.8cm top=18.1cm w=7.1cm h=1.1cm
+         зона: середина-право
+         текст:
+           > 20–25 г [Arial 15pt #FFFFFF]
+    [29] name='Rectangle 32' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=19.6cm w=23.9cm h=1.4cm
+         зона: середина-центр
+         [нет текста]
+    [30] name='TextBox 56' type=TEXT_BOX (17)
+         pos: left=1.0cm top=19.7cm w=8.9cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > Пенокомплект (ручная мойка дома) [Arial 15pt #F2F2F2]
+    [31] name='TextBox 57' type=TEXT_BOX (17)
+         pos: left=10.0cm top=19.7cm w=7.1cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > 1:3 – 1:4 [Arial 15pt bold #FF6B00]
+    [32] name='TextBox 58' type=TEXT_BOX (17)
+         pos: left=14.8cm top=19.7cm w=7.1cm h=1.1cm
+         зона: середина-право
+         текст:
+           > 200–250 г [Arial 15pt #FFFFFF]
+    [33] name='Rectangle 36' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=21.4cm w=24.4cm h=0.1cm
+         зона: середина-центр
+         [нет текста]
+    [34] name='TextBox 60' type=TEXT_BOX (17)
+         pos: left=0.8cm top=21.8cm w=23.9cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Дополнительные элементы слайда: [Arial 19pt bold #FF6B00]
+    [35] name='TextBox 61' type=TEXT_BOX (17)
+         pos: left=0.8cm top=23.1cm w=1.0cm h=1.0cm
+         зона: низ-лево
+         текст:
+           > ✓ [Arial 14pt bold #2ECC71]
+    [36] name='TextBox 62' type=TEXT_BOX (17)
+         pos: left=1.9cm top=23.1cm w=22.9cm h=1.0cm
+         зона: низ-центр
+         текст:
+           > Иконка канистры → стрелка → ведро → стрелка → автомобиль (инфографика) [Arial 14pt #FFFFFF]
+    [37] name='TextBox 63' type=TEXT_BOX (17)
+         pos: left=0.8cm top=24.1cm w=1.0cm h=1.0cm
+         зона: низ-лево
+         текст:
+           > ✓ [Arial 14pt bold #2ECC71]
+    [38] name='TextBox 64' type=TEXT_BOX (17)
+         pos: left=1.9cm top=24.1cm w=22.9cm h=1.0cm
+         зона: низ-центр
+         текст:
+           > Подпись: «30–50 г концентрата на одно авто» — конкретная цифра расхода [Arial 14pt #FFFFFF]
+    [39] name='TextBox 65' type=TEXT_BOX (17)
+         pos: left=0.8cm top=25.2cm w=1.0cm h=1.0cm
+         зона: низ-лево
+         текст:
+           > ✓ [Arial 14pt bold #2ECC71]
+    [40] name='TextBox 66' type=TEXT_BOX (17)
+         pos: left=1.9cm top=25.2cm w=22.9cm h=1.0cm
+         зона: низ-центр
+         текст:
+           > Акцент: «Концентрат — не значит сложно: просто добавь воды» [Arial 14pt #FFFFFF]
+    [41] name='TextBox 67' type=TEXT_BOX (17)
+         pos: left=0.8cm top=26.3cm w=1.0cm h=1.0cm
+         зона: низ-лево
+         текст:
+           > ✓ [Arial 14pt bold #2ECC71]
+    [42] name='TextBox 68' type=TEXT_BOX (17)
+         pos: left=1.9cm top=26.3cm w=22.9cm h=1.0cm
+         зона: низ-центр
+         текст:
+           > Фоновое фото: автомобиль в густой пене или пеногенератор в действии [Arial 14pt #FFFFFF]
+    [43] name='TextBox 69' type=TEXT_BOX (17)
+         pos: left=0.8cm top=27.3cm w=1.0cm h=1.0cm
+         зона: низ-лево
+         текст:
+           > ✗ [Arial 14pt bold #FF4444]
+    [44] name='TextBox 70' type=TEXT_BOX (17)
+         pos: left=1.9cm top=27.3cm w=22.9cm h=1.0cm
+         зона: низ-центр
+         текст:
+           > Без цен, рублей, сравнений стоимости с конкурентами [Arial 14pt #FFFFFF]
+    [45] name='TextBox 71' type=TEXT_BOX (17)
+         pos: left=0.8cm top=28.4cm w=1.0cm h=1.0cm
+         зона: низ-лево
+         текст:
+           > ✗ [Arial 14pt bold #FF4444]
+    [46] name='TextBox 72' type=TEXT_BOX (17)
+         pos: left=1.9cm top=28.4cm w=22.9cm h=1.0cm
+         зона: низ-центр
+         текст:
+           > Без фраз «выгодно», «дёшево» — только факты расхода и объёма [Arial 14pt #FFFFFF]
+    [47] name='TextBox 73' type=TEXT_BOX (17)
+         pos: left=0.8cm top=32.8cm w=23.9cm h=0.9cm
+         зона: низ-центр
+         текст:
+           > ifoam AUTO  |  Orange Standard 5кг  |  Art. 119105 [Arial 12pt #808080]
+    [48] name='TextBox 74' type=TEXT_BOX (17)
+         pos: left=20.5cm top=16.7cm w=4.4cm h=0.9cm
+         зона: середина-право
+         текст:
+           > Кол-во моек [Arial 15pt bold #FF6B00]
+    [49] name='TextBox 75' type=TEXT_BOX (17)
+         pos: left=21.5cm top=18.2cm w=5.3cm h=0.9cm
+         зона: середина-право
+         текст:
+           > 210 [Arial 15pt #FFFFFF]
+    [50] name='TextBox 76' type=TEXT_BOX (17)
+         pos: left=21.3cm top=19.7cm w=5.3cm h=0.9cm
+         зона: середина-право
+         текст:
+           > 21 [Arial 15pt #FFFFFF]
+    [51] name='TextBox 77' type=TEXT_BOX (17)
+         pos: left=1.5cm top=29.3cm w=22.9cm h=3.3cm
+         зона: низ-центр
+         текст:
+           > ЕСЛИ НЕ ПОЛУЧАЕТСЯ УМЕСТИТЬ СЛОВОСОЧЕТАНИЕ «ЧИСТЫХ АВТОМОБИЛЕЙ», ТО СЛЕДУЕТ ЗАМЕНИТЬ НА «МОЕК» [Arial 24pt #FFC000]
+
+================================================================================
+СЛАЙД 6
+================================================================================
+  [ФОН] тип заливки: SOLID (1)
+  [ФОН] цвет: #1A1A1A
+  [ФОН] theme_color: NOT_THEME_COLOR (0)
+  [LAYOUT] Blank
+  Количество shapes: 19
+
+  БЛОКИ (shapes):
+    [1] name='TextBox 1' type=TEXT_BOX (17)
+         pos: left=0.8cm top=0.6cm w=1.8cm h=1.8cm
+         зона: верх-лево
+         текст:
+           > 5 [Arial 36pt bold #FF6B00]
+    [2] name='TextBox 2' type=TEXT_BOX (17)
+         pos: left=2.8cm top=0.8cm w=21.6cm h=1.7cm
+         зона: верх-центр
+         текст:
+           > КАРТОЧКА "РЕКОМЕНДАЦИИ" [Arial 28pt bold #FFFFFF]
+    [3] name='Rectangle 3' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=2.7cm w=23.9cm h=0.1cm
+         зона: верх-центр
+         [нет текста]
+    [4] name='TextBox 4' type=TEXT_BOX (17)
+         pos: left=0.8cm top=3.0cm w=23.9cm h=1.1cm
+         зона: верх-центр
+         текст:
+           > Фон: тёмный с размытым фото автомобиля или гаражного пространства [Arial 16pt #F2F2F2]
+    [5] name='TextBox 5' type=TEXT_BOX (17)
+         pos: left=0.8cm top=4.4cm w=23.9cm h=1.1cm
+         зона: верх-центр
+         текст:
+           > Меры предосторожности: [Arial 20pt bold #FF6B00]
+    [6] name='TextBox 6' type=TEXT_BOX (17)
+         pos: left=0.8cm top=5.7cm w=1.3cm h=1.1cm
+         зона: верх-лево
+         текст:
+           > ⚠ [Arial 17pt bold #FFCC00]
+    [7] name='TextBox 7' type=TEXT_BOX (17)
+         pos: left=2.0cm top=5.7cm w=20.3cm h=1.7cm
+         зона: верх-центр
+         текст:
+           > Не наносить на нагретые поверхности (при температура кузова выше 40°С) [Arial 17pt #FFFFFF]
+    [8] name='TextBox 8' type=TEXT_BOX (17)
+         pos: left=0.8cm top=7.2cm w=1.3cm h=1.1cm
+         зона: верх-лево
+         текст:
+           > ⚠ [Arial 17pt bold #FFCC00]
+    [9] name='TextBox 9' type=TEXT_BOX (17)
+         pos: left=2.0cm top=7.2cm w=20.3cm h=1.1cm
+         зона: верх-центр
+         текст:
+           > Не допускать высыхания на поверхности — смывать не позднее 2 минут [Arial 17pt #FFFFFF]
+    [10] name='TextBox 10' type=TEXT_BOX (17)
+         pos: left=0.8cm top=9.0cm w=1.3cm h=1.1cm
+         зона: верх-лево
+         текст:
+           > ⚠ [Arial 17pt bold #FFCC00]
+    [11] name='TextBox 11' type=TEXT_BOX (17)
+         pos: left=2.0cm top=9.0cm w=20.3cm h=1.1cm
+         зона: верх-центр
+         текст:
+           > Избегать попадания в глаза и на кожу — использовать перчатки [Arial 17pt #FFFFFF]
+    [12] name='TextBox 12' type=TEXT_BOX (17)
+         pos: left=0.8cm top=10.1cm w=1.3cm h=1.1cm
+         зона: верх-лево
+         текст:
+           > ⚠ [Arial 17pt bold #FFCC00]
+    [13] name='TextBox 13' type=TEXT_BOX (17)
+         pos: left=2.0cm top=10.1cm w=20.3cm h=1.1cm
+         зона: верх-центр
+         текст:
+           > Не смешивать с кислотными средствами [Arial 17pt #FFFFFF]
+    [14] name='TextBox 14' type=TEXT_BOX (17)
+         pos: left=0.8cm top=11.3cm w=1.3cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ⚠ [Arial 17pt bold #FFCC00]
+    [15] name='TextBox 15' type=TEXT_BOX (17)
+         pos: left=2.0cm top=11.3cm w=20.3cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Беречь от детей и животных [Arial 17pt #FFFFFF]
+    [16] name='TextBox 16' type=TEXT_BOX (17)
+         pos: left=0.8cm top=12.6cm w=1.3cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ⚠ [Arial 17pt bold #FFCC00]
+    [17] name='TextBox 17' type=TEXT_BOX (17)
+         pos: left=2.0cm top=12.6cm w=20.3cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Хранить при температуре от 0°С до +30°С [Arial 17pt #FFFFFF]
+    [18] name='Rectangle 18' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=14.2cm w=23.9cm h=0.1cm
+         зона: середина-центр
+         [нет текста]
+    [19] name='TextBox 29' type=TEXT_BOX (17)
+         pos: left=0.8cm top=32.8cm w=23.9cm h=0.9cm
+         зона: низ-центр
+         текст:
+           > ifoam AUTO  |  Orange Standard 5кг  |  Art. 119105 [Arial 12pt #808080]
+
+================================================================================
+СЛАЙД 7
+================================================================================
+  [ФОН] тип заливки: SOLID (1)
+  [ФОН] цвет: #1A1A1A
+  [ФОН] theme_color: NOT_THEME_COLOR (0)
+  [LAYOUT] Blank
+  Количество shapes: 26
+
+  БЛОКИ (shapes):
+    [1] name='TextBox 1' type=TEXT_BOX (17)
+         pos: left=0.8cm top=0.6cm w=1.8cm h=1.8cm
+         зона: верх-лево
+         текст:
+           > 6 [Arial 36pt bold #FF6B00]
+    [2] name='TextBox 2' type=TEXT_BOX (17)
+         pos: left=2.8cm top=0.8cm w=21.6cm h=1.7cm
+         зона: верх-центр
+         текст:
+           > КАРТОЧКА "ПРОИЗВОДСТВО И ДОВЕРИЕ" [Arial 28pt bold #FFFFFF]
+    [3] name='Rectangle 3' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=2.7cm w=23.9cm h=0.1cm
+         зона: верх-центр
+         [нет текста]
+    [4] name='TextBox 4' type=TEXT_BOX (17)
+         pos: left=0.8cm top=3.0cm w=23.9cm h=1.1cm
+         зона: верх-центр
+         текст:
+           > Концепция: «Сделано в России — мы отвечаем за качество»  (как у GLITTER G5) [Arial 16pt #FFA040]
+    [5] name='TextBox 5' type=TEXT_BOX (17)
+         pos: left=0.8cm top=4.4cm w=23.9cm h=1.1cm
+         зона: верх-центр
+         текст:
+           > Заголовок слайда (крупно): [Arial 19pt bold #FF6B00]
+    [6] name='TextBox 6' type=TEXT_BOX (17)
+         pos: left=0.8cm top=5.6cm w=23.9cm h=1.4cm
+         зона: верх-центр
+         текст:
+           > "ПРОИЗВОДИМ САМИ — ОТВЕЧАЕМ ЗА КАЧЕСТВО" [Arial 19pt bold #FFFFFF]
+    [7] name='TextBox 7' type=TEXT_BOX (17)
+         pos: left=0.8cm top=7.1cm w=23.9cm h=1.1cm
+         зона: верх-центр
+         текст:
+           > Подзаголовок: «ifoam AUTO — российский производитель автохимии» [Arial 16pt #F2F2F2]
+    [8] name='Rectangle 8' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=8.5cm w=23.9cm h=0.1cm
+         зона: верх-центр
+         [нет текста]
+    [9] name='TextBox 9' type=TEXT_BOX (17)
+         pos: left=0.8cm top=8.9cm w=23.9cm h=1.1cm
+         зона: верх-центр
+         текст:
+           > Фото-коллаж (4 фрагмента в сетке 2×2): [Arial 19pt bold #FF6B00]
+    [10] name='Rectangle 10' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=10.3cm w=11.7cm h=6.9cm
+         зона: середина-лево
+         [нет текста]
+    [11] name='TextBox 11' type=TEXT_BOX (17)
+         pos: left=1.1cm top=12.1cm w=10.9cm h=2.8cm
+         зона: середина-лево
+         текст:
+           > [ФОТО]
+Производственный цех /
+оборудование ifoam [Arial 15pt #F2F2F2]
+    [12] name='TextBox 12' type=TEXT_BOX (17)
+         pos: left=1.1cm top=10.5cm w=10.9cm h=1.0cm
+         зона: верх-лево
+         текст:
+           > Верхний левый [Arial 12pt #FF6B00]
+    [13] name='Rectangle 13' type=AUTO_SHAPE (1)
+         pos: left=12.8cm top=10.3cm w=11.7cm h=6.9cm
+         зона: середина-право
+         [нет текста]
+    [14] name='TextBox 14' type=TEXT_BOX (17)
+         pos: left=13.2cm top=12.1cm w=10.9cm h=2.8cm
+         зона: середина-право
+         текст:
+           > [ФОТО]
+Лаборант / контроль
+качества продукта [Arial 15pt #F2F2F2]
+    [15] name='TextBox 15' type=TEXT_BOX (17)
+         pos: left=13.2cm top=10.5cm w=10.9cm h=1.0cm
+         зона: верх-право
+         текст:
+           > Верхний правый [Arial 12pt #FF6B00]
+    [16] name='Rectangle 16' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=17.9cm w=11.7cm h=6.9cm
+         зона: середина-лево
+         [нет текста]
+    [17] name='TextBox 17' type=TEXT_BOX (17)
+         pos: left=1.1cm top=19.7cm w=10.9cm h=2.8cm
+         зона: середина-лево
+         текст:
+           > [ФОТО]
+Канистра Orange Standard
+на линии розлива [Arial 15pt #F2F2F2]
+    [18] name='TextBox 18' type=TEXT_BOX (17)
+         pos: left=1.1cm top=18.2cm w=10.9cm h=1.0cm
+         зона: середина-лево
+         текст:
+           > Нижний левый [Arial 12pt #FF6B00]
+    [19] name='Rectangle 19' type=AUTO_SHAPE (1)
+         pos: left=12.8cm top=17.9cm w=11.7cm h=6.9cm
+         зона: середина-право
+         [нет текста]
+    [20] name='TextBox 20' type=TEXT_BOX (17)
+         pos: left=13.2cm top=19.7cm w=10.9cm h=2.8cm
+         зона: середина-право
+         текст:
+           > [ФОТО]
+Стенд с продукцией
+линейки ifoam AUTO [Arial 15pt #F2F2F2]
+    [21] name='TextBox 21' type=TEXT_BOX (17)
+         pos: left=13.2cm top=18.2cm w=10.9cm h=1.0cm
+         зона: середина-право
+         текст:
+           > Нижний правый [Arial 12pt #FF6B00]
+    [22] name='Rectangle 22' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=25.1cm w=23.9cm h=0.1cm
+         зона: низ-центр
+         [нет текста]
+    [23] name='TextBox 23' type=TEXT_BOX (17)
+         pos: left=0.8cm top=25.5cm w=23.9cm h=1.1cm
+         зона: низ-центр
+         текст:
+           > Нижний баннер (поверх фото / под сеткой): [Arial 19pt bold #FF6B00]
+    [24] name='Rectangle 24' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=26.8cm w=23.9cm h=2.5cm
+         зона: низ-центр
+         [нет текста]
+    [25] name='TextBox 25' type=TEXT_BOX (17)
+         pos: left=0.8cm top=27.2cm w=23.9cm h=1.5cm
+         зона: низ-центр
+         текст:
+           > 🇷🇺  ifoam AUTO  |  ТУ 20.41.32-003-36603872-2024  |  Сделано в России [Arial 17pt bold #FFFFFF]
+    [26] name='TextBox 26' type=TEXT_BOX (17)
+         pos: left=0.8cm top=32.8cm w=23.9cm h=0.9cm
+         зона: низ-центр
+         текст:
+           > ifoam AUTO  |  Orange Standard 5кг  |  Art. 119105 [Arial 12pt #808080]
+
+================================================================================
+СЛАЙД 8
+================================================================================
+  [ФОН] тип заливки: SOLID (1)
+  [ФОН] цвет: #2D2D2D
+  [ФОН] theme_color: NOT_THEME_COLOR (0)
+  [LAYOUT] Blank
+  Количество shapes: 50
+
+  БЛОКИ (shapes):
+    [1] name='TextBox 1' type=TEXT_BOX (17)
+         pos: left=0.8cm top=0.6cm w=23.9cm h=2.0cm
+         зона: верх-центр
+         текст:
+           > ТЕХНИЧЕСКИЕ ТРЕБОВАНИЯ [Arial 34pt bold #FF6B00]
+    [2] name='Rectangle 2' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=2.8cm w=23.9cm h=0.1cm
+         зона: верх-центр
+         [нет текста]
+    [3] name='TextBox 3' type=TEXT_BOX (17)
+         pos: left=0.8cm top=3.3cm w=23.9cm h=1.1cm
+         зона: верх-центр
+         текст:
+           > Шрифты: [Arial 20pt bold #FF6B00]
+    [4] name='TextBox 4' type=TEXT_BOX (17)
+         pos: left=0.8cm top=4.5cm w=23.9cm h=1.0cm
+         зона: верх-центр
+         текст:
+           > • Заголовки: жирный, без засечек — Arial Bold / Montserrat Bold / Impact [Arial 16pt #F2F2F2]
+    [5] name='TextBox 5' type=TEXT_BOX (17)
+         pos: left=0.8cm top=5.5cm w=23.9cm h=1.0cm
+         зона: верх-центр
+         текст:
+           > • Основной текст: чёткий, контрастный — Arial / Roboto [Arial 16pt #F2F2F2]
+    [6] name='TextBox 6' type=TEXT_BOX (17)
+         pos: left=0.8cm top=6.5cm w=23.9cm h=1.0cm
+         зона: верх-центр
+         текст:
+           > • Минимальный размер: 24 px (читаемость на мобильном 375 px) [Arial 16pt #F2F2F2]
+    [7] name='TextBox 7' type=TEXT_BOX (17)
+         pos: left=0.8cm top=7.4cm w=23.9cm h=1.0cm
+         зона: верх-центр
+         текст:
+           > • Не использовать декоративные и курсивные шрифты для ключевых надписей [Arial 16pt #F2F2F2]
+    [8] name='Rectangle 8' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=8.5cm w=23.9cm h=0.1cm
+         зона: верх-центр
+         [нет текста]
+    [9] name='TextBox 9' type=TEXT_BOX (17)
+         pos: left=0.8cm top=8.9cm w=23.9cm h=1.1cm
+         зона: верх-центр
+         текст:
+           > Цветовая палитра: [Arial 20pt bold #FF6B00]
+    [10] name='TextBox 10' type=TEXT_BOX (17)
+         pos: left=0.8cm top=10.2cm w=7.1cm h=1.0cm
+         зона: верх-лево
+         текст:
+           > Основной фон [Arial 15pt #F2F2F2]
+    [11] name='TextBox 12' type=TEXT_BOX (17)
+         pos: left=13.5cm top=10.2cm w=11.2cm h=1.0cm
+         зона: верх-право
+         текст:
+           > Все слайды [Arial 15pt #F2F2F2]
+    [12] name='TextBox 13' type=TEXT_BOX (17)
+         pos: left=0.8cm top=11.2cm w=7.1cm h=1.0cm
+         зона: середина-лево
+         текст:
+           > Акцент бренда [Arial 15pt #F2F2F2]
+    [13] name='TextBox 15' type=TEXT_BOX (17)
+         pos: left=13.5cm top=11.2cm w=11.2cm h=1.0cm
+         зона: середина-право
+         текст:
+           > Заголовки, маркеры, рамки [Arial 15pt #F2F2F2]
+    [14] name='TextBox 16' type=TEXT_BOX (17)
+         pos: left=0.8cm top=13.0cm w=7.1cm h=1.0cm
+         зона: середина-лево
+         текст:
+           > Текст основной [Arial 15pt #F2F2F2]
+    [15] name='TextBox 18' type=TEXT_BOX (17)
+         pos: left=13.5cm top=13.0cm w=11.2cm h=1.0cm
+         зона: середина-право
+         текст:
+           > Все подписи [Arial 15pt #F2F2F2]
+    [16] name='TextBox 19' type=TEXT_BOX (17)
+         pos: left=0.8cm top=13.8cm w=7.1cm h=1.0cm
+         зона: середина-лево
+         текст:
+           > Текст вторичный [Arial 15pt #F2F2F2]
+    [17] name='TextBox 21' type=TEXT_BOX (17)
+         pos: left=13.5cm top=13.8cm w=11.2cm h=1.0cm
+         зона: середина-право
+         текст:
+           > Описания, пояснения [Arial 15pt #F2F2F2]
+    [18] name='TextBox 22' type=TEXT_BOX (17)
+         pos: left=0.8cm top=14.5cm w=7.1cm h=1.0cm
+         зона: середина-лево
+         текст:
+           > Предупреждения [Arial 15pt #F2F2F2]
+    [19] name='TextBox 24' type=TEXT_BOX (17)
+         pos: left=13.5cm top=14.5cm w=11.2cm h=1.0cm
+         зона: середина-право
+         текст:
+           > ⚠ блоки [Arial 15pt #F2F2F2]
+    [20] name='TextBox 25' type=TEXT_BOX (17)
+         pos: left=0.8cm top=15.2cm w=7.1cm h=1.0cm
+         зона: середина-лево
+         текст:
+           > Запрещено [Arial 15pt #F2F2F2]
+    [21] name='TextBox 27' type=TEXT_BOX (17)
+         pos: left=13.5cm top=15.2cm w=11.2cm h=1.0cm
+         зона: середина-право
+         текст:
+           > ✗ блоки [Arial 15pt #F2F2F2]
+    [22] name='Rectangle 28' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=16.1cm w=23.9cm h=0.1cm
+         зона: середина-центр
+         [нет текста]
+    [23] name='TextBox 29' type=TEXT_BOX (17)
+         pos: left=0.8cm top=16.6cm w=23.9cm h=1.4cm
+         зона: середина-центр
+         текст:
+           > ВАЖНЫЕ АКЦЕНТЫ — УТП ifoam Orange Standard: [Arial 20pt bold #FF6B00]
+    [24] name='TextBox 30' type=TEXT_BOX (17)
+         pos: left=0.8cm top=17.6cm w=1.3cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 15pt bold #FF6B00]
+    [25] name='TextBox 31' type=TEXT_BOX (17)
+         pos: left=2.0cm top=17.6cm w=20.3cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > pH 12 — ключевой технический параметр, выносить на каждую инфографику [Arial 15pt #FFFFFF]
+    [26] name='TextBox 32' type=TEXT_BOX (17)
+         pos: left=0.8cm top=18.9cm w=1.3cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 15pt bold #FF6B00]
+    [27] name='TextBox 33' type=TEXT_BOX (17)
+         pos: left=2.0cm top=18.9cm w=20.3cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Цвет жидкости оранжевый — использовать как фирменный визуальный акцент [Arial 15pt #FFFFFF]
+    [28] name='TextBox 34' type=TEXT_BOX (17)
+         pos: left=0.8cm top=20.0cm w=1.3cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 15pt bold #FF6B00]
+    [29] name='TextBox 35' type=TEXT_BOX (17)
+         pos: left=2.0cm top=20.0cm w=20.3cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Конкуренты используют синий (GLITTER) и жёлтый (GRASS) — нам нужен чёткий контраст [Arial 15pt #FFFFFF]
+    [30] name='TextBox 38' type=TEXT_BOX (17)
+         pos: left=0.8cm top=21.8cm w=1.3cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 15pt bold #FF6B00]
+    [31] name='TextBox 39' type=TEXT_BOX (17)
+         pos: left=2.0cm top=21.5cm w=20.3cm h=1.4cm
+         зона: середина-центр
+         текст:
+           > «От производителя» и российский флаг(галочка сделано в россии) — закрываем возражение о подделках [Arial 13pt #FFFFFF]
+    [32] name='TextBox 40' type=TEXT_BOX (17)
+         pos: left=0.8cm top=23.6cm w=1.3cm h=1.1cm
+         зона: низ-лево
+         текст:
+           > ✓ [Arial 15pt bold #FF6B00]
+    [33] name='TextBox 41' type=TEXT_BOX (17)
+         pos: left=2.0cm top=23.6cm w=20.3cm h=1.1cm
+         зона: низ-центр
+         текст:
+           > Не копировать зелёный цвет — GRASS занял эту нишу, путаница недопустима [Arial 15pt #FFFFFF]
+    [34] name='Rectangle 42' type=AUTO_SHAPE (1)
+         pos: left=0.8cm top=24.8cm w=23.9cm h=0.1cm
+         зона: низ-центр
+         [нет текста]
+    [35] name='TextBox 43' type=TEXT_BOX (17)
+         pos: left=0.8cm top=25.2cm w=23.9cm h=1.1cm
+         зона: низ-центр
+         текст:
+           > СОСТАВ ПАКЕТА ФОТОГРАФИЙ (итого 6 изображений): [Arial 18pt bold #FF6B00]
+    [36] name='TextBox 44' type=TEXT_BOX (17)
+         pos: left=0.8cm top=26.5cm w=23.9cm h=0.9cm
+         зона: низ-центр
+         текст:
+           > 1. Главное фото (продакт-шот) — 1200×1600 px [Arial 15pt #F2F2F2]
+    [37] name='TextBox 45' type=TEXT_BOX (17)
+         pos: left=0.8cm top=27.4cm w=23.9cm h=1.0cm
+         зона: низ-центр
+         текст:
+           > 2. Характеристики / УТП — 1200×1600 px [Arial 15pt #F2F2F2]
+    [38] name='TextBox 46' type=TEXT_BOX (17)
+         pos: left=0.8cm top=28.4cm w=23.9cm h=1.0cm
+         зона: низ-центр
+         текст:
+           > 3. Инструкция по применению — 1200×1600 px [Arial 15pt #F2F2F2]
+    [39] name='TextBox 47' type=TEXT_BOX (17)
+         pos: left=0.8cm top=29.4cm w=23.9cm h=1.0cm
+         зона: низ-центр
+         текст:
+           > 4. Экономика (5 кг = 20 авто) — 1200×1600 px [Arial 15pt #F2F2F2]
+    [40] name='TextBox 48' type=TEXT_BOX (17)
+         pos: left=0.8cm top=30.3cm w=23.9cm h=1.0cm
+         зона: низ-центр
+         текст:
+           > 5. Рекомендации и безопасность — 1200×1600 px [Arial 15pt #F2F2F2]
+    [41] name='TextBox 49' type=TEXT_BOX (17)
+         pos: left=0.8cm top=31.3cm w=23.9cm h=1.0cm
+         зона: низ-центр
+         текст:
+           > 6. Производство и доверие — 1200×1600 px [Arial 15pt #F2F2F2]
+    [42] name='TextBox 50' type=TEXT_BOX (17)
+         pos: left=0.8cm top=32.8cm w=23.9cm h=0.9cm
+         зона: низ-центр
+         текст:
+           > ifoam AUTO  |  Orange Standard 5кг  |  Art. 119105 [Arial 12pt #808080]
+    [43] name='Rectangle 24' type=AUTO_SHAPE (1)
+         pos: left=7.1cm top=10.3cm w=5.1cm h=0.6cm
+         зона: верх-центр
+         [нет текста]
+    [44] name='Rectangle 26' type=AUTO_SHAPE (1)
+         pos: left=7.1cm top=11.4cm w=5.1cm h=0.6cm
+         зона: середина-центр
+         [нет текста]
+    [45] name='Rectangle 28' type=AUTO_SHAPE (1)
+         pos: left=7.1cm top=13.2cm w=5.1cm h=0.6cm
+         зона: середина-центр
+         [нет текста]
+    [46] name='Rectangle 28' type=AUTO_SHAPE (1)
+         pos: left=7.1cm top=14.0cm w=5.1cm h=0.6cm
+         зона: середина-центр
+         [нет текста]
+    [47] name='Rectangle 28' type=AUTO_SHAPE (1)
+         pos: left=7.1cm top=14.6cm w=5.1cm h=0.6cm
+         зона: середина-центр
+         [нет текста]
+    [48] name='Rectangle 28' type=AUTO_SHAPE (1)
+         pos: left=7.1cm top=15.5cm w=5.1cm h=0.6cm
+         зона: середина-центр
+         [нет текста]
+    [49] name='Rectangle 30' type=AUTO_SHAPE (1)
+         pos: left=7.1cm top=12.3cm w=5.1cm h=0.5cm
+         зона: середина-центр
+         [нет текста]
+    [50] name='TextBox 66' type=TEXT_BOX (17)
+         pos: left=0.8cm top=12.2cm w=12.7cm h=0.9cm
+         зона: середина-лево
+         текст:
+           > Вспомогательный [Arial 14pt #F2F2F2]
+
+================================================================================
+СЛАЙД 9
+================================================================================
+  [ФОН] тип заливки: SOLID (1)
+  [ФОН] цвет: #2D2D2D
+  [ФОН] theme_color: NOT_THEME_COLOR (0)
+  [LAYOUT] Blank
+  Количество shapes: 58
+
+  БЛОКИ (shapes):
+    [1] name='TextBox 1' type=TEXT_BOX (17)
+         pos: left=0.5cm top=0.3cm w=24.4cm h=1.8cm
+         зона: верх-центр
+         текст:
+           > АНАЛИЗ КОНКУРЕНТОВ → ФОКУС ДЛЯ КАЖДОГО ФОТО ifoam [Arial 22pt bold #FF6B00]
+    [2] name='TextBox 2' type=TEXT_BOX (17)
+         pos: left=0.5cm top=2.0cm w=24.4cm h=1.0cm
+         зона: верх-центр
+         текст:
+           > Что делают лидеры и на что обратить внимание при создании нашей карточки [Arial 13pt #F2F2F2]
+    [3] name='Rectangle 3' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=3.0cm w=24.4cm h=0.1cm
+         зона: верх-центр
+         [нет текста]
+    [4] name='Rectangle 4' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=3.2cm w=24.4cm h=1.1cm
+         зона: верх-центр
+         [нет текста]
+    [5] name='TextBox 5' type=TEXT_BOX (17)
+         pos: left=0.6cm top=3.3cm w=0.6cm h=1.0cm
+         зона: верх-лево
+         текст:
+           > № [Arial 13pt bold #FF6B00]
+    [6] name='TextBox 6' type=TEXT_BOX (17)
+         pos: left=1.5cm top=3.3cm w=2.9cm h=0.7cm
+         зона: верх-лево
+         текст:
+           > Наше фото [Arial 11pt bold #FF6B00]
+    [7] name='TextBox 7' type=TEXT_BOX (17)
+         pos: left=4.7cm top=3.3cm w=8.9cm h=0.7cm
+         зона: верх-центр
+         текст:
+           > Что делают конкуренты (лучший пример) [Arial 11pt bold #FF6B00]
+    [8] name='TextBox 8' type=TEXT_BOX (17)
+         pos: left=13.8cm top=3.3cm w=9.9cm h=0.7cm
+         зона: верх-право
+         текст:
+           > На что обратить внимание для ifoam [Arial 11pt bold #FF6B00]
+    [9] name='Rectangle 9' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=4.3cm w=24.4cm h=4.6cm
+         зона: верх-центр
+         [нет текста]
+    [10] name='Rectangle 10' type=AUTO_SHAPE (1)
+         pos: left=1.4cm top=4.3cm w=0.1cm h=4.6cm
+         зона: верх-лево
+         [нет текста]
+    [11] name='Rectangle 11' type=AUTO_SHAPE (1)
+         pos: left=4.6cm top=4.3cm w=0.1cm h=4.6cm
+         зона: верх-лево
+         [нет текста]
+    [12] name='Rectangle 12' type=AUTO_SHAPE (1)
+         pos: left=13.7cm top=4.3cm w=0.1cm h=4.6cm
+         зона: верх-центр
+         [нет текста]
+    [13] name='TextBox 13' type=TEXT_BOX (17)
+         pos: left=0.6cm top=4.4cm w=0.6cm h=4.4cm
+         зона: верх-лево
+         текст:
+           > 1 [Arial 18pt bold #FF6B00]
+    [14] name='TextBox 14' type=TEXT_BOX (17)
+         pos: left=1.5cm top=4.5cm w=2.9cm h=4.4cm
+         зона: верх-лево
+         текст:
+           > Главное фото
+(продакт-шот) [Arial 13pt bold #FFFFFF]
+    [15] name='TextBox 15' type=TEXT_BOX (17)
+         pos: left=4.7cm top=4.5cm w=8.8cm h=4.5cm
+         зона: верх-центр
+         текст:
+           > GLITTER G10: чистый продакт-шот, светлый фон, этикетка чётко читается, минимум текста на фото
+GRASS Balance: яркий жёлтый канистр + «Бренд №1» бейдж, пена снизу
+DR.BERG ACE: тёмный фон, канистр крупно, нет лишнего [Arial 11pt #F2F2F2]
+    [16] name='TextBox 16' type=TEXT_BOX (17)
+         pos: left=13.9cm top=4.5cm w=9.9cm h=4.0cm
+         зона: верх-право
+         текст:
+           > ✓ Тёмный фон  — отстройка от конкурентов
+✓ Оранжевый акцент — цвет жидкости виден через канистр
+✓ Этикетка «Orange Standard» читается полностью
+✓ «5 кг» бейдж + «ОТ ПРОИЗВОДИТЕЛЯ»+ «СДЕЛАНО В РОССИИ» метка
+✗ Не светлый фон — НЕ теряемся рядом с GLITTER G10 [Arial 11pt #FFFFFF]
+    [17] name='Rectangle 17' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=9.1cm w=24.4cm h=4.6cm
+         зона: середина-центр
+         [нет текста]
+    [18] name='Rectangle 18' type=AUTO_SHAPE (1)
+         pos: left=1.4cm top=9.1cm w=0.1cm h=4.6cm
+         зона: середина-лево
+         [нет текста]
+    [19] name='Rectangle 19' type=AUTO_SHAPE (1)
+         pos: left=4.6cm top=9.1cm w=0.1cm h=4.6cm
+         зона: середина-лево
+         [нет текста]
+    [20] name='Rectangle 20' type=AUTO_SHAPE (1)
+         pos: left=13.7cm top=9.1cm w=0.1cm h=4.6cm
+         зона: середина-центр
+         [нет текста]
+    [21] name='TextBox 21' type=TEXT_BOX (17)
+         pos: left=0.6cm top=9.2cm w=0.6cm h=4.4cm
+         зона: середина-лево
+         текст:
+           > 2 [Arial 18pt bold #FF6B00]
+    [22] name='TextBox 22' type=TEXT_BOX (17)
+         pos: left=1.5cm top=9.3cm w=2.9cm h=4.4cm
+         зона: середина-лево
+         текст:
+           > Характеристики
+/ УТП [Arial 13pt bold #FFFFFF]
+    [23] name='TextBox 23' type=TEXT_BOX (17)
+         pos: left=4.7cm top=9.2cm w=8.8cm h=4.5cm
+         зона: середина-центр
+         текст:
+           > GLITTER G10: 4 буллета с иконками — работает с водой / густая пена / смывается / не оставляет разводов
+DR.BERG ACE: 3 плашки на тёмном — «активная пена / плотная пена / безопасно для покрытия»
+GLITTER G5: «густая активная пена — удаляет грязь и реагенты / работает без губки» [Arial 11pt #F2F2F2]
+    [24] name='TextBox 24' type=TEXT_BOX (17)
+         pos: left=13.9cm top=9.2cm w=9.9cm h=4.5cm
+         зона: середина-право
+         текст:
+           > ✓ pH 12 — крупно в отдельном блоке (конкуренты это НЕ делают)
+✓ Пропорции разбавления 1:30–1:40 / 1:3–1:4 — таблица или иконки
+✓ «Не повреждает ЛКП» — закрываем главное возражение
+✗ Не копировать зелёные маркеры — цвет GRASS
+✗ Не перегружать — не более 5–6 буллетов [Arial 11pt #FFFFFF]
+    [25] name='Rectangle 25' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=13.9cm w=24.4cm h=4.6cm
+         зона: середина-центр
+         [нет текста]
+    [26] name='Rectangle 26' type=AUTO_SHAPE (1)
+         pos: left=1.4cm top=13.9cm w=0.1cm h=4.6cm
+         зона: середина-лево
+         [нет текста]
+    [27] name='Rectangle 27' type=AUTO_SHAPE (1)
+         pos: left=4.6cm top=13.9cm w=0.1cm h=4.6cm
+         зона: середина-лево
+         [нет текста]
+    [28] name='Rectangle 28' type=AUTO_SHAPE (1)
+         pos: left=13.7cm top=13.9cm w=0.1cm h=4.6cm
+         зона: середина-центр
+         [нет текста]
+    [29] name='TextBox 29' type=TEXT_BOX (17)
+         pos: left=0.6cm top=14.0cm w=0.6cm h=4.4cm
+         зона: середина-лево
+         текст:
+           > 3 [Arial 18pt bold #FF6B00]
+    [30] name='TextBox 30' type=TEXT_BOX (17)
+         pos: left=1.5cm top=14.1cm w=2.9cm h=4.4cm
+         зона: середина-лево
+         текст:
+           > Инструкция по
+применению [Arial 13pt bold #FFFFFF]
+    [31] name='TextBox 31' type=TEXT_BOX (17)
+         pos: left=4.7cm top=14.0cm w=8.8cm h=4.5cm
+         зона: середина-центр
+         текст:
+           > GRASS Balance: пошаговые фото «1-откройте / 2-разведите / 3-остудите кузов» — тёмный стиль, реальные руки
+GLITTER G5: «4 шага до чистого кузова» — сетка 2×2 с фото процесса
+GLITTER G10: инструкция с иконками пеногенератор/пенокомплект/дозатрон + пропорции [Arial 11pt #F2F2F2]
+    [32] name='TextBox 32' type=TEXT_BOX (17)
+         pos: left=13.9cm top=14.0cm w=9.9cm h=4.5cm
+         зона: середина-право
+         текст:
+           > ✓ 4 шага — остудите / разведите / нанесите / смойте
+✓ Шаг 2: КРУПНО пропорции — пеногенератор 1:30–1:40, пенокомплект 1:3–1:4
+✓ Реальные фото процесса (не иконки) — как у GRASS
+✓ Предупреждение «НЕ ДОПУСКАЙТЕ ВЫСЫХАНИЯ» — жёлтым
+✗ Не мелкий текст — пропорции должны читаться с телефона [Arial 11pt #FFFFFF]
+    [33] name='Rectangle 33' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=18.6cm w=24.4cm h=4.6cm
+         зона: середина-центр
+         [нет текста]
+    [34] name='Rectangle 34' type=AUTO_SHAPE (1)
+         pos: left=1.4cm top=18.6cm w=0.1cm h=4.6cm
+         зона: середина-лево
+         [нет текста]
+    [35] name='Rectangle 35' type=AUTO_SHAPE (1)
+         pos: left=4.6cm top=18.6cm w=0.1cm h=4.6cm
+         зона: середина-лево
+         [нет текста]
+    [36] name='Rectangle 36' type=AUTO_SHAPE (1)
+         pos: left=13.7cm top=18.6cm w=0.1cm h=4.6cm
+         зона: середина-центр
+         [нет текста]
+    [37] name='TextBox 37' type=TEXT_BOX (17)
+         pos: left=0.6cm top=18.8cm w=0.6cm h=4.4cm
+         зона: середина-лево
+         текст:
+           > 4 [Arial 18pt bold #FF6B00]
+    [38] name='TextBox 38' type=TEXT_BOX (17)
+         pos: left=1.5cm top=18.8cm w=2.9cm h=4.4cm
+         зона: середина-лево
+         текст:
+           > Экономика
+(уникальный слайд) [Arial 13pt bold #FFFFFF]
+    [39] name='TextBox 39' type=TEXT_BOX (17)
+         pos: left=4.7cm top=18.8cm w=8.8cm h=4.5cm
+         зона: середина-центр
+         текст:
+           > DR.BERG ACE: «до 200 моек» на главном фото мелко
+BIGHIM: «5л = до 150 моек» на карточке характеристик
+Остальные конкуренты — ОТДЕЛЬНОГО слайда по экономике НЕТ ни у кого [Arial 11pt #F2F2F2]
+    [40] name='TextBox 40' type=TEXT_BOX (17)
+         pos: left=13.9cm top=18.8cm w=9.9cm h=4.0cm
+         зона: середина-право
+         текст:
+           > ✓ Уникальный слайд — показываем расход, которого нет у конкурентов ✓ Заголовок: «5 КГ = 21 АВТОМОБИЛЕЙ С ПЕНОКОМПЛЕКТОМ» или «5 КГ = 210 АВТОМОБИЛЕЙ С ПЕНОГЕНЕРАТОРОМ» ✓ Визуальная цепочка: канистра → ведро с раствором → ряд автомобилей ✓ Таблица пропорций: пеногенератор 1:30–1:40 / пенокомплект 1:3–1:4 ✗ Без цен, рублей и сравнений стоимости — только объём и расход [-apple-system 11pt #CCCCCC]
+    [41] name='Rectangle 41' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=23.4cm w=24.4cm h=4.6cm
+         зона: низ-центр
+         [нет текста]
+    [42] name='Rectangle 42' type=AUTO_SHAPE (1)
+         pos: left=1.4cm top=23.4cm w=0.1cm h=4.6cm
+         зона: низ-лево
+         [нет текста]
+    [43] name='Rectangle 43' type=AUTO_SHAPE (1)
+         pos: left=4.6cm top=23.4cm w=0.1cm h=4.6cm
+         зона: низ-лево
+         [нет текста]
+    [44] name='Rectangle 44' type=AUTO_SHAPE (1)
+         pos: left=13.7cm top=23.4cm w=0.1cm h=4.6cm
+         зона: низ-центр
+         [нет текста]
+    [45] name='TextBox 45' type=TEXT_BOX (17)
+         pos: left=0.6cm top=23.5cm w=0.6cm h=4.4cm
+         зона: низ-лево
+         текст:
+           > 5 [Arial 18pt bold #FF6B00]
+    [46] name='TextBox 46' type=TEXT_BOX (17)
+         pos: left=1.5cm top=23.6cm w=2.9cm h=4.4cm
+         зона: низ-лево
+         текст:
+           > Рекомендации
+/ Безопасность [Arial 13pt bold #FFFFFF]
+    [47] name='TextBox 47' type=TEXT_BOX (17)
+         pos: left=4.7cm top=23.6cm w=8.8cm h=4.5cm
+         зона: низ-центр
+         текст:
+           > GLITTER G10: «Наденьте перчатки» — крупно, фото синей перчатки на руке, серый фон
+GLITTER G5: «Защитные перчатки» — фото мужчины с пистолетом на мойке
+DR.BERG: предупреждения текстом — «не наносить на горячее / не допускать высыхания» [Arial 11pt #F2F2F2]
+    [48] name='TextBox 48' type=TEXT_BOX (17)
+         pos: left=13.9cm top=23.6cm w=9.9cm h=4.5cm
+         зона: низ-право
+         текст:
+           > ✓ Реальное фото человека в перчатках (не иконка) — как у GLITTER
+✓ Главное предупреждение крупно: «НЕ НАНОСИТЬ НА ГОРЯЧИЙ КУЗОВ»
+✓ Второе: «ВЫДЕРЖАТЬ НЕ БОЛЕЕ 2 МИНУТ» — жёлтый цвет
+✓ Блок антивозражений: «что будет если...» — закрываем страхи
+✗ Не просто список — нужна визуальная иерархия приоритетов [Arial 11pt #FFFFFF]
+    [49] name='Rectangle 49' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=28.2cm w=24.4cm h=4.6cm
+         зона: низ-центр
+         [нет текста]
+    [50] name='Rectangle 50' type=AUTO_SHAPE (1)
+         pos: left=1.4cm top=28.2cm w=0.1cm h=4.6cm
+         зона: низ-лево
+         [нет текста]
+    [51] name='Rectangle 51' type=AUTO_SHAPE (1)
+         pos: left=4.6cm top=28.2cm w=0.1cm h=4.6cm
+         зона: низ-лево
+         [нет текста]
+    [52] name='Rectangle 52' type=AUTO_SHAPE (1)
+         pos: left=13.7cm top=28.2cm w=0.1cm h=4.6cm
+         зона: низ-центр
+         [нет текста]
+    [53] name='TextBox 53' type=TEXT_BOX (17)
+         pos: left=0.6cm top=28.3cm w=0.6cm h=4.4cm
+         зона: низ-лево
+         текст:
+           > 6 [Arial 18pt bold #FF6B00]
+    [54] name='TextBox 54' type=TEXT_BOX (17)
+         pos: left=1.5cm top=28.4cm w=2.9cm h=4.4cm
+         зона: низ-лево
+         текст:
+           > Производство
+/ Доверие [Arial 13pt bold #FFFFFF]
+    [55] name='TextBox 55' type=TEXT_BOX (17)
+         pos: left=4.7cm top=28.3cm w=8.8cm h=4.5cm
+         зона: низ-центр
+         текст:
+           > GLITTER G5: «Сделано в России для наших дорог» — коллаж лаборатории 2×2, флаг РФ
+GLITTER G5: «51 000+ положительных отзывов» — карточки с цитатами и звёздами
+DR.BERG: «Немецкое качество» на главном фото, логотип DE
+GLITTER G5: «Мойка своими руками — как у профи» — фото мужчины с канистром [Arial 11pt #F2F2F2]
+    [56] name='TextBox 56' type=TEXT_BOX (17)
+         pos: left=13.9cm top=28.3cm w=9.9cm h=4.5cm
+         зона: низ-право
+         текст:
+           > ✓ «ПРОИЗВОДИМ САМИ — ОТВЕЧАЕМ ЗА КАЧЕСТВО» — фото цеха ifoam
+✓ Флаг РФ + ТУ 20.41.32-003-36603872-2024 — закрываем «подделка?»
+✓ Коллаж 2×2: оборудование / лаборатория / розлив / готовая продукция
+✓ Если есть отзывы — 2 карточки с цитатами и ★★★★★
+✗ Не AI-фото лаборатории — только реальные кадры производства [Arial 11pt #FFFFFF]
+    [57] name='Rectangle 57' type=AUTO_SHAPE (1)
+         pos: left=0.6cm top=33.0cm w=24.4cm h=0.1cm
+         зона: низ-центр
+         [нет текста]
+    [58] name='TextBox 58' type=TEXT_BOX (17)
+         pos: left=0.4cm top=33.1cm w=24.4cm h=1.0cm
+         зона: низ-центр
+         текст:
+           > ✓ — делать обязательно     ✗ — избегать     → — уникальное преимущество ifoam [Arial 12pt #AAAAAA]
+
+================================================================================
+СЛАЙД 10
+================================================================================
+  [ФОН] тип заливки: SOLID (1)
+  [ФОН] цвет: #1A1A1A
+  [ФОН] theme_color: NOT_THEME_COLOR (0)
+  [LAYOUT] Blank
+  Количество shapes: 36
+
+  БЛОКИ (shapes):
+    [1] name='Rectangle 1' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=0.3cm w=24.4cm h=1.8cm
+         зона: верх-центр
+         [нет текста]
+    [2] name='TextBox 2' type=TEXT_BOX (17)
+         pos: left=0.8cm top=0.4cm w=23.9cm h=1.7cm
+         зона: верх-центр
+         текст:
+           > ФОТО 1: ГЛАВНОЕ ФОТО — примеры конкурентов [Arial 20pt bold #FF6B00]
+    [3] name='Rectangle 3' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=2.2cm w=24.4cm h=0.1cm
+         зона: верх-центр
+         [нет текста]
+    [4] name='Rectangle 4' type=AUTO_SHAPE (1)
+         pos: left=0.6cm top=2.5cm w=5.8cm h=12.0cm
+         зона: верх-лево
+         [нет текста]
+    [5] name='Picture 5' type=PICTURE (13)
+         pos: left=0.7cm top=3.7cm w=5.5cm h=7.4cm
+         зона: верх-лево
+         [IMAGE: Picture 5]
+    [6] name='Rectangle 6' type=AUTO_SHAPE (1)
+         pos: left=3.0cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-лево
+         [нет текста]
+    [7] name='TextBox 7' type=TEXT_BOX (17)
+         pos: left=3.0cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-лево
+         текст:
+           > GLITTER [Arial 11pt bold #FFFFFF]
+    [8] name='TextBox 8' type=TEXT_BOX (17)
+         pos: left=0.7cm top=12.2cm w=5.5cm h=2.2cm
+         зона: середина-лево
+         текст:
+           > GLITTER G10
+Чистый продакт-шот,
+светлый фон, этикетка читается [Arial 11pt #F2F2F2]
+    [9] name='Rectangle 9' type=AUTO_SHAPE (1)
+         pos: left=6.7cm top=2.5cm w=5.8cm h=12.0cm
+         зона: верх-центр
+         [нет текста]
+    [10] name='Picture 10' type=PICTURE (13)
+         pos: left=6.9cm top=3.7cm w=5.5cm h=7.4cm
+         зона: верх-центр
+         [IMAGE: Picture 10]
+    [11] name='Rectangle 11' type=AUTO_SHAPE (1)
+         pos: left=9.2cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-центр
+         [нет текста]
+    [12] name='TextBox 12' type=TEXT_BOX (17)
+         pos: left=9.2cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-центр
+         текст:
+           > DR.BERG [Arial 11pt bold #FFFFFF]
+    [13] name='TextBox 13' type=TEXT_BOX (17)
+         pos: left=6.9cm top=12.2cm w=5.5cm h=2.2cm
+         зона: середина-центр
+         текст:
+           > DR.BERG ACE
+Тёмный фон, канистр крупно,
+«до 200 моек» — цифры видны [Arial 11pt #F2F2F2]
+    [14] name='Rectangle 14' type=AUTO_SHAPE (1)
+         pos: left=12.9cm top=2.5cm w=5.8cm h=12.0cm
+         зона: верх-центр
+         [нет текста]
+    [15] name='Picture 15' type=PICTURE (13)
+         pos: left=13.0cm top=3.7cm w=5.5cm h=7.4cm
+         зона: верх-центр
+         [IMAGE: Picture 15]
+    [16] name='Rectangle 16' type=AUTO_SHAPE (1)
+         pos: left=15.4cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-центр
+         [нет текста]
+    [17] name='TextBox 17' type=TEXT_BOX (17)
+         pos: left=15.4cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-центр
+         текст:
+           > GRASS [Arial 11pt bold #FFFFFF]
+    [18] name='TextBox 18' type=TEXT_BOX (17)
+         pos: left=13.0cm top=12.2cm w=5.5cm h=2.2cm
+         зона: середина-центр
+         текст:
+           > GRASS Balance
+«Бренд №1» бейдж, яркий
+жёлтый — читается сразу [Arial 11pt #F2F2F2]
+    [19] name='Rectangle 19' type=AUTO_SHAPE (1)
+         pos: left=19.1cm top=2.5cm w=5.8cm h=12.0cm
+         зона: верх-право
+         [нет текста]
+    [20] name='Picture 20' type=PICTURE (13)
+         pos: left=19.2cm top=3.7cm w=5.5cm h=7.4cm
+         зона: верх-право
+         [IMAGE: Picture 20]
+    [21] name='Rectangle 21' type=AUTO_SHAPE (1)
+         pos: left=21.5cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-право
+         [нет текста]
+    [22] name='TextBox 22' type=TEXT_BOX (17)
+         pos: left=21.5cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-право
+         текст:
+           > BIGHIM [Arial 11pt bold #FFFFFF]
+    [23] name='TextBox 23' type=TEXT_BOX (17)
+         pos: left=19.2cm top=12.2cm w=5.5cm h=2.2cm
+         зона: середина-право
+         текст:
+           > BIGHIM
+«5л = до 150 моек» крупно,
+яркий оранжевый фон [Arial 11pt #F2F2F2]
+    [24] name='Rectangle 24' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=15.0cm w=24.4cm h=0.1cm
+         зона: середина-центр
+         [нет текста]
+    [25] name='TextBox 25' type=TEXT_BOX (17)
+         pos: left=0.5cm top=15.2cm w=24.4cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > ▶  НА ЧТО ОБРАТИТЬ ВНИМАНИЕ — ФОТО 1 ifoam Orange Standard [Arial 15pt bold #FF6B00]
+    [26] name='TextBox 26' type=TEXT_BOX (17)
+         pos: left=0.5cm top=16.5cm w=1.0cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 14pt bold #2ECC71]
+    [27] name='TextBox 27' type=TEXT_BOX (17)
+         pos: left=1.7cm top=16.5cm w=23.1cm h=0.8cm
+         зона: середина-центр
+         текст:
+           > Тёмный фон  — отстройка от светлого GLITTER G10 [Arial 13pt #FFFFFF]
+    [28] name='TextBox 28' type=TEXT_BOX (17)
+         pos: left=0.5cm top=17.6cm w=1.0cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 14pt bold #2ECC71]
+    [29] name='TextBox 29' type=TEXT_BOX (17)
+         pos: left=1.7cm top=17.6cm w=23.1cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Оранжевый акцент — цвет жидкости виден через канистру [Arial 13pt #FFFFFF]
+    [30] name='TextBox 30' type=TEXT_BOX (17)
+         pos: left=0.5cm top=18.6cm w=1.0cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 14pt bold #2ECC71]
+    [31] name='TextBox 31' type=TEXT_BOX (17)
+         pos: left=1.7cm top=18.6cm w=23.1cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Этикетка Orange Standard читается полностью [Arial 13pt #FFFFFF]
+    [32] name='TextBox 32' type=TEXT_BOX (17)
+         pos: left=0.5cm top=19.7cm w=1.0cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 14pt bold #2ECC71]
+    [33] name='TextBox 33' type=TEXT_BOX (17)
+         pos: left=1.7cm top=19.7cm w=23.1cm h=0.8cm
+         зона: середина-центр
+         текст:
+           > Бейдж «5 кг» + метка «ОТ ПРОИЗВОДИТЕЛЯ» + «СДЕЛАНО В РОССИИ» [Arial 13pt #FFFFFF]
+    [34] name='TextBox 34' type=TEXT_BOX (17)
+         pos: left=0.5cm top=20.8cm w=1.0cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✗ [Arial 14pt bold #FF4444]
+    [35] name='TextBox 35' type=TEXT_BOX (17)
+         pos: left=1.7cm top=20.8cm w=23.1cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Не белый фон — на полке сливаемся с GLITTER G10 [Arial 13pt #FFFFFF]
+    [36] name='TextBox 36' type=TEXT_BOX (17)
+         pos: left=0.5cm top=32.8cm w=24.4cm h=0.9cm
+         зона: низ-центр
+         текст:
+           > ifoam AUTO  |  Orange Standard 5кг  |  Art. 119105 [Arial 11pt #666666]
+
+================================================================================
+СЛАЙД 11
+================================================================================
+  [ФОН] тип заливки: SOLID (1)
+  [ФОН] цвет: #1A1A1A
+  [ФОН] theme_color: NOT_THEME_COLOR (0)
+  [LAYOUT] Blank
+  Количество shapes: 36
+
+  БЛОКИ (shapes):
+    [1] name='Rectangle 1' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=0.3cm w=24.4cm h=1.8cm
+         зона: верх-центр
+         [нет текста]
+    [2] name='TextBox 2' type=TEXT_BOX (17)
+         pos: left=0.8cm top=0.4cm w=23.9cm h=1.7cm
+         зона: верх-центр
+         текст:
+           > ФОТО 2: ХАРАКТЕРИСТИКИ / УТП — примеры конкурентов [Arial 20pt bold #FF6B00]
+    [3] name='Rectangle 3' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=2.2cm w=24.4cm h=0.1cm
+         зона: верх-центр
+         [нет текста]
+    [4] name='Rectangle 4' type=AUTO_SHAPE (1)
+         pos: left=0.6cm top=2.5cm w=5.8cm h=12.0cm
+         зона: верх-лево
+         [нет текста]
+    [5] name='Picture 5' type=PICTURE (13)
+         pos: left=0.7cm top=3.7cm w=5.5cm h=7.4cm
+         зона: верх-лево
+         [IMAGE: Picture 5]
+    [6] name='Rectangle 6' type=AUTO_SHAPE (1)
+         pos: left=3.0cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-лево
+         [нет текста]
+    [7] name='TextBox 7' type=TEXT_BOX (17)
+         pos: left=3.0cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-лево
+         текст:
+           > GLITTER [Arial 11pt bold #FFFFFF]
+    [8] name='TextBox 8' type=TEXT_BOX (17)
+         pos: left=0.7cm top=12.2cm w=5.5cm h=2.2cm
+         зона: середина-лево
+         текст:
+           > GLITTER G10
+4 буллета с иконками:
+пена / вода / смывается / разводы [Arial 11pt #F2F2F2]
+    [9] name='Rectangle 9' type=AUTO_SHAPE (1)
+         pos: left=6.7cm top=2.5cm w=5.8cm h=12.0cm
+         зона: верх-центр
+         [нет текста]
+    [10] name='Picture 10' type=PICTURE (13)
+         pos: left=6.9cm top=3.7cm w=5.5cm h=7.4cm
+         зона: верх-центр
+         [IMAGE: Picture 10]
+    [11] name='Rectangle 11' type=AUTO_SHAPE (1)
+         pos: left=9.2cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-центр
+         [нет текста]
+    [12] name='TextBox 12' type=TEXT_BOX (17)
+         pos: left=9.2cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-центр
+         текст:
+           > DR.BERG [Arial 11pt bold #FFFFFF]
+    [13] name='TextBox 13' type=TEXT_BOX (17)
+         pos: left=6.9cm top=12.2cm w=5.5cm h=2.2cm
+         зона: середина-центр
+         текст:
+           > DR.BERG ACE
+3 плашки на тёмном:
+активная пена / плотная / безопасно [Arial 11pt #F2F2F2]
+    [14] name='Rectangle 14' type=AUTO_SHAPE (1)
+         pos: left=12.9cm top=2.5cm w=5.8cm h=12.0cm
+         зона: верх-центр
+         [нет текста]
+    [15] name='Picture 15' type=PICTURE (13)
+         pos: left=13.0cm top=3.7cm w=5.5cm h=7.4cm
+         зона: верх-центр
+         [IMAGE: Picture 15]
+    [16] name='Rectangle 16' type=AUTO_SHAPE (1)
+         pos: left=15.4cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-центр
+         [нет текста]
+    [17] name='TextBox 17' type=TEXT_BOX (17)
+         pos: left=15.4cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-центр
+         текст:
+           > GLITTER [Arial 11pt bold #FFFFFF]
+    [18] name='TextBox 18' type=TEXT_BOX (17)
+         pos: left=13.0cm top=12.2cm w=5.5cm h=2.2cm
+         зона: середина-центр
+         текст:
+           > GLITTER G5
+«Готов к применению»
+буллеты + логотип [Arial 11pt #F2F2F2]
+    [19] name='Rectangle 19' type=AUTO_SHAPE (1)
+         pos: left=19.1cm top=2.5cm w=5.8cm h=12.0cm
+         зона: верх-право
+         [нет текста]
+    [20] name='Picture 20' type=PICTURE (13)
+         pos: left=19.2cm top=3.7cm w=5.5cm h=7.4cm
+         зона: верх-право
+         [IMAGE: Picture 20]
+    [21] name='Rectangle 21' type=AUTO_SHAPE (1)
+         pos: left=21.5cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-право
+         [нет текста]
+    [22] name='TextBox 22' type=TEXT_BOX (17)
+         pos: left=21.5cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-право
+         текст:
+           > BIGHIM [Arial 11pt bold #FFFFFF]
+    [23] name='TextBox 23' type=TEXT_BOX (17)
+         pos: left=19.2cm top=12.2cm w=5.5cm h=2.2cm
+         зона: середина-право
+         текст:
+           > BIGHIM
+Список на ярком фоне:
+кислотно-щелочной / блеск / водоотталк. [Arial 11pt #F2F2F2]
+    [24] name='Rectangle 24' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=15.0cm w=24.4cm h=0.1cm
+         зона: середина-центр
+         [нет текста]
+    [25] name='TextBox 25' type=TEXT_BOX (17)
+         pos: left=0.5cm top=15.2cm w=24.4cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > ▶  НА ЧТО ОБРАТИТЬ ВНИМАНИЕ — ФОТО 2 ifoam Orange Standard [Arial 15pt bold #FF6B00]
+    [26] name='TextBox 26' type=TEXT_BOX (17)
+         pos: left=0.5cm top=16.5cm w=1.0cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 14pt bold #2ECC71]
+    [27] name='TextBox 27' type=TEXT_BOX (17)
+         pos: left=1.7cm top=16.5cm w=23.1cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > pH 12 — крупный блок отдельно (никто из конкурентов так НЕ делает) [Arial 13pt #FFFFFF]
+    [28] name='TextBox 28' type=TEXT_BOX (17)
+         pos: left=0.5cm top=17.6cm w=1.0cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 14pt bold #2ECC71]
+    [29] name='TextBox 29' type=TEXT_BOX (17)
+         pos: left=1.7cm top=17.6cm w=23.1cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Пропорции 1:30–1:40 / 1:3–1:4 — иконки или таблица [Arial 13pt #FFFFFF]
+    [30] name='TextBox 30' type=TEXT_BOX (17)
+         pos: left=0.5cm top=18.6cm w=1.0cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 14pt bold #2ECC71]
+    [31] name='TextBox 31' type=TEXT_BOX (17)
+         pos: left=1.7cm top=18.6cm w=23.1cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > «Не повреждает ЛКП» — закрываем главное возражение [Arial 13pt #FFFFFF]
+    [32] name='TextBox 32' type=TEXT_BOX (17)
+         pos: left=0.5cm top=19.7cm w=1.0cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✗ [Arial 14pt bold #FF4444]
+    [33] name='TextBox 33' type=TEXT_BOX (17)
+         pos: left=1.7cm top=19.7cm w=23.1cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Не зелёные маркеры — цвет занят брендом GRASS [Arial 13pt #FFFFFF]
+    [34] name='TextBox 34' type=TEXT_BOX (17)
+         pos: left=0.5cm top=20.8cm w=1.0cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✗ [Arial 14pt bold #FF4444]
+    [35] name='TextBox 35' type=TEXT_BOX (17)
+         pos: left=1.7cm top=20.8cm w=23.1cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Не более 5–6 буллетов — не перегружать [Arial 13pt #FFFFFF]
+    [36] name='TextBox 36' type=TEXT_BOX (17)
+         pos: left=0.5cm top=32.8cm w=24.4cm h=0.9cm
+         зона: низ-центр
+         текст:
+           > ifoam AUTO  |  Orange Standard 5кг  |  Art. 119105 [Arial 11pt #666666]
+
+================================================================================
+СЛАЙД 12
+================================================================================
+  [ФОН] тип заливки: SOLID (1)
+  [ФОН] цвет: #1A1A1A
+  [ФОН] theme_color: NOT_THEME_COLOR (0)
+  [LAYOUT] Blank
+  Количество shapes: 36
+
+  БЛОКИ (shapes):
+    [1] name='Rectangle 1' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=0.3cm w=24.4cm h=1.8cm
+         зона: верх-центр
+         [нет текста]
+    [2] name='TextBox 2' type=TEXT_BOX (17)
+         pos: left=0.8cm top=0.4cm w=23.9cm h=1.7cm
+         зона: верх-центр
+         текст:
+           > ФОТО 3: ИНСТРУКЦИЯ ПО ПРИМЕНЕНИЮ — примеры конкурентов [Arial 20pt bold #FF6B00]
+    [3] name='Rectangle 3' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=2.2cm w=24.4cm h=0.1cm
+         зона: верх-центр
+         [нет текста]
+    [4] name='Rectangle 4' type=AUTO_SHAPE (1)
+         pos: left=0.6cm top=2.5cm w=5.8cm h=12.0cm
+         зона: верх-лево
+         [нет текста]
+    [5] name='Picture 5' type=PICTURE (13)
+         pos: left=0.7cm top=3.7cm w=5.5cm h=7.4cm
+         зона: верх-лево
+         [IMAGE: Picture 5]
+    [6] name='Rectangle 6' type=AUTO_SHAPE (1)
+         pos: left=3.0cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-лево
+         [нет текста]
+    [7] name='TextBox 7' type=TEXT_BOX (17)
+         pos: left=3.0cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-лево
+         текст:
+           > GLITTER [Arial 11pt bold #FFFFFF]
+    [8] name='TextBox 8' type=TEXT_BOX (17)
+         pos: left=0.7cm top=12.2cm w=5.5cm h=2.2cm
+         зона: середина-лево
+         текст:
+           > GLITTER G10
+Инструкция с иконками:
+пеногенератор / пенокомплект / дозатрон [Arial 11pt #F2F2F2]
+    [9] name='Rectangle 9' type=AUTO_SHAPE (1)
+         pos: left=6.7cm top=2.5cm w=5.8cm h=12.0cm
+         зона: верх-центр
+         [нет текста]
+    [10] name='Picture 10' type=PICTURE (13)
+         pos: left=6.9cm top=3.7cm w=5.5cm h=7.4cm
+         зона: верх-центр
+         [IMAGE: Picture 10]
+    [11] name='Rectangle 11' type=AUTO_SHAPE (1)
+         pos: left=9.2cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-центр
+         [нет текста]
+    [12] name='TextBox 12' type=TEXT_BOX (17)
+         pos: left=9.2cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-центр
+         текст:
+           > GLITTER [Arial 11pt bold #FFFFFF]
+    [13] name='TextBox 13' type=TEXT_BOX (17)
+         pos: left=6.9cm top=12.2cm w=5.5cm h=2.2cm
+         зона: середина-центр
+         текст:
+           > GLITTER G5
+«4 шага до чистого кузова»
+Сетка 2×2 с реальными фото [Arial 11pt #F2F2F2]
+    [14] name='Rectangle 14' type=AUTO_SHAPE (1)
+         pos: left=12.9cm top=2.5cm w=5.8cm h=12.0cm
+         зона: верх-центр
+         [нет текста]
+    [15] name='Picture 15' type=PICTURE (13)
+         pos: left=13.0cm top=3.7cm w=5.5cm h=7.4cm
+         зона: верх-центр
+         [IMAGE: Picture 15]
+    [16] name='Rectangle 16' type=AUTO_SHAPE (1)
+         pos: left=15.4cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-центр
+         [нет текста]
+    [17] name='TextBox 17' type=TEXT_BOX (17)
+         pos: left=15.4cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-центр
+         текст:
+           > GRASS [Arial 11pt bold #FFFFFF]
+    [18] name='TextBox 18' type=TEXT_BOX (17)
+         pos: left=13.0cm top=12.2cm w=5.5cm h=2.2cm
+         зона: середина-центр
+         текст:
+           > GRASS Balance
+Шаг 1: «Откройте упаковку»
+Реальные руки, тёмный стиль [Arial 11pt #F2F2F2]
+    [19] name='Rectangle 19' type=AUTO_SHAPE (1)
+         pos: left=19.1cm top=2.5cm w=5.8cm h=12.0cm
+         зона: верх-право
+         [нет текста]
+    [20] name='Picture 20' type=PICTURE (13)
+         pos: left=19.2cm top=3.7cm w=5.5cm h=7.4cm
+         зона: верх-право
+         [IMAGE: Picture 20]
+    [21] name='Rectangle 21' type=AUTO_SHAPE (1)
+         pos: left=21.5cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-право
+         [нет текста]
+    [22] name='TextBox 22' type=TEXT_BOX (17)
+         pos: left=21.5cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-право
+         текст:
+           > GRASS [Arial 11pt bold #FFFFFF]
+    [23] name='TextBox 23' type=TEXT_BOX (17)
+         pos: left=19.2cm top=12.2cm w=5.5cm h=2.2cm
+         зона: середина-право
+         текст:
+           > GRASS Balance
+Шаг 2: «Разведите состав»
+Показан концентрат наглядно [Arial 11pt #F2F2F2]
+    [24] name='Rectangle 24' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=15.0cm w=24.4cm h=0.1cm
+         зона: середина-центр
+         [нет текста]
+    [25] name='TextBox 25' type=TEXT_BOX (17)
+         pos: left=0.5cm top=15.2cm w=24.4cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > ▶  НА ЧТО ОБРАТИТЬ ВНИМАНИЕ — ФОТО 3 ifoam Orange Standard [Arial 15pt bold #FF6B00]
+    [26] name='TextBox 26' type=TEXT_BOX (17)
+         pos: left=0.5cm top=16.5cm w=1.0cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 14pt bold #2ECC71]
+    [27] name='TextBox 27' type=TEXT_BOX (17)
+         pos: left=1.7cm top=16.5cm w=23.1cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > 4 шага: остудите / разведите / нанесите / смойте [Arial 13pt #FFFFFF]
+    [28] name='TextBox 28' type=TEXT_BOX (17)
+         pos: left=0.5cm top=17.6cm w=1.0cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 14pt bold #2ECC71]
+    [29] name='TextBox 29' type=TEXT_BOX (17)
+         pos: left=1.7cm top=17.6cm w=23.1cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Шаг 2: КРУПНО пропорции — 1:30–1:40 и 1:3–1:4 [Arial 13pt #FFFFFF]
+    [30] name='TextBox 30' type=TEXT_BOX (17)
+         pos: left=0.5cm top=18.6cm w=1.0cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 14pt bold #2ECC71]
+    [31] name='TextBox 31' type=TEXT_BOX (17)
+         pos: left=1.7cm top=18.6cm w=23.1cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Реальные фото процесса (не иконки) — как у GRASS [Arial 13pt #FFFFFF]
+    [32] name='TextBox 32' type=TEXT_BOX (17)
+         pos: left=0.5cm top=19.7cm w=1.0cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 14pt bold #2ECC71]
+    [33] name='TextBox 33' type=TEXT_BOX (17)
+         pos: left=1.7cm top=19.7cm w=23.1cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Предупреждение «НЕ ДОПУСКАЙТЕ ВЫСЫХАНИЯ» жёлтым [Arial 13pt #FFFFFF]
+    [34] name='TextBox 34' type=TEXT_BOX (17)
+         pos: left=0.5cm top=20.8cm w=1.0cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✗ [Arial 14pt bold #FF4444]
+    [35] name='TextBox 35' type=TEXT_BOX (17)
+         pos: left=1.7cm top=20.8cm w=23.1cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Не мелкий текст — пропорции должны читаться с телефона [Arial 13pt #FFFFFF]
+    [36] name='TextBox 36' type=TEXT_BOX (17)
+         pos: left=0.5cm top=32.8cm w=24.4cm h=0.9cm
+         зона: низ-центр
+         текст:
+           > ifoam AUTO  |  Orange Standard 5кг  |  Art. 119105 [Arial 11pt #666666]
+
+================================================================================
+СЛАЙД 13
+================================================================================
+  [ФОН] тип заливки: SOLID (1)
+  [ФОН] цвет: #1A1A1A
+  [ФОН] theme_color: NOT_THEME_COLOR (0)
+  [LAYOUT] Blank
+  Количество shapes: 38
+
+  БЛОКИ (shapes):
+    [1] name='Rectangle 1' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=0.3cm w=24.4cm h=1.8cm
+         зона: верх-центр
+         [нет текста]
+    [2] name='TextBox 2' type=TEXT_BOX (17)
+         pos: left=0.8cm top=0.4cm w=23.9cm h=1.7cm
+         зона: верх-центр
+         текст:
+           > ФОТО 4: ЭКОНОМИКА — как конкуренты показывают выгоду [Arial 20pt bold #FF6B00]
+    [3] name='Rectangle 3' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=2.2cm w=24.4cm h=0.1cm
+         зона: верх-центр
+         [нет текста]
+    [4] name='Rectangle 4' type=AUTO_SHAPE (1)
+         pos: left=0.6cm top=2.5cm w=5.8cm h=12.0cm
+         зона: верх-лево
+         [нет текста]
+    [5] name='Picture 5' type=PICTURE (13)
+         pos: left=0.7cm top=3.7cm w=5.5cm h=7.4cm
+         зона: верх-лево
+         [IMAGE: Picture 5]
+    [6] name='Rectangle 6' type=AUTO_SHAPE (1)
+         pos: left=3.0cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-лево
+         [нет текста]
+    [7] name='TextBox 7' type=TEXT_BOX (17)
+         pos: left=3.0cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-лево
+         текст:
+           > DR.BERG [Arial 11pt bold #FFFFFF]
+    [8] name='TextBox 8' type=TEXT_BOX (17)
+         pos: left=0.7cm top=12.2cm w=5.5cm h=2.2cm
+         зона: середина-лево
+         текст:
+           > DR.BERG ACE
+«Разбавление»: ратио 1:100–200
+пеногенератор / пенокомплект [Arial 11pt #F2F2F2]
+    [9] name='Rectangle 9' type=AUTO_SHAPE (1)
+         pos: left=6.7cm top=2.5cm w=5.8cm h=12.0cm
+         зона: верх-центр
+         [нет текста]
+    [10] name='Picture 10' type=PICTURE (13)
+         pos: left=6.9cm top=3.7cm w=5.5cm h=7.4cm
+         зона: верх-центр
+         [IMAGE: Picture 10]
+    [11] name='Rectangle 11' type=AUTO_SHAPE (1)
+         pos: left=9.2cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-центр
+         [нет текста]
+    [12] name='TextBox 12' type=TEXT_BOX (17)
+         pos: left=9.2cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-центр
+         текст:
+           > DR.BERG [Arial 11pt bold #FFFFFF]
+    [13] name='TextBox 13' type=TEXT_BOX (17)
+         pos: left=6.9cm top=12.2cm w=5.5cm h=2.2cm
+         зона: середина-центр
+         текст:
+           > DR.BERG ACE
+«Высокая концентрация»
+— ближайший аналог экономики [Arial 11pt #F2F2F2]
+    [14] name='Rectangle 14' type=AUTO_SHAPE (1)
+         pos: left=12.9cm top=2.5cm w=5.8cm h=12.0cm
+         зона: верх-центр
+         [нет текста]
+    [15] name='Picture 15' type=PICTURE (13)
+         pos: left=13.0cm top=3.7cm w=5.5cm h=7.4cm
+         зона: верх-центр
+         [IMAGE: Picture 15]
+    [16] name='Rectangle 16' type=AUTO_SHAPE (1)
+         pos: left=15.4cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-центр
+         [нет текста]
+    [17] name='TextBox 17' type=TEXT_BOX (17)
+         pos: left=15.4cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-центр
+         текст:
+           > DR.BERG [Arial 11pt bold #FFFFFF]
+    [18] name='TextBox 18' type=TEXT_BOX (17)
+         pos: left=13.0cm top=12.2cm w=5.5cm h=2.2cm
+         зона: середина-центр
+         текст:
+           > DR.BERG ACE
+«До 200 моек» — мелко
+на главном фото [Arial 11pt #F2F2F2]
+    [19] name='Rectangle 19' type=AUTO_SHAPE (1)
+         pos: left=19.1cm top=2.5cm w=5.8cm h=12.0cm
+         зона: верх-право
+         [нет текста]
+    [20] name='Picture 20' type=PICTURE (13)
+         pos: left=19.2cm top=3.7cm w=5.5cm h=7.4cm
+         зона: верх-право
+         [IMAGE: Picture 20]
+    [21] name='Rectangle 21' type=AUTO_SHAPE (1)
+         pos: left=21.5cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-право
+         [нет текста]
+    [22] name='TextBox 22' type=TEXT_BOX (17)
+         pos: left=21.5cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-право
+         текст:
+           > BIGHIM [Arial 11pt bold #FFFFFF]
+    [23] name='TextBox 23' type=TEXT_BOX (17)
+         pos: left=19.2cm top=12.2cm w=5.5cm h=2.2cm
+         зона: середина-право
+         текст:
+           > BIGHIM
+«5л = до 150 моек»
+— единственный кто считает [Arial 11pt #F2F2F2]
+    [24] name='Rectangle 24' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=15.0cm w=24.4cm h=0.1cm
+         зона: середина-центр
+         [нет текста]
+    [25] name='TextBox 25' type=TEXT_BOX (17)
+         pos: left=0.5cm top=15.2cm w=24.4cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > ▶  НА ЧТО ОБРАТИТЬ ВНИМАНИЕ — ФОТО 4 ifoam Orange Standard [Arial 15pt bold #FF6B00]
+    [26] name='TextBox 36' type=TEXT_BOX (17)
+         pos: left=0.5cm top=32.8cm w=24.4cm h=0.9cm
+         зона: низ-центр
+         текст:
+           > ifoam AUTO  |  Orange Standard 5кг  |  Art. 119105 [Arial 11pt #666666]
+    [27] name='TextBox 37' type=TEXT_BOX (17)
+         pos: left=0.8cm top=16.8cm w=1.0cm h=1.0cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 14pt bold #2ECC71]
+    [28] name='TextBox 38' type=TEXT_BOX (17)
+         pos: left=1.9cm top=16.8cm w=23.1cm h=1.4cm
+         зона: середина-центр
+         текст:
+           > Заголовок: «5 КГ = 210 АВТОМОБИЛЕЙ С ГЕНЕРАТОРОМ / 21 АВТОМОБИЛЕЙ С ПЕНОКОМПЛЕКТОМ» — главная цифра вперёд [Arial 13pt #FFFFFF]
+    [29] name='TextBox 39' type=TEXT_BOX (17)
+         pos: left=0.8cm top=18.4cm w=1.0cm h=1.0cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 14pt bold #2ECC71]
+    [30] name='TextBox 40' type=TEXT_BOX (17)
+         pos: left=1.9cm top=18.4cm w=23.1cm h=1.0cm
+         зона: середина-центр
+         текст:
+           > Визуальная цепочка: канистра → ведро раствора → автомобили [Arial 13pt #FFFFFF]
+    [31] name='TextBox 41' type=TEXT_BOX (17)
+         pos: left=0.8cm top=19.4cm w=1.0cm h=1.0cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 14pt bold #2ECC71]
+    [32] name='TextBox 42' type=TEXT_BOX (17)
+         pos: left=1.9cm top=19.4cm w=23.1cm h=1.0cm
+         зона: середина-центр
+         текст:
+           > Пропорции разбавления крупно: пеногенератор 1:30–1:40 / пенокомплект 1:3–1:4 [Arial 13pt #FFFFFF]
+    [33] name='TextBox 43' type=TEXT_BOX (17)
+         pos: left=0.8cm top=20.4cm w=1.0cm h=1.0cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 14pt bold #2ECC71]
+    [34] name='TextBox 44' type=TEXT_BOX (17)
+         pos: left=1.9cm top=20.4cm w=23.1cm h=0.8cm
+         зона: середина-центр
+         текст:
+           > Подпись: «1 кг концентрата = 30–40 литров рабочего состава с пеногенератором» [Arial 13pt #FFFFFF]
+    [35] name='TextBox 45' type=TEXT_BOX (17)
+         pos: left=0.8cm top=21.3cm w=1.0cm h=1.0cm
+         зона: середина-лево
+         текст:
+           > ✗ [Arial 14pt bold #FF4444]
+    [36] name='TextBox 46' type=TEXT_BOX (17)
+         pos: left=1.9cm top=21.3cm w=23.1cm h=1.0cm
+         зона: середина-центр
+         текст:
+           > Без цен и рублей — только объём, пропорции, количество моек [Arial 13pt #FFFFFF]
+    [37] name='TextBox 47' type=TEXT_BOX (17)
+         pos: left=0.8cm top=22.3cm w=1.0cm h=1.0cm
+         зона: низ-лево
+         текст:
+           > ✗ [Arial 14pt bold #FF4444]
+    [38] name='TextBox 48' type=TEXT_BOX (17)
+         pos: left=1.9cm top=22.3cm w=23.1cm h=1.0cm
+         зона: низ-центр
+         текст:
+           > Не сравнивать с конкурентами — только наши показатели расхода [Arial 13pt #FFFFFF]
+
+================================================================================
+СЛАЙД 14
+================================================================================
+  [ФОН] тип заливки: SOLID (1)
+  [ФОН] цвет: #1A1A1A
+  [ФОН] theme_color: NOT_THEME_COLOR (0)
+  [LAYOUT] Blank
+  Количество shapes: 31
+
+  БЛОКИ (shapes):
+    [1] name='Rectangle 1' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=0.3cm w=24.4cm h=1.8cm
+         зона: верх-центр
+         [нет текста]
+    [2] name='TextBox 2' type=TEXT_BOX (17)
+         pos: left=0.8cm top=0.4cm w=23.9cm h=1.7cm
+         зона: верх-центр
+         текст:
+           > ФОТО 5: РЕКОМЕНДАЦИИ / БЕЗОПАСНОСТЬ — примеры конкурентов [Arial 20pt bold #FF6B00]
+    [3] name='Rectangle 3' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=2.2cm w=24.4cm h=0.1cm
+         зона: верх-центр
+         [нет текста]
+    [4] name='Rectangle 4' type=AUTO_SHAPE (1)
+         pos: left=0.6cm top=2.5cm w=7.8cm h=12.0cm
+         зона: верх-лево
+         [нет текста]
+    [5] name='Picture 5' type=PICTURE (13)
+         pos: left=0.7cm top=3.6cm w=7.6cm h=7.6cm
+         зона: верх-лево
+         [IMAGE: Picture 5]
+    [6] name='Rectangle 6' type=AUTO_SHAPE (1)
+         pos: left=5.1cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-лево
+         [нет текста]
+    [7] name='TextBox 7' type=TEXT_BOX (17)
+         pos: left=5.1cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-лево
+         текст:
+           > GLITTER [Arial 11pt bold #FFFFFF]
+    [8] name='TextBox 8' type=TEXT_BOX (17)
+         pos: left=0.7cm top=12.2cm w=7.5cm h=2.2cm
+         зона: середина-лево
+         текст:
+           > GLITTER G10/G5
+«Наденьте перчатки» крупно
+Фото синей перчатки [Arial 11pt #F2F2F2]
+    [9] name='Rectangle 9' type=AUTO_SHAPE (1)
+         pos: left=8.8cm top=2.5cm w=7.8cm h=12.0cm
+         зона: верх-центр
+         [нет текста]
+    [10] name='Picture 10' type=PICTURE (13)
+         pos: left=9.2cm top=2.7cm w=7.0cm h=9.4cm
+         зона: верх-центр
+         [IMAGE: Picture 10]
+    [11] name='Rectangle 11' type=AUTO_SHAPE (1)
+         pos: left=13.3cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-центр
+         [нет текста]
+    [12] name='TextBox 12' type=TEXT_BOX (17)
+         pos: left=13.3cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-центр
+         текст:
+           > GLITTER [Arial 11pt bold #FFFFFF]
+    [13] name='TextBox 13' type=TEXT_BOX (17)
+         pos: left=8.9cm top=12.2cm w=7.5cm h=2.2cm
+         зона: середина-центр
+         текст:
+           > GLITTER G5
+«Защитные перчатки»
+Мужчина на мойке с пистолетом [Arial 11pt #F2F2F2]
+    [14] name='Rectangle 14' type=AUTO_SHAPE (1)
+         pos: left=17.0cm top=2.5cm w=7.8cm h=12.0cm
+         зона: верх-право
+         [нет текста]
+    [15] name='Picture 15' type=PICTURE (13)
+         pos: left=17.4cm top=2.7cm w=7.0cm h=9.4cm
+         зона: верх-право
+         [IMAGE: Picture 15]
+    [16] name='Rectangle 16' type=AUTO_SHAPE (1)
+         pos: left=21.5cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-право
+         [нет текста]
+    [17] name='TextBox 17' type=TEXT_BOX (17)
+         pos: left=21.5cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-право
+         текст:
+           > DR.BERG [Arial 11pt bold #FFFFFF]
+    [18] name='TextBox 18' type=TEXT_BOX (17)
+         pos: left=17.2cm top=12.2cm w=7.5cm h=2.2cm
+         зона: середина-право
+         текст:
+           > DR.BERG ACE
+«Способ применения» + предупреждения
+Тёмный, чёткий текст [Arial 11pt #F2F2F2]
+    [19] name='Rectangle 19' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=15.0cm w=24.4cm h=0.1cm
+         зона: середина-центр
+         [нет текста]
+    [20] name='TextBox 20' type=TEXT_BOX (17)
+         pos: left=0.5cm top=15.2cm w=24.4cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > ▶  НА ЧТО ОБРАТИТЬ ВНИМАНИЕ — ФОТО 5 ifoam Orange Standard [Arial 15pt bold #FF6B00]
+    [21] name='TextBox 21' type=TEXT_BOX (17)
+         pos: left=0.5cm top=16.5cm w=1.0cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 14pt bold #2ECC71]
+    [22] name='TextBox 22' type=TEXT_BOX (17)
+         pos: left=1.7cm top=16.5cm w=23.1cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Реальное фото человека в перчатках (не иконка) — как у GLITTER G5 [Arial 13pt #FFFFFF]
+    [23] name='TextBox 23' type=TEXT_BOX (17)
+         pos: left=0.5cm top=17.6cm w=1.0cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 14pt bold #2ECC71]
+    [24] name='TextBox 24' type=TEXT_BOX (17)
+         pos: left=1.7cm top=17.6cm w=23.1cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Главное предупреждение КРУПНО: «НЕ НАНОСИТЬ НА ГОРЯЧИЙ КУЗОВ» [Arial 13pt #FFFFFF]
+    [25] name='TextBox 25' type=TEXT_BOX (17)
+         pos: left=0.5cm top=18.6cm w=1.0cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 14pt bold #2ECC71]
+    [26] name='TextBox 26' type=TEXT_BOX (17)
+         pos: left=1.7cm top=18.6cm w=23.1cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > «ВЫДЕРЖАТЬ НЕ БОЛЕЕ 2 МИНУТ» — жёлтый акцент [Arial 13pt #FFFFFF]
+    [27] name='TextBox 27' type=TEXT_BOX (17)
+         pos: left=0.5cm top=19.7cm w=1.0cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 14pt bold #2ECC71]
+    [28] name='TextBox 28' type=TEXT_BOX (17)
+         pos: left=1.7cm top=19.7cm w=23.1cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Блок антивозражений: «что будет если...» — закрываем страхи [Arial 13pt #FFFFFF]
+    [29] name='TextBox 29' type=TEXT_BOX (17)
+         pos: left=0.5cm top=20.8cm w=1.0cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✗ [Arial 14pt bold #FF4444]
+    [30] name='TextBox 30' type=TEXT_BOX (17)
+         pos: left=1.7cm top=20.8cm w=23.1cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Не только список ⚠ — нужна визуальная иерархия по важности [Arial 13pt #FFFFFF]
+    [31] name='TextBox 31' type=TEXT_BOX (17)
+         pos: left=0.5cm top=32.8cm w=24.4cm h=0.9cm
+         зона: низ-центр
+         текст:
+           > ifoam AUTO  |  Orange Standard 5кг  |  Art. 119105 [Arial 11pt #666666]
+
+================================================================================
+СЛАЙД 15
+================================================================================
+  [ФОН] тип заливки: SOLID (1)
+  [ФОН] цвет: #1A1A1A
+  [ФОН] theme_color: NOT_THEME_COLOR (0)
+  [LAYOUT] Blank
+  Количество shapes: 36
+
+  БЛОКИ (shapes):
+    [1] name='Rectangle 1' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=0.3cm w=24.4cm h=1.8cm
+         зона: верх-центр
+         [нет текста]
+    [2] name='TextBox 2' type=TEXT_BOX (17)
+         pos: left=0.8cm top=0.4cm w=23.9cm h=1.7cm
+         зона: верх-центр
+         текст:
+           > ФОТО 6: ПРОИЗВОДСТВО И ДОВЕРИЕ — примеры конкурентов [Arial 20pt bold #FF6B00]
+    [3] name='Rectangle 3' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=2.2cm w=24.4cm h=0.1cm
+         зона: верх-центр
+         [нет текста]
+    [4] name='Rectangle 4' type=AUTO_SHAPE (1)
+         pos: left=0.6cm top=2.5cm w=5.8cm h=12.0cm
+         зона: верх-лево
+         [нет текста]
+    [5] name='Picture 5' type=PICTURE (13)
+         pos: left=0.7cm top=3.7cm w=5.5cm h=7.4cm
+         зона: верх-лево
+         [IMAGE: Picture 5]
+    [6] name='Rectangle 6' type=AUTO_SHAPE (1)
+         pos: left=3.0cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-лево
+         [нет текста]
+    [7] name='TextBox 7' type=TEXT_BOX (17)
+         pos: left=3.0cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-лево
+         текст:
+           > GLITTER [Arial 11pt bold #FFFFFF]
+    [8] name='TextBox 8' type=TEXT_BOX (17)
+         pos: left=0.7cm top=12.2cm w=5.5cm h=2.2cm
+         зона: середина-лево
+         текст:
+           > GLITTER G5
+«Сделано в России для наших дорог»
+Коллаж лаборатории 2×2 [Arial 11pt #F2F2F2]
+    [9] name='Rectangle 9' type=AUTO_SHAPE (1)
+         pos: left=6.7cm top=2.5cm w=5.8cm h=12.0cm
+         зона: верх-центр
+         [нет текста]
+    [10] name='Picture 10' type=PICTURE (13)
+         pos: left=6.9cm top=3.7cm w=5.5cm h=7.4cm
+         зона: верх-центр
+         [IMAGE: Picture 10]
+    [11] name='Rectangle 11' type=AUTO_SHAPE (1)
+         pos: left=9.2cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-центр
+         [нет текста]
+    [12] name='TextBox 12' type=TEXT_BOX (17)
+         pos: left=9.2cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-центр
+         текст:
+           > GLITTER [Arial 11pt bold #FFFFFF]
+    [13] name='TextBox 13' type=TEXT_BOX (17)
+         pos: left=6.9cm top=12.2cm w=5.5cm h=2.2cm
+         зона: середина-центр
+         текст:
+           > GLITTER G5
+«51 000+ положительных отзывов»
+Карточки с цитатами и ★ [Arial 11pt #F2F2F2]
+    [14] name='Rectangle 14' type=AUTO_SHAPE (1)
+         pos: left=12.9cm top=2.5cm w=5.8cm h=12.0cm
+         зона: верх-центр
+         [нет текста]
+    [15] name='Picture 15' type=PICTURE (13)
+         pos: left=13.0cm top=3.7cm w=5.5cm h=7.4cm
+         зона: верх-центр
+         [IMAGE: Picture 15]
+    [16] name='Rectangle 16' type=AUTO_SHAPE (1)
+         pos: left=15.4cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-центр
+         [нет текста]
+    [17] name='TextBox 17' type=TEXT_BOX (17)
+         pos: left=15.4cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-центр
+         текст:
+           > GLITTER [Arial 11pt bold #FFFFFF]
+    [18] name='TextBox 18' type=TEXT_BOX (17)
+         pos: left=13.0cm top=12.2cm w=5.5cm h=2.2cm
+         зона: середина-центр
+         текст:
+           > GLITTER G5
+«Мойка своими руками — как у профи»
+Мужчина с канистром [Arial 11pt #F2F2F2]
+    [19] name='Rectangle 19' type=AUTO_SHAPE (1)
+         pos: left=19.1cm top=2.5cm w=5.8cm h=12.0cm
+         зона: верх-право
+         [нет текста]
+    [20] name='Picture 20' type=PICTURE (13)
+         pos: left=19.2cm top=3.7cm w=5.5cm h=7.4cm
+         зона: верх-право
+         [IMAGE: Picture 20]
+    [21] name='Rectangle 21' type=AUTO_SHAPE (1)
+         pos: left=21.5cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-право
+         [нет текста]
+    [22] name='TextBox 22' type=TEXT_BOX (17)
+         pos: left=21.5cm top=2.7cm w=3.1cm h=0.8cm
+         зона: верх-право
+         текст:
+           > GLITTER [Arial 11pt bold #FFFFFF]
+    [23] name='TextBox 23' type=TEXT_BOX (17)
+         pos: left=19.2cm top=12.2cm w=5.5cm h=2.2cm
+         зона: середина-право
+         текст:
+           > GLITTER G5
+«Почему мы?» — таблица сравнения
+GLITTER vs обычное средство [Arial 11pt #F2F2F2]
+    [24] name='Rectangle 24' type=AUTO_SHAPE (1)
+         pos: left=0.5cm top=15.0cm w=24.4cm h=0.1cm
+         зона: середина-центр
+         [нет текста]
+    [25] name='TextBox 25' type=TEXT_BOX (17)
+         pos: left=0.5cm top=15.2cm w=24.4cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > ▶  НА ЧТО ОБРАТИТЬ ВНИМАНИЕ — ФОТО 6 ifoam Orange Standard [Arial 15pt bold #FF6B00]
+    [26] name='TextBox 26' type=TEXT_BOX (17)
+         pos: left=0.5cm top=16.5cm w=1.0cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 14pt bold #2ECC71]
+    [27] name='TextBox 27' type=TEXT_BOX (17)
+         pos: left=1.7cm top=16.5cm w=23.1cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > «ПРОИЗВОДИМ САМИ — ОТВЕЧАЕМ ЗА КАЧЕСТВО» — фото цеха ifoam [Arial 13pt #FFFFFF]
+    [28] name='TextBox 28' type=TEXT_BOX (17)
+         pos: left=0.5cm top=17.6cm w=1.0cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 14pt bold #2ECC71]
+    [29] name='TextBox 29' type=TEXT_BOX (17)
+         pos: left=1.7cm top=17.6cm w=23.1cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Флаг РФ + ТУ 20.41.32-003-36603872-2024 — закрываем «подделка?» [Arial 13pt #FFFFFF]
+    [30] name='TextBox 30' type=TEXT_BOX (17)
+         pos: left=0.5cm top=18.6cm w=1.0cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 14pt bold #2ECC71]
+    [31] name='TextBox 31' type=TEXT_BOX (17)
+         pos: left=1.7cm top=18.6cm w=23.1cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Коллаж 2×2: оборудование / лаборатория / розлив / готовый продукт [Arial 13pt #FFFFFF]
+    [32] name='TextBox 32' type=TEXT_BOX (17)
+         pos: left=0.5cm top=19.7cm w=1.0cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✓ [Arial 14pt bold #2ECC71]
+    [33] name='TextBox 33' type=TEXT_BOX (17)
+         pos: left=1.7cm top=19.7cm w=23.1cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > Если есть отзывы — 2 карточки с цитатами и ★★★★★ [Arial 13pt #FFFFFF]
+    [34] name='TextBox 34' type=TEXT_BOX (17)
+         pos: left=0.5cm top=20.8cm w=1.0cm h=1.1cm
+         зона: середина-лево
+         текст:
+           > ✗ [Arial 14pt bold #FF4444]
+    [35] name='TextBox 35' type=TEXT_BOX (17)
+         pos: left=1.7cm top=20.8cm w=23.1cm h=1.1cm
+         зона: середина-центр
+         текст:
+           > НЕ AI-фото лаборатории — только реальные кадры производства ifoam [Arial 13pt #FFFFFF]
+    [36] name='TextBox 36' type=TEXT_BOX (17)
+         pos: left=0.5cm top=32.8cm w=24.4cm h=0.9cm
+         зона: низ-центр
+         текст:
+           > ifoam AUTO  |  Orange Standard 5кг  |  Art. 119105 [Arial 11pt #666666]
+
+================================================================================
+ИТОГОВАЯ ИНФОРМАЦИЯ
+================================================================================
+Уникальные шрифты: ['-apple-system', 'Arial', 'Courier New']
+Цвета фонов слайдов: ['2D2D2D', '1A1A1A']
+
+КЛАССИФИКАЦИЯ СЛАЙДОВ:
+(требует ручного анализа по содержимому, см. выше)
+
+Признаки служебных слайдов: наличие слов 'Техническое задание', 'Требования',
+'Шрифт', 'Цвет', 'Размер', 'Инструкция', 'Титул' в заголовке или тексте.
+Признаки карточек товара: наличие описания продукта, характеристик, фотографий.
+
+АВТОМАТИЧЕСКАЯ КЛАССИФИКАЦИЯ:
+  Слайд  1: СМЕШАННЫЙ (карточка + служебное)  | первый текст: ОБЩИЕ ТРЕБОВАНИЯ
+  Слайд  2: КАРТОЧКА ТОВАРА  | первый текст: 1
+  Слайд  3: КАРТОЧКА ТОВАРА  | первый текст: 2
+  Слайд  4: СМЕШАННЫЙ (карточка + служебное)  | первый текст: 3
+  Слайд  5: КАРТОЧКА ТОВАРА  | первый текст: 4
+  Слайд  6: КАРТОЧКА ТОВАРА  | первый текст: 5
+  Слайд  7: КАРТОЧКА ТОВАРА  | первый текст: 6
+  Слайд  8: СМЕШАННЫЙ (карточка + служебное)  | первый текст: ТЕХНИЧЕСКИЕ ТРЕБОВАНИЯ
+  Слайд  9: СМЕШАННЫЙ (карточка + служебное)  | первый текст: АНАЛИЗ КОНКУРЕНТОВ → ФОКУС ДЛЯ КАЖДОГО ФОТО ifoam
+  Слайд 10: КАРТОЧКА ТОВАРА  | первый текст: ФОТО 1: ГЛАВНОЕ ФОТО — примеры конкурентов
+  Слайд 11: КАРТОЧКА ТОВАРА  | первый текст: ФОТО 2: ХАРАКТЕРИСТИКИ / УТП — примеры конкурентов
+  Слайд 12: СМЕШАННЫЙ (карточка + служебное)  | первый текст: ФОТО 3: ИНСТРУКЦИЯ ПО ПРИМЕНЕНИЮ — примеры конкурентов
+  Слайд 13: КАРТОЧКА ТОВАРА  | первый текст: ФОТО 4: ЭКОНОМИКА — как конкуренты показывают выгоду
+  Слайд 14: КАРТОЧКА ТОВАРА  | первый текст: ФОТО 5: РЕКОМЕНДАЦИИ / БЕЗОПАСНОСТЬ — примеры конкурентов
+  Слайд 15: КАРТОЧКА ТОВАРА  | первый текст: ФОТО 6: ПРОИЗВОДСТВО И ДОВЕРИЕ — примеры конкурентов

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bg">
+
+    <!-- Золотая полоска сверху -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="@color/gold" />
+
+    <!-- Заголовок -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pirat Split-Tunneling"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:textColor="@color/gold"
+        android:gravity="center"
+        android:paddingTop="24dp"
+        android:paddingBottom="4dp"
+        android:letterSpacing="0.02" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="⚓  РУ-трафик напрямую  ·  Telegram через VPN  ⚓"
+        android:textSize="12sp"
+        android:textColor="@color/muted"
+        android:gravity="center"
+        android:paddingBottom="24dp" />
+
+    <!-- Статус -->
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Введи конфиг и нажми кнопку"
+        android:textSize="15sp"
+        android:textColor="@color/fg"
+        android:gravity="center"
+        android:paddingBottom="20dp" />
+
+    <!-- Главная кнопка -->
+    <Button
+        android:id="@+id/btnToggle"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginHorizontal="32dp"
+        android:text="⚓  ПОДНЯТЬ ПАРУСА"
+        android:textSize="16sp"
+        android:textColor="@color/bg"
+        android:textAllCaps="false"
+        android:backgroundTint="@color/gold"
+        style="@style/Widget.MaterialComponents.Button" />
+
+    <!-- Кнопка конфига -->
+    <Button
+        android:id="@+id/btnConfig"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:text="✧ Настроить WireGuard конфиг"
+        android:textSize="12sp"
+        android:textColor="@color/muted"
+        android:textAllCaps="false"
+        style="@style/Widget.MaterialComponents.Button.TextButton" />
+
+    <!-- Разделитель -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/gold" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="✦  Журнал приключений  ✦"
+        android:textSize="11sp"
+        android:textColor="@color/muted"
+        android:gravity="center"
+        android:paddingTop="6dp"
+        android:paddingBottom="4dp" />
+
+    <!-- Лог -->
+    <ScrollView
+        android:id="@+id/scrollLog"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/surface"
+        android:padding="12dp">
+
+        <TextView
+            android:id="@+id/tvLog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="11sp"
+            android:textColor="@color/fg"
+            android:fontFamily="monospace"
+            android:lineSpacingMultiplier="1.4" />
+
+    </ScrollView>
+
+    <!-- Золотая полоска снизу -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="@color/gold" />
+
+</LinearLayout>

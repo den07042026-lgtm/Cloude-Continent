@@ -1,0 +1,414 @@
+{
+  "system": "Autoparts Analytics v1",
+  "description": "Аналитическая система сбора, обработки и прогнозирования данных маркетплейсов Ozon и Wildberries для продажи автозапчастей",
+  "version": "1.0.0",
+
+  "modules": [
+
+    {
+      "id": "update_reference",
+      "layer": "00_reference",
+      "file": "modules/00_reference/update_products_reference.py",
+      "name": "Обновить справочник товаров",
+      "description": "Загружает актуальный список товаров из Ozon API и объединяет с себестоимостью и данными применяемости из config/products_reference.csv.",
+      "inputs": {
+        "api_list": "https://api-seller.ozon.ru/v3/product/list",
+        "api_info": "https://api-seller.ozon.ru/v3/product/info/list",
+        "credentials": ".env → OZON_CLIENT_ID, OZON_API_KEY",
+        "cost_csv": "config/products_reference.csv (артикул, OEM, применяемость, себестоимость, бренд, категория)"
+      },
+      "outputs": {
+        "products": "data/reference/products_reference.parquet",
+        "cost": "data/reference/cost_reference.parquet",
+        "raw_cache": "data/reference/ozon_products_raw.parquet"
+      },
+      "depends_on": [],
+      "schedule": "on_demand",
+      "run_order": 0
+    },
+
+    {
+      "id": "collect_ozon_fbo",
+      "layer": "01_collect",
+      "file": "modules/01_collect/ozon_fbo.py",
+      "name": "Сбор заказов Ozon FBO",
+      "description": "Загружает заказы по схеме FBO из Ozon API. Инкрементальная загрузка: только новые заказы с последней даты синхронизации.",
+      "inputs": {
+        "api": "https://api-seller.ozon.ru/v2/posting/fbo/list",
+        "api_detail": "https://api-seller.ozon.ru/v2/posting/fbo/get",
+        "credentials": ".env → OZON_CLIENT_ID, OZON_API_KEY",
+        "state": "data/raw/ozon/fbo/last_sync.json"
+      },
+      "outputs": {
+        "monthly_files": "data/raw/ozon/fbo/YYYY/MM/ozon_fbo_YYYY-MM.parquet",
+        "full_history": "data/raw/ozon/fbo/ozon_fbo_full.parquet"
+      },
+      "depends_on": [],
+      "schedule": "daily",
+      "run_order": 1
+    },
+
+    {
+      "id": "collect_ozon_fbs",
+      "layer": "01_collect",
+      "file": "modules/01_collect/ozon_fbs.py",
+      "name": "Сбор заказов Ozon FBS",
+      "description": "Загружает заказы по схеме FBS из Ozon API. Инкрементальная загрузка.",
+      "inputs": {
+        "api": "https://api-seller.ozon.ru/v3/posting/fbs/list",
+        "api_detail": "https://api-seller.ozon.ru/v3/posting/fbs/get",
+        "credentials": ".env → OZON_CLIENT_ID, OZON_API_KEY",
+        "state": "data/raw/ozon/fbs/last_sync.json"
+      },
+      "outputs": {
+        "monthly_files": "data/raw/ozon/fbs/YYYY/MM/ozon_fbs_YYYY-MM.parquet",
+        "full_history": "data/raw/ozon/fbs/ozon_fbs_full.parquet"
+      },
+      "depends_on": [],
+      "schedule": "daily",
+      "run_order": 2
+    },
+
+    {
+      "id": "collect_ozon_accruals",
+      "layer": "01_collect",
+      "file": "modules/01_collect/ozon_accruals.py",
+      "name": "Обработка отчётов начислений Ozon",
+      "description": "Читает Excel-отчёты начислений из папки Ozon, нормализует и загружает в единый формат. Также загружает в ClickHouse.",
+      "inputs": {
+        "source_dir": "data/raw/ozon/accruals/xlsx/",
+        "credentials": ".env → CLICKHOUSE_HOST, CLICKHOUSE_USER, CLICKHOUSE_PASSWORD"
+      },
+      "outputs": {
+        "parquet": "data/raw/ozon/accruals/ozon_accruals_full.parquet",
+        "clickhouse": "база autoparts, таблица accruals"
+      },
+      "depends_on": [],
+      "schedule": "on_new_file",
+      "run_order": 3
+    },
+
+    {
+      "id": "collect_ozon_stocks",
+      "layer": "01_collect",
+      "file": "modules/01_collect/ozon_stocks.py",
+      "name": "Сбор остатков на складах Ozon",
+      "description": "Запрашивает текущие остатки по всем SKU на всех складах Ozon. Обогащает данными о кластерах складов.",
+      "inputs": {
+        "api_products": "https://api-seller.ozon.ru/v3/product/list",
+        "api_stocks": "https://api-seller.ozon.ru/v1/analytics/stocks",
+        "api_clusters": "https://cdn1.ozonusercontent.com (Excel файл со складами)",
+        "credentials": ".env → OZON_CLIENT_ID, OZON_API_KEY"
+      },
+      "outputs": {
+        "csv": "data/raw/ozon/stocks/stocks_with_clusters_YYYY-MM-DD.csv",
+        "latest": "data/raw/ozon/stocks/stocks_latest.csv"
+      },
+      "depends_on": [],
+      "schedule": "daily",
+      "run_order": 4
+    },
+
+    {
+      "id": "collect_wb_finance",
+      "layer": "01_collect",
+      "file": "modules/01_collect/wb_finance.py",
+      "name": "Загрузка финотчётов Wildberries",
+      "description": "Загружает ежедневные финансовые отчёты WB через Statistics API. Инкрементальная загрузка по датам.",
+      "inputs": {
+        "api": "https://statistics-api.wildberries.ru/api/v5/supplier/reportDetailByPeriod",
+        "credentials": ".env → WB_API_KEY",
+        "state": "data/raw/wb/finance/last_sync.json"
+      },
+      "outputs": {
+        "daily_files": "data/raw/wb/finance/YYYY/MM/DD/finance_YYYY-MM-DD.parquet"
+      },
+      "depends_on": [],
+      "schedule": "daily",
+      "run_order": 5,
+      "notes": "Задержка 62 сек между запросами из-за rate limit WB API"
+    },
+
+    {
+      "id": "collect_wb_ads",
+      "layer": "01_collect",
+      "file": "modules/01_collect/wb_ads.py",
+      "name": "Загрузка рекламной статистики Wildberries",
+      "description": "Загружает статистику рекламных кампаний WB. Агрегирует по nm_id (артикулу). Инкрементально по месяцам.",
+      "inputs": {
+        "api_campaigns": "https://advert-api.wildberries.ru/adv/v1/promotion/count",
+        "api_stats": "https://advert-api.wildberries.ru/adv/v3/fullstats",
+        "credentials": ".env → WB_API_KEY",
+        "state": "data/raw/wb/ads/last_sync.json"
+      },
+      "outputs": {
+        "monthly": "data/raw/wb/ads/YYYY/MM/ad_expenses_YYYY-MM.parquet",
+        "aggregated": "data/raw/wb/ads/ad_expenses_by_article.parquet"
+      },
+      "depends_on": [],
+      "schedule": "daily",
+      "run_order": 6
+    },
+
+    {
+      "id": "process_unify_ozon",
+      "layer": "02_process",
+      "file": "modules/02_process/unify_ozon.py",
+      "name": "Объединение заказов Ozon FBO + FBS",
+      "description": "Читает сырые данные FBO и FBS, объединяет в единый формат. Конвертирует даты к концу месяца. Агрегирует по (месяц, склад, кластер, SKU, артикул, OEM, применяемость).",
+      "inputs": {
+        "fbo": "data/raw/ozon/fbo/ozon_fbo_full.parquet",
+        "fbs": "data/raw/ozon/fbs/ozon_fbs_full.parquet",
+        "reference": "data/reference/products_reference.parquet"
+      },
+      "outputs": {
+        "combined": "data/processed/ozon/orders_combined.parquet",
+        "aggregated": "data/processed/ozon/orders_aggregated.parquet"
+      },
+      "depends_on": ["collect_ozon_fbo", "collect_ozon_fbs"],
+      "schedule": "daily",
+      "run_order": 7
+    },
+
+    {
+      "id": "process_unify_wb",
+      "layer": "02_process",
+      "file": "modules/02_process/unify_wb.py",
+      "name": "Объединение финансов и рекламы WB",
+      "description": "Читает финотчёты и рекламные данные WB, объединяет. Расщепляет рекламные расходы: 60% → реклама, 40% → скидки/бонусы.",
+      "inputs": {
+        "finance": "data/raw/wb/finance/ (все parquet)",
+        "ads": "data/raw/wb/ads/ad_expenses_by_article.parquet",
+        "reference": "data/reference/products_reference.parquet"
+      },
+      "outputs": {
+        "unified": "data/processed/wb/unified.parquet",
+        "aggregated": "data/processed/wb/aggregated.parquet"
+      },
+      "depends_on": ["collect_wb_finance", "collect_wb_ads"],
+      "schedule": "daily",
+      "run_order": 8
+    },
+
+    {
+      "id": "process_merge",
+      "layer": "02_process",
+      "file": "modules/02_process/merge_marketplaces.py",
+      "name": "Слияние Ozon + WB в единую таблицу",
+      "description": "Объединяет обработанные данные Ozon и WB в единую таблицу. Подтягивает себестоимость из справочника. Рассчитывает прибыль.",
+      "inputs": {
+        "ozon": "data/processed/ozon/orders_aggregated.parquet",
+        "wb": "data/processed/wb/aggregated.parquet",
+        "cost_reference": "data/reference/cost_reference.parquet"
+      },
+      "outputs": {
+        "combined": "data/processed/combined_marketplaces.parquet",
+        "excel": "data/output/powerbi/combined_marketplaces.xlsx"
+      },
+      "depends_on": ["process_unify_ozon", "process_unify_wb"],
+      "schedule": "daily",
+      "run_order": 9
+    },
+
+    {
+      "id": "analyze_profit",
+      "layer": "03_analyze",
+      "file": "modules/03_analyze/profit_analysis.py",
+      "name": "Анализ прибыли и маржи",
+      "description": "Рассчитывает прибыль, маржу, ROI по каждому товару и маркетплейсу. Группировка по категориям запчастей, брендам, применяемости. Поддерживает what-if анализ.",
+      "inputs": {
+        "combined": "data/processed/combined_marketplaces.parquet",
+        "cost_reference": "data/reference/cost_reference.parquet"
+      },
+      "outputs": {
+        "profit_report": "data/output/powerbi/profit_analysis.parquet",
+        "excel": "data/output/reports/profit_YYYY-MM.xlsx"
+      },
+      "key_fields": {
+        "revenue": "fin_payout (уже за вычетом всех комиссий Ozon)",
+        "cost": "quantity × себестоимость из справочника",
+        "profit": "revenue - cost",
+        "margin_pct": "profit / revenue × 100"
+      },
+      "depends_on": ["process_merge"],
+      "schedule": "daily",
+      "run_order": 10
+    },
+
+    {
+      "id": "analyze_stocks",
+      "layer": "03_analyze",
+      "file": "modules/03_analyze/stock_analysis.py",
+      "name": "Анализ остатков по кластерам",
+      "description": "Анализирует распределение остатков по кластерам складов Ozon. Выявляет перезапасённые и дефицитные позиции. Учитывает сезонный фактор авторынка.",
+      "inputs": {
+        "stocks": "data/raw/ozon/stocks/stocks_latest.csv",
+        "forecast": "data/output/forecasts/demand_forecast_sku_cluster.parquet"
+      },
+      "outputs": {
+        "stock_report": "data/output/powerbi/stock_analysis.parquet",
+        "excel": "data/output/reports/stocks_YYYY-MM-DD.xlsx"
+      },
+      "depends_on": ["collect_ozon_stocks", "forecast_demand"],
+      "schedule": "daily",
+      "run_order": 11
+    },
+
+    {
+      "id": "forecast_demand",
+      "layer": "04_forecast",
+      "file": "modules/04_forecast/demand_forecast.py",
+      "name": "Прогноз спроса",
+      "description": "Адаптивный прогноз спроса на 6 месяцев с учётом сезонности авторынка (пики: февраль–апрель, август–октябрь). Метод выбирается автоматически: ETS (≥12 точек) → Holt (≥6) → скользящее среднее. Для текущего месяца применяется экстраполяция.",
+      "inputs": {
+        "orders": "data/processed/ozon/orders_aggregated.parquet"
+      },
+      "outputs": {
+        "detailed": "data/output/forecasts/forecast_detailed.parquet",
+        "by_sku_cluster": "data/output/forecasts/forecast_sku_cluster.parquet",
+        "by_cluster": "data/output/forecasts/forecast_by_cluster.parquet",
+        "excel": "data/output/forecasts/forecast_YYYY-MM.xlsx"
+      },
+      "parameters": {
+        "horizon_months": 6,
+        "seasonality_period": 12,
+        "min_points_ets": 12,
+        "min_points_holt": 6,
+        "auto_seasonality_months": [2, 3, 4, 8, 9, 10],
+        "low_season_months": [1, 7]
+      },
+      "depends_on": ["process_unify_ozon"],
+      "schedule": "weekly",
+      "run_order": 12
+    },
+
+    {
+      "id": "forecast_stock_norms",
+      "layer": "04_forecast",
+      "file": "modules/04_forecast/stock_norms.py",
+      "name": "Расчёт норм запасов",
+      "description": "Рассчитывает минимальные и максимальные нормы запасов по каждому SKU и кластеру на основе прогноза спроса. Учитывает сезонные пики авторынка.",
+      "inputs": {
+        "forecast": "data/output/forecasts/forecast_sku_cluster.parquet",
+        "stocks": "data/raw/ozon/stocks/stocks_latest.csv"
+      },
+      "outputs": {
+        "norms": "data/output/forecasts/stock_norms.csv",
+        "excel": "data/output/forecasts/stock_norms.xlsx"
+      },
+      "depends_on": ["forecast_demand", "collect_ozon_stocks"],
+      "schedule": "weekly",
+      "run_order": 13
+    },
+
+    {
+      "id": "report_daily",
+      "layer": "05_report",
+      "file": "modules/05_report/daily_report.py",
+      "name": "Ежедневный управленческий отчёт",
+      "description": "Генерирует ежедневный отчёт: продажи по категориям запчастей, прибыль, остатки, отклонения от плана.",
+      "inputs": {
+        "profit": "data/output/powerbi/profit_analysis.parquet",
+        "stocks": "data/output/powerbi/stock_analysis.parquet"
+      },
+      "outputs": {
+        "excel": "data/output/reports/daily_YYYY-MM-DD.xlsx"
+      },
+      "depends_on": ["analyze_profit", "analyze_stocks"],
+      "schedule": "daily",
+      "run_order": 14
+    },
+
+    {
+      "id": "report_management",
+      "layer": "05_report",
+      "file": "modules/05_report/management_report.py",
+      "name": "Сводный управленческий отчёт",
+      "description": "Генерирует месячный сводный отчёт по всем маркетплейсам: выручка, прибыль, комиссии, реклама, ROI. Разбивка по категориям запчастей и брендам.",
+      "inputs": {
+        "combined": "data/processed/combined_marketplaces.parquet",
+        "profit": "data/output/powerbi/profit_analysis.parquet",
+        "forecast": "data/output/forecasts/forecast_sku_cluster.parquet"
+      },
+      "outputs": {
+        "excel": "data/output/reports/management_YYYY-MM.xlsx"
+      },
+      "depends_on": ["analyze_profit", "forecast_demand"],
+      "schedule": "monthly",
+      "run_order": 15
+    }
+
+  ],
+
+  "execution_order": [
+    ["collect_ozon_fbo", "collect_ozon_fbs", "collect_ozon_accruals", "collect_ozon_stocks", "collect_wb_finance", "collect_wb_ads"],
+    ["process_unify_ozon", "process_unify_wb"],
+    ["process_merge"],
+    ["analyze_profit", "analyze_stocks", "forecast_demand"],
+    ["forecast_stock_norms"],
+    ["report_daily", "report_management"]
+  ],
+
+  "data_schemas": {
+    "orders_unified": {
+      "description": "Единый формат заказов Ozon (FBO+FBS) для автозапчастей",
+      "fields": {
+        "posting_number": "string — номер отправления",
+        "created_at": "datetime — дата создания заказа",
+        "status": "string — статус (delivered, cancelled, in_process...)",
+        "scheme": "string — FBO или FBS",
+        "offer_id": "string — наш артикул",
+        "sku": "string — SKU Ozon",
+        "oem_number": "string — OEM номер детали (из справочника)",
+        "compatibility": "string — применяемость: марка/модель/год",
+        "part_category": "string — категория запчасти (фильтр, тормоза, подвеска...)",
+        "part_brand": "string — бренд детали (Bosch, Mann, NGK...)",
+        "product_name": "string — название товара",
+        "quantity": "int — количество единиц",
+        "price": "float — цена продажи",
+        "fin_commission_amount": "float — комиссия Ozon (отрицательная)",
+        "fin_payout": "float — итоговая выплата продавцу (после всех вычетов)",
+        "fin_customer_price": "float — цена для покупателя",
+        "warehouse_name": "string — название склада",
+        "cluster": "string — кластер склада (регион)",
+        "month_end": "date — последний день месяца заказа"
+      }
+    },
+    "profit_analysis": {
+      "description": "Результат анализа прибыли по товарам",
+      "fields": {
+        "offer_id": "string — наш артикул",
+        "oem_number": "string — OEM номер",
+        "product_name": "string — название",
+        "part_category": "string — категория запчасти",
+        "part_brand": "string — бренд детали",
+        "marketplace": "string — Ozon или WB",
+        "period": "date — период (месяц)",
+        "quantity": "int — количество продано",
+        "revenue": "float — выплата (fin_payout)",
+        "cost": "float — себестоимость",
+        "profit": "float — прибыль = revenue - cost",
+        "margin_pct": "float — маржа %",
+        "commission": "float — комиссия маркетплейса"
+      }
+    }
+  },
+
+  "reference_files": {
+    "products_reference": {
+      "path": "data/reference/products_reference.parquet",
+      "description": "Справочник товаров: артикул, SKU, OEM, применяемость, бренд, категория, nm_id WB",
+      "key_fields": ["offer_id", "sku", "nm_id", "oem_number", "compatibility", "part_category", "part_brand", "product_name"]
+    },
+    "cost_reference": {
+      "path": "data/reference/cost_reference.parquet",
+      "description": "Себестоимость по артикулам",
+      "key_fields": ["offer_id", "cost_per_unit"]
+    },
+    "warehouses": {
+      "path": "data/reference/warehouses.json",
+      "description": "Склады Ozon с координатами и кластерами",
+      "key_fields": ["warehouse_name", "cluster", "lat", "lon"]
+    }
+  }
+}

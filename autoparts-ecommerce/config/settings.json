@@ -1,0 +1,55 @@
+{
+  "paths": {
+    "data_dir": "data/",
+    "raw_ozon": "data/raw/ozon/",
+    "raw_wb": "data/raw/wb/",
+    "processed": "data/processed/",
+    "reference": "data/reference/",
+    "output": "data/output/",
+    "reports": "data/output/reports/",
+    "forecasts": "data/output/forecasts/",
+    "powerbi": "data/output/powerbi/",
+    "logs": "logs/pipeline.log",
+    "cost_csv": "config/products_reference.csv",
+    "warehouses_json": "config/warehouses.json"
+  },
+
+  "forecast": {
+    "horizon_months": 6,
+    "seasonality_period": 12,
+    "min_points_ets": 12,
+    "min_points_holt": 6,
+    "high_season_months": [2, 3, 4, 8, 9, 10],
+    "low_season_months": [1, 7],
+    "high_season_multiplier": 1.25,
+    "low_season_multiplier": 0.80
+  },
+
+  "stock_norms": {
+    "safety_stock_days": 14,
+    "replenishment_lead_days": 7,
+    "max_stock_days": 60
+  },
+
+  "ozon_api": {
+    "base_url": "https://api-seller.ozon.ru",
+    "timeout_sec": 30,
+    "retry_count": 3,
+    "page_size": 100
+  },
+
+  "wb_api": {
+    "finance_base_url": "https://statistics-api.wildberries.ru",
+    "ads_base_url": "https://advert-api.wildberries.ru",
+    "rate_limit_delay_sec": 62
+  },
+
+  "clickhouse": {
+    "database": "autoparts",
+    "tables": {
+      "accruals": "accruals",
+      "orders": "orders_unified",
+      "stocks": "stocks_daily"
+    }
+  }
+}
