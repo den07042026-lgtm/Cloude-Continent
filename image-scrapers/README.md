@@ -1,4 +1,4 @@
-# Image Scrapers — Скачивание фото от поставщиков
+﻿# Image Scrapers — Скачивание фото от поставщиков
 
 Скрипты для скачивания фотографий автозапчастей с B2B-сайтов поставщиков.  
 Исходники: `C:\Users\Admin\Desktop\`  
@@ -33,7 +33,7 @@
 ```python
 EXCEL_PATH  = r"C:\Users\Admin\Desktop\Топ-500 ВБ\Топ-500 ВБ_new.xlsx"
 IMAGES_DIR  = Path(r"C:\Users\Admin\Desktop\Топ-500 ВБ\Изображения Автолига")
-LOGIN_EMAIL = "Control.vlz@gmail.com"
+LOGIN_EMAIL = "your-email@example.com"
 ```
 
 ---

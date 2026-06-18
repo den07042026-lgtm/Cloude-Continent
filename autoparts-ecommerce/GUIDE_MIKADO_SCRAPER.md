@@ -1,4 +1,4 @@
-# Гайд: Сбор данных с mikado-parts.ru
+﻿# Гайд: Сбор данных с mikado-parts.ru
 ## Для передачи контекста в новую сессию Claude
 
 ---
@@ -42,7 +42,7 @@ C:\Users\Admin\Documents\Autoparts_Ecommerce\.env
 Содержимое:
 ```
 MIKADO_CODE=35275
-MIKADO_PASSWORD=KONSHIN1963
+MIKADO_PASSWORD=YOUR_MIKADO_PASSWORD
 ```
 
 ---

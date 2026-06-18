@@ -1,7 +1,7 @@
-import requests
+﻿import requests
 import json
 
-WB_API_KEY = "eyJhbGciOiJFUzI1NiIsImtpZCI6IjIwMjYwMzAydjEiLCJ0eXAiOiJKV1QifQ.eyJhY2MiOjEsImVudCI6MSwiZXhwIjoxNzk0NjkwODAyLCJpZCI6IjAxOWUzMDBmLWNlNjUtNzg5OC1hYmVlLTZmMTZlMzQ5MjU2OCIsImlpZCI6NDUwOTYyNjgsIm9pZCI6MjUwMTM5MzA1LCJzIjoxNjEyNiwic2lkIjoiMDY4ZTk2NDktYzhiYS00ODg0LWE0NmQtNzE2MDVmMmRmMTFkIiwidCI6ZmFsc2UsInVpZCI6NDUwOTYyNjh9.U-7tU37MCYXY0gVQt92ONiLbOWsNgKXYsJWQr3T_eOKqJNldIMJjrZm5U5v9_Hq3jDM-ope_bfDwSeepMRQjWA"
+WB_API_KEY = "os.environ.get("WB_API_KEY", "")"
 
 HEADERS = {"Authorization": WB_API_KEY}
 OUTPUT_FILE = r"C:\Users\Admin\Desktop\wb_autoparts_subcategories.txt"

@@ -1,4 +1,4 @@
-# /// script
+﻿# /// script
 # requires-python = ">=3.10"
 # dependencies = [
 #   "selenium",
@@ -36,8 +36,8 @@ sys.stdout.reconfigure(encoding="utf-8")
 EXCEL_PATH  = r"C:\Users\Admin\Desktop\Топ-500 ВБ\Топ-500 ВБ_new.xlsx"
 IMAGES_DIR  = Path(r"C:\Users\Admin\Desktop\Топ-500 ВБ\СТ изображения")
 SITE_URL    = "https://stparts.ru"
-LOGIN_EMAIL = "control.vlz2@gmail.com"
-LOGIN_PASS  = "140886continent"
+LOGIN_EMAIL = os.environ.get("STPARTS_EMAIL", "")
+LOGIN_PASS  = os.environ.get("STPARTS_PASS", "")
 TIMEOUT     = 20
 PAGE_WAIT   = 3.0
 # ──────────────────────────────────────────────────────────

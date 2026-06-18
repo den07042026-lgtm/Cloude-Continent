@@ -1,4 +1,4 @@
-# /// script
+﻿# /// script
 # requires-python = ">=3.10"
 # dependencies = ["requests", "openpyxl"]
 # ///
@@ -29,7 +29,7 @@ PRODUCT_URL = f"{BASE_URL}/galleyp.asp"
 AJAX_URL    = f"{BASE_URL}/pp0.asp"
 
 MIKADO_CODE = "35275"
-MIKADO_PASS = "KONSHIN1963"
+MIKADO_PASS = os.environ.get("MIKADO_PASS", "")
 
 DELAY = 1.5
 # ──────────────────────────────────────────────────────────

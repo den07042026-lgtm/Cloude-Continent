@@ -1,4 +1,4 @@
-# /// script
+﻿# /// script
 # requires-python = ">=3.10"
 # dependencies = [
 #   "selenium",
@@ -37,8 +37,8 @@ sys.stdout.reconfigure(encoding="utf-8")
 EXCEL_PATH   = r"C:\Users\Admin\Desktop\Топ-500 ВБ\Топ-500 ВБ_new.xlsx"
 IMAGES_DIR   = Path(r"C:\Users\Admin\Desktop\Топ-500 ВБ\Изображения Автолига")
 SITE_URL     = "https://b2b.avtoliga.ru"
-LOGIN_EMAIL  = "Control.vlz@gmail.com"
-LOGIN_PASS   = "7iXOaxSpU6"
+LOGIN_EMAIL  = os.environ.get("AVTOLIGA_EMAIL", "")
+LOGIN_PASS   = "os.environ.get("AVTOLIGA_PASS", "")"
 TIMEOUT      = 20
 # ──────────────────────────────────────────────────────────
 

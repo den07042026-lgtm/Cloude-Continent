@@ -1,4 +1,4 @@
-"""
+﻿"""
 wb_get_cookie.py
 ════════════════════════════════════════════════════════════════════════════
 Открывает реальный Chrome через прокси, решает WBAAS antibot challenge
@@ -35,7 +35,7 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 # Прокси по умолчанию (мобильный Билайн)
-DEFAULT_PROXY = "http://DengR7:140d10wP0@node-ru-41.astroproxy.com:10055"
+DEFAULT_PROXY = "http://os.environ.get("PROXY_URL", "")"
 
 
 def get_cookies(proxy: str, headful: bool = False) -> dict:

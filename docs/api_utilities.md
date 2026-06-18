@@ -1,4 +1,4 @@
-# API Utilities — Быстрые утилиты для Ozon и WB
+﻿# API Utilities — Быстрые утилиты для Ozon и WB
 
 **Путь:** `C:\Users\Admin\`  
 **Язык:** Python 3.10+  
@@ -25,8 +25,8 @@
 
 **Настройки (жёстко вшиты в файл):**
 ```python
-CLIENT_ID = "3315303"
-API_KEY   = "6ee3b7b7-eef3-4ce5-ac54-0b830613c55a"
+CLIENT_ID = "YOUR_OZON_CLIENT_ID"
+API_KEY   = "YOUR_OZON_API_KEY"
 ```
 
 **Запуск:**

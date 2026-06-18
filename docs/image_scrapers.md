@@ -1,4 +1,4 @@
-# Image Scrapers — Скачивание фото от поставщиков
+﻿# Image Scrapers — Скачивание фото от поставщиков
 
 **Путь:** `C:\Users\Admin\Desktop\`  
 **Язык:** Python 3.10+ + Selenium / requests  
@@ -44,7 +44,7 @@
 EXCEL_PATH   = r"C:\Users\Admin\Desktop\Топ-500 ВБ\Топ-500 ВБ_new.xlsx"
 IMAGES_DIR   = Path(r"C:\Users\Admin\Desktop\Топ-500 ВБ\Изображения Автолига")
 SITE_URL     = "https://b2b.avtoliga.ru"
-LOGIN_EMAIL  = "Control.vlz@gmail.com"
+LOGIN_EMAIL  = "your-email@example.com"
 LOGIN_PASS   = "..."  # хранится в файле или .env
 ```
 

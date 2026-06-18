@@ -1,7 +1,7 @@
-import requests, json, sys, time
+﻿import requests, json, sys, time
 sys.stdout.reconfigure(encoding='utf-8')
 
-token = 'eyJhbGciOiJFUzI1NiIsImtpZCI6IjIwMjYwMzAydjEiLCJ0eXAiOiJKV1QifQ.eyJhY2MiOjEsImVudCI6MSwiZXhwIjoxNzk0NjkwODAyLCJpZCI6IjAxOWUzMDBmLWNlNjUtNzg5OC1hYmVlLTZmMTZlMzQ5MjU2OCIsImlpZCI6NDUwOTYyNjgsIm9pZCI6MjUwMTM5MzA1LCJzIjoxNjEyNiwic2lkIjoiMDY4ZTk2NDktYzhiYS00ODg0LWE0NmQtNzE2MDVmMmRmMTFkIiwidCI6ZmFsc2UsInVpZCI6NDUwOTYyNjh9.U-7tU37MCYXY0gVQt92ONiLbOWsNgKXYsJWQr3T_eOKqJNldIMJjrZm5U5v9_Hq3jDM-ope_bfDwSeepMRQjWA'
+token = 'os.environ.get("WB_API_KEY", "")'
 headers = {'Authorization': token}
 
 print('Ждём 5 минут для полного сброса rate limit...')
