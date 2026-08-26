@@ -1,7 +1,7 @@
 """
 wb_price_recalc.py
 ═══════════════════════════════════════════════════════════════════════════════
-Ежедневный пересчёт цен WB в 00:01.
+Ежедневный пересчёт цен WB в 09:10.
 
 Алгоритм:
   1. Загружает актуальный прайс Mikado (закупочные цены)
@@ -26,7 +26,7 @@ wb_price_recalc.py
     TG_BOT_TOKEN=...
     TG_CHAT_ID=...
 
-Запуск (демон, срабатывает в 00:01):
+Запуск (демон, срабатывает в 09:10):
   uv run --with requests,openpyxl scripts/wb_price_recalc.py
 
 Разовый пересчёт:
@@ -60,17 +60,23 @@ try:
 except ImportError:
     _TG_OK = False
 
+try:
+    from daemon_guard import single_instance
+except ImportError:
+    def single_instance(_): pass
+
+from mikado_price_fetcher import download_mikado_price_bytes
+
 # ─── Константы ────────────────────────────────────────────────────────────────
 BASE_DIR       = Path(__file__).parent.parent
 ENV_FILE       = BASE_DIR / ".env"
 LOG_FILE       = BASE_DIR / "logs" / "wb_price_recalc.log"
 SCRAPER_DATA   = BASE_DIR / "data" / "suppliers" / "mikado" / "scraper_output" / "mikado_data.xlsx"
-PRICE_FALLBACK = Path("C:/Users/Admin/Documents/Ecommerce/mikado_price_34.xlsx")
 PRICE_LOG_FILE = BASE_DIR / "data" / "wb_price_recalc_last.json"
 
 MIKADO_PRICE_URL = (
     "https://mikado-parts.ru/api/Price/GetPriceExcel"
-    "?StockId=34&Key=BBE2E029-54CF-4D9E-9FAC-9FE25E85B300"
+    "?StockId=34&Key=YOUR_MIKADO_PRICE_KEY"
 )
 
 WB_PRICES_BASE = "https://discounts-prices-api.wildberries.ru"
@@ -93,9 +99,6 @@ RETURN_LITER     = 14.0
 
 # Дефолтный объём если нет габаритов (~типичная автозапчасть 20×15×10 см = 3 л)
 DEFAULT_VOLUME   = 3.0
-
-# Не снижать цену более чем на 30% за один пересчёт
-PRICE_DROP_LIMIT = 0.70
 
 # Коды (строчными), исключённые из автопересчёта (ложные совпадения с Mikado)
 SKIP_CODES: frozenset[str] = frozenset({
@@ -162,25 +165,26 @@ def find_rec_price(purchase: float, liters: float,
     return None
 
 
+# ─── Загрузка прайса Автолиги ────────────────────────────────────────────────
+def load_autoliga_price() -> dict[str, float]:
+    """Возвращает {normalized_article: purchase_price} из последнего файла Автолиги."""
+    try:
+        import sys
+        sys.path.insert(0, str(Path(__file__).parent))
+        from autoliga_loader import load_autoliga
+        al = load_autoliga()
+        result = {k: float(v["price"]) for k, v in al.items() if v.get("price", 0) > 0}
+        log.info(f"Автолига: {len(result):,} позиций с ценой")
+        return result
+    except Exception as e:
+        log.warning(f"Автолига: не удалось загрузить цены ({e})")
+        return {}
+
+
 # ─── Загрузка прайса Mikado ───────────────────────────────────────────────────
 def load_mikado_price() -> dict[str, float]:
-    content = None
-    try:
-        resp = requests.get(MIKADO_PRICE_URL, timeout=60)
-        resp.raise_for_status()
-        if resp.content[:2] == b"PK":
-            content = resp.content
-            log.info(f"Mikado: прайс скачан ({len(content):,} байт)")
-    except Exception as e:
-        log.warning(f"Mikado онлайн недоступен ({e}), берём локальный")
-
-    if content:
-        wb_file = openpyxl.load_workbook(io.BytesIO(content), read_only=True, data_only=True)
-    elif PRICE_FALLBACK.exists():
-        wb_file = openpyxl.load_workbook(PRICE_FALLBACK, read_only=True, data_only=True)
-    else:
-        log.error("Mikado: прайс недоступен")
-        return {}
+    content = download_mikado_price_bytes(MIKADO_PRICE_URL, log)
+    wb_file = openpyxl.load_workbook(io.BytesIO(content), read_only=True, data_only=True)
 
     ws     = wb_file.active
     rows   = ws.iter_rows(values_only=True)
@@ -276,31 +280,49 @@ def get_wb_goods(token: str) -> list[dict]:
     limit   = 1000
 
     while True:
-        try:
-            r = requests.get(
-                f"{WB_PRICES_BASE}/api/v2/list/goods/filter",
-                headers=headers,
-                params={"limit": limit, "offset": offset},
-                timeout=30,
-            )
-            r.raise_for_status()
-            goods = r.json().get("data", {}).get("listGoods", [])
-            for g in goods:
-                vc    = (g.get("vendorCode") or "").strip()
-                nm_id = g.get("nmID")
-                sizes = g.get("sizes", [])
-                price = sizes[0].get("price", 0) if sizes else 0
-                if vc and nm_id:
-                    result.append({
-                        "nmID":         nm_id,
-                        "vendorCode":   vc,
-                        "current_price": float(price),
-                    })
-            if len(goods) < limit:
+        delay = 5.0
+        success = False
+        for attempt in range(5):
+            try:
+                r = requests.get(
+                    f"{WB_PRICES_BASE}/api/v2/list/goods/filter",
+                    headers=headers,
+                    params={"limit": limit, "offset": offset},
+                    timeout=30,
+                )
+                if r.status_code == 429:
+                    retry_hdr = r.headers.get("X-Ratelimit-Retry") or r.headers.get("Retry-After") or ""
+                    wait_s = int(retry_hdr) if retry_hdr.isdigit() else delay
+                    log.warning(f"WB pricing API: 429 rate limit, X-Ratelimit-Retry={retry_hdr or 'нет'}, ждём {wait_s}с...")
+                    if wait_s > 300:
+                        log.error(f"WB: слишком долгое ожидание ({wait_s}с), пропускаем цикл. Следующий запуск по расписанию.")
+                        return []
+                    time.sleep(wait_s)
+                    delay = min(delay * 2, 120)
+                    continue
+                r.raise_for_status()
+                goods = r.json().get("data", {}).get("listGoods", [])
+                for g in goods:
+                    vc    = (g.get("vendorCode") or "").strip()
+                    nm_id = g.get("nmID")
+                    sizes = g.get("sizes", [])
+                    price = sizes[0].get("price", 0) if sizes else 0
+                    if vc and nm_id:
+                        result.append({
+                            "nmID":         nm_id,
+                            "vendorCode":   vc,
+                            "current_price": float(price),
+                        })
+                offset = -1 if len(goods) < limit else offset + limit
+                success = True
                 break
-            offset += limit
-        except Exception as e:
-            log.error(f"WB: ошибка получения товаров (offset={offset}): {e}")
+            except Exception as e:
+                log.error(f"WB: ошибка получения товаров (offset={offset}): {e}")
+                break
+        if not success:
+            log.error("WB: не удалось получить товары после 5 попыток")
+            break
+        if offset < 0:
             break
 
     log.info(f"WB: загружено {len(result)} товаров")
@@ -319,18 +341,39 @@ def update_wb_prices(token: str, updates: list[dict]) -> tuple[int, int]:
     for i in range(0, len(updates), BATCH_SIZE):
         chunk = updates[i: i + BATCH_SIZE]
         payload = {"data": [{"nmID": u["nmID"], "price": u["new_price"]} for u in chunk]}
-        try:
-            r = requests.post(
-                f"{WB_PRICES_BASE}/api/v2/upload/task",
-                headers=headers,
-                json=payload,
-                timeout=30,
-            )
-            r.raise_for_status()
-            ok += len(chunk)
-            log.info(f"WB: батч [{i}:{i+len(chunk)}] принят (taskId={r.json().get('data',{}).get('taskId','?')})")
-        except Exception as e:
-            log.error(f"WB: ошибка батча [{i}:{i+len(chunk)}]: {e}")
+        delay = 10.0
+        sent = False
+        for attempt in range(6):
+            try:
+                r = requests.post(
+                    f"{WB_PRICES_BASE}/api/v2/upload/task",
+                    headers=headers,
+                    json=payload,
+                    timeout=30,
+                )
+                if r.status_code == 429:
+                    retry_hdr = r.headers.get("X-Ratelimit-Retry") or r.headers.get("Retry-After") or ""
+                    wait_s = int(retry_hdr) if retry_hdr.isdigit() else delay
+                    if wait_s > 300:
+                        log.error(f"WB upload: rate limit {wait_s}с, пропускаем цикл.")
+                        fail += len(chunk)
+                        sent = True
+                        break
+                    log.warning(f"WB upload: 429, ждём {wait_s}с...")
+                    time.sleep(wait_s)
+                    delay = min(delay * 2, 120)
+                    continue
+                r.raise_for_status()
+                ok += len(chunk)
+                log.info(f"WB: батч [{i}:{i+len(chunk)}] принят (taskId={r.json().get('data',{}).get('taskId','?')})")
+                sent = True
+                break
+            except Exception as e:
+                log.error(f"WB: ошибка батча [{i}:{i+len(chunk)}]: {e}")
+                fail += len(chunk)
+                sent = True
+                break
+        if not sent:
             fail += len(chunk)
 
     return ok, fail
@@ -347,10 +390,11 @@ def recalc_once(env: dict, dry_run: bool = False) -> None:
         return
 
     # 1. Загружаем данные
-    price_db = load_mikado_price()
-    dims_db  = load_product_dims()
-    if not price_db:
-        log.error("Прайс Mikado пуст — пересчёт отменён")
+    price_db     = load_mikado_price()
+    autoliga_db  = load_autoliga_price()
+    dims_db      = load_product_dims()
+    if not price_db and not autoliga_db:
+        log.error("Прайс Mikado и Автолига пусты — пересчёт отменён")
         return
 
     # 2. Товары WB
@@ -364,19 +408,22 @@ def recalc_once(env: dict, dry_run: bool = False) -> None:
     skipped   = unchanged = 0
 
     for good in wb_goods:
-        vc    = good["vendorCode"]
+        vc     = good["vendorCode"]
         vc_key = vc.lower()
+        # WB vendorCodes имеют суффикс -con; убираем его для поиска в прайсах
+        base_key = vc_key[:-4] if vc_key.endswith("-con") else vc_key
 
-        if vc_key in SKIP_CODES:
+        if base_key in SKIP_CODES or vc_key in SKIP_CODES:
             skipped += 1
             continue
 
-        purchase = price_db.get(vc_key)
+        al_key = base_key.replace("-", "").replace(" ", "").replace(".", "").upper()
+        purchase = price_db.get(base_key) or autoliga_db.get(al_key)
         if not purchase:
             skipped += 1
             continue
 
-        dims = dims_db.get(vc_key) or dims_db.get(vc)
+        dims = dims_db.get(base_key) or dims_db.get(vc_key) or dims_db.get(vc)
         if dims:
             liters = _volume_liters(dims["length"], dims["width"], dims["height"])
         else:
@@ -388,13 +435,11 @@ def recalc_once(env: dict, dry_run: bool = False) -> None:
             skipped += 1
             continue
 
-        # Защита: не снижать цену более чем на 30% за один пересчёт
         cur = good["current_price"]
-        if cur > 0 and new_price < cur * PRICE_DROP_LIMIT:
-            log.warning(
-                f"  {vc}: подозрительное снижение {cur:.0f} → {new_price} ₽ "
-                f"(−{(1 - new_price/cur)*100:.0f}%, лимит 30%) — пропущен"
-            )
+
+        # Цены не снижаются
+        if cur > 0 and new_price < cur:
+            log.info(f"  {vc}: цена не снижается ({cur:.0f} → {new_price} ₽) — пропущен")
             skipped += 1
             continue
 
@@ -446,9 +491,9 @@ def recalc_once(env: dict, dry_run: bool = False) -> None:
 
 
 # ─── Планировщик ──────────────────────────────────────────────────────────────
-def _seconds_until_0001() -> float:
+def _seconds_until_0910() -> float:
     now   = datetime.now()
-    today = now.replace(hour=0, minute=1, second=0, microsecond=0)
+    today = now.replace(hour=9, minute=10, second=0, microsecond=0)
     if now >= today:
         today += timedelta(days=1)
     return (today - now).total_seconds()
@@ -461,15 +506,16 @@ def main() -> None:
     parser.add_argument("--dry-run", action="store_true", help="Без отправки на WB")
     args = parser.parse_args()
 
+    single_instance(__file__)
     env = load_env()
 
     if args.once or args.dry_run:
         recalc_once(env, dry_run=args.dry_run)
         return
 
-    log.info("Планировщик WB цен: пересчёт ежедневно в 00:01")
+    log.info("Планировщик WB цен: пересчёт ежедневно в 09:10")
     while True:
-        wait    = _seconds_until_0001()
+        wait    = _seconds_until_0910()
         next_dt = (datetime.now() + timedelta(seconds=wait)).strftime("%d.%m %H:%M")
         log.info(f"Следующий пересчёт в {next_dt} (через {wait/3600:.1f}ч)")
         time.sleep(wait)

@@ -44,7 +44,7 @@ SCRAPER_DATA   = BASE_DIR / "data" / "suppliers" / "mikado" / "scraper_output" /
 PRICE_FALLBACK = Path("C:/Users/Admin/Documents/Ecommerce/mikado_price_34.xlsx")
 MIKADO_PRICE_URL = (
     "https://mikado-parts.ru/api/Price/GetPriceExcel"
-    "?StockId=34&Key=BBE2E029-54CF-4D9E-9FAC-9FE25E85B300"
+    "?StockId=34&Key=YOUR_MIKADO_PRICE_KEY"
 )
 
 log = logging.getLogger(__name__)

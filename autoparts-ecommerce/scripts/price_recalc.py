@@ -6,26 +6,25 @@ price_recalc.py
 Алгоритм:
   1. Загружает актуальный прайс Mikado (закупочные цены)
   2. Загружает габариты товаров из scraper_output/mikado_data.xlsx
-  3. Получает все товары из МойСклад
-  4. Для каждого товара с известной закупочной ценой:
+  3. Получает текущие цены из Ozon API (/v4/product/info/prices)
+  4. Для каждого offer_id в Ozon (формат <code>-con):
+     - Находит закупочную цену из прайса Mikado
      - Считает логистику FBS по габаритам (или дефолт 115 ₽)
-     - Находит цену продажи, при которой маржа ≥ TARGET_MARGIN (12%)
-     - Обновляет цену в МойСклад
-  5. МойСклад автоматически синхронизирует цены с Ozon
-  6. Telegram-отчёт по итогу
-
-Формула (из ozon_pricing.py):
-  commission = sell × rate(sell)   — зависит от ценового порога
-  acquiring  = sell × 1.5%
-  return_loss= 3% × (logistics + 80)
-  proceeds   = sell − commission − acquiring − logistics
-  tax        = max(0, proceeds) × 6%
-  profit     = sell − purchase − commission − acquiring − logistics
-               − return_loss − 30 − tax
-  margin     = profit / sell ≥ 12%
+     - Применяет ценовую политику «Оптимум»:
+         Целевая наценка на себестоимость (тиер по закупке):
+           < 500 ₽  →  25%
+           < 1200 ₽ →  20%
+           < 2500 ₽ →  17%
+           < 3500 ₽ →  15%
+           ≥ 3500 ₽ →  12%
+         Минимальная цена при которой profit/(purchase+20) ≥ target
+  5. Применяет защиты: не снижать > 30% за раз, не ставить маржу < 5%
+  6. Обновляет цены в Ozon через /v1/product/import/prices
+  7. Telegram-отчёт
 
 Переменные .env:
-    MOYSKLAD_TOKEN=...
+    OZON_CLIENT_ID=...
+    OZON_API_KEY=...
     TG_BOT_TOKEN=...
     TG_CHAT_ID=...
 
@@ -44,7 +43,6 @@ import json
 import time
 import logging
 import argparse
-from collections import Counter
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -64,33 +62,39 @@ try:
 except ImportError:
     _TG_OK = False
 
+try:
+    from daemon_guard import single_instance
+except ImportError:
+    def single_instance(_): pass
+
+try:
+    from code_aliases import CODE_ALIASES
+except ImportError:
+    CODE_ALIASES = {}
+
+from mikado_price_fetcher import download_mikado_price_bytes
+from autoliga_loader import load_autoliga
+
 # ─── Константы ────────────────────────────────────────────────────────────────
 BASE_DIR       = Path(__file__).parent.parent
 ENV_FILE       = BASE_DIR / ".env"
-LOG_FILE       = BASE_DIR / "logs" / "price_recalc.log"
+LOG_FILE       = BASE_DIR / "logs" / "price_recalc_v2.log"
 SCRAPER_DATA   = BASE_DIR / "data" / "suppliers" / "mikado" / "scraper_output" / "mikado_data.xlsx"
-PRICE_FALLBACK = Path("C:/Users/Admin/Documents/Ecommerce/mikado_price_34.xlsx")
 PRICE_LOG_FILE = BASE_DIR / "data" / "price_recalc_last.json"
 
 MIKADO_PRICE_URL = (
     "https://mikado-parts.ru/api/Price/GetPriceExcel"
-    "?StockId=34&Key=BBE2E029-54CF-4D9E-9FAC-9FE25E85B300"
+    "?StockId=34&Key=YOUR_MIKADO_PRICE_KEY"
 )
-MS_BASE     = "https://api.moysklad.ru/api/remap/1.2"
-BATCH_SIZE  = 100  # МойСклад: до 1000 за раз, берём 100 для надёжности
+OZON_API_BASE = "https://api-seller.ozon.ru"
+BATCH_SIZE    = 100
 
-# ─── Защитные ограничения ──────────────────────────────────────────────────────
-PRICE_DROP_LIMIT = 0.70   # не снижать цену более чем на 30% за один пересчёт
-MIN_MARGIN_FLOOR = 0.05   # не ставить цену если расчётная маржа ниже 5%
+# ─── Защитные ограничения ─────────────────────────────────────────────────────
+MIN_MARGIN_FLOOR = 0.05   # не ставить цену если маржа (profit/sell) ниже 5%
 
-# Коды (строчными), исключённые из автопересчёта.
-# Причина: в прайсе Mikado есть позиции с таким же кодом, но это другой товар.
-# Добавлять сюда при повторных инцидентах.
-SKIP_CODES: frozenset[str] = frozenset({
-    "gf-1904",  # Mikado: газовая пружина багажника Citroen C4 (не наш товар)
-})
+SKIP_CODES: frozenset[str] = frozenset()
 
-# ─── Ценовая формула (из ozon_pricing.py) ─────────────────────────────────────
+# ─── Ценовая политика «Оптимум» ───────────────────────────────────────────────
 FBS_TIERS = [100, 300, 1500, 5000, 10000]
 FBS_RATES = [0.14, 0.20, 0.44, 0.44, 0.44, 0.44]
 
@@ -98,9 +102,8 @@ ACQ_PCT   = 0.015   # эквайринг
 TAX_PCT   = 0.06    # УСН 6%
 RET_RATE  = 0.03    # % возвратов
 REVERSE   = 80      # обратная логистика, ₽
-OTHER     = 30      # упаковка/прочее, ₽
-TARGET_MARGIN = 0.12  # целевая маржа 12%
-DEFAULT_LOGISTICS = 115  # ₽ — дефолт для товаров без габаритов (~2 кг)
+OTHER     = 20      # упаковка/этикетки, ₽ (соответствует ozon_calculator.html)
+DEFAULT_LOGISTICS = 115  # ₽ для товаров без габаритов
 
 LOG_FBS = [
     (0.5, 75), (1, 90), (2, 115), (5, 155), (10, 210),
@@ -134,7 +137,15 @@ def load_env() -> dict:
     return env
 
 
-# ─── Ценовые формулы ──────────────────────────────────────────────────────────
+# ─── Ценовые формулы (Оптимум) ────────────────────────────────────────────────
+def get_optimal_markup(purchase: float) -> float:
+    if purchase < 500:  return 0.25
+    if purchase < 1200: return 0.20
+    if purchase < 2500: return 0.17
+    if purchase < 3500: return 0.15
+    return 0.12
+
+
 def _fbs_rate(sell: float) -> float:
     for thresh, rate in zip(FBS_TIERS, FBS_RATES):
         if sell < thresh:
@@ -156,8 +167,7 @@ def calc_logistics(weight_g: float, length_mm: float, width_mm: float, height_mm
 
 
 def calc_profit(purchase: float, sell: float, logistics: float) -> float:
-    comm_rate   = _fbs_rate(sell)
-    commission  = sell * comm_rate
+    commission  = sell * _fbs_rate(sell)
     acquiring   = sell * ACQ_PCT
     return_loss = RET_RATE * (logistics + REVERSE)
     proceeds    = sell - commission - acquiring - logistics
@@ -166,50 +176,37 @@ def calc_profit(purchase: float, sell: float, logistics: float) -> float:
     return sell - total_cost
 
 
-def find_rec_price(purchase: float, logistics: float, target: float = TARGET_MARGIN) -> int | None:
-    """Находит минимальную цену продажи при которой маржа ≥ target."""
+def find_rec_price(purchase: float, logistics: float) -> int | None:
+    """Оптимум: минимальная цена при которой profit/(purchase+OTHER) >= target."""
+    target = get_optimal_markup(purchase)
+    cost   = purchase + OTHER
     for s in range(50, 500_001):
         profit = calc_profit(purchase, s, logistics)
-        if s > 0 and profit / s >= target - 1e-6:
+        if profit / cost >= target - 1e-6:
             return s
     return None
 
 
 # ─── Загрузка прайса Mikado ───────────────────────────────────────────────────
 def load_mikado_price() -> dict[str, float]:
-    """Загружает прайс. Возвращает {code: purchase_price}."""
-    content = None
-    try:
-        resp = requests.get(MIKADO_PRICE_URL, timeout=60)
-        resp.raise_for_status()
-        if resp.content[:2] == b"PK":
-            content = resp.content
-            log.info(f"Mikado: прайс скачан ({len(content):,} байт)")
-    except Exception as e:
-        log.warning(f"Mikado: онлайн недоступен ({e}), берём локальный")
-
-    if content:
-        wb = openpyxl.load_workbook(io.BytesIO(content), read_only=True, data_only=True)
-    elif PRICE_FALLBACK.exists():
-        wb = openpyxl.load_workbook(PRICE_FALLBACK, read_only=True, data_only=True)
-    else:
-        log.error("Mikado: прайс недоступен")
-        return {}
+    """Загружает прайс. Возвращает {code_lower: purchase_price}."""
+    content = download_mikado_price_bytes(MIKADO_PRICE_URL, log)
+    wb = openpyxl.load_workbook(io.BytesIO(content), read_only=True, data_only=True)
 
     ws     = wb.active
     rows   = ws.iter_rows(values_only=True)
     header = [str(v).strip().lower() if v else "" for v in (next(rows, []) or [])]
 
-    code_idx = price_idx = None
+    code_idx = price_idx = prodnum_idx = None
     for i, h in enumerate(header):
-        if h == "code":       code_idx  = i
-        elif h == "priceout": price_idx = i
+        if h == "code":       code_idx    = i
+        elif h == "priceout": price_idx   = i
+        elif h == "prodnum":  prodnum_idx = i
 
     if code_idx is None:
         wb.close()
         return {}
 
-    # Собираем все цены по каждому коду (нормализуем к нижнему регистру)
     raw_db: dict[str, list[float]] = {}
     for row in rows:
         raw = row[code_idx] if len(row) > code_idx else None
@@ -222,8 +219,12 @@ def load_mikado_price() -> dict[str, float]:
             except: pass
         if price > 0:
             raw_db.setdefault(code, []).append(price)
+            # Также индексируем по Prodnum (уникален — нужен для CODE_ALIASES)
+            if prodnum_idx is not None and len(row) > prodnum_idx and row[prodnum_idx]:
+                prodnum = str(row[prodnum_idx]).strip().lower()
+                if prodnum and prodnum != code:
+                    raw_db.setdefault(prodnum, []).append(price)
 
-    # Исключаем коды с конфликтующими дублями (разные цены = неизвестно какая верная)
     db: dict[str, float] = {}
     unsafe: list[str] = []
     for code, prices in raw_db.items():
@@ -233,19 +234,46 @@ def load_mikado_price() -> dict[str, float]:
             unsafe.append(code)
             log.warning(f"  Mikado дубль: '{code}' — конфликт цен {prices} → исключён")
     if unsafe:
-        log.warning(f"Mikado: {len(unsafe)} кодов с конфликтующими дублями исключены из пересчёта")
+        log.warning(f"Mikado: {len(unsafe)} кодов с конфликтующими дублями исключены")
 
     wb.close()
     log.info(f"Mikado: цены загружены — {len(db)} позиций с ценой")
     return db
 
 
-# ─── Загрузка габаритов из scraper_output ────────────────────────────────────
+def _price_key(value: str) -> str:
+    """Нормализованный артикул для сопоставления прайсов с offer_id Ozon."""
+    return "".join(ch for ch in str(value).lower().strip() if ch.isalnum())
+
+
+def load_supplier_prices() -> dict[str, float]:
+    """Объединяет Микадо и Автолигу; при совпадении берёт меньшую закупку."""
+    combined: dict[str, float] = {}
+
+    def add(key: str, price: float) -> None:
+        if not key or price <= 0:
+            return
+        for candidate in {str(key).lower().strip(), _price_key(key)}:
+            if candidate:
+                combined[candidate] = min(price, combined.get(candidate, price))
+
+    mikado = load_mikado_price()
+    for article, price in mikado.items():
+        add(article, price)
+
+    autoliga = load_autoliga()
+    for item in autoliga.values():
+        add(item.get("article", ""), float(item.get("price", 0) or 0))
+
+    log.info(
+        f"Единый прайс: Микадо={len(mikado)}; Автолига={len(autoliga)}; "
+        f"индекс={len(combined)} ключей"
+    )
+    return combined
+
+
+# ─── Загрузка габаритов из scraper_output ─────────────────────────────────────
 def load_product_dims() -> dict[str, dict]:
-    """
-    Загружает габариты из mikado_data.xlsx.
-    Возвращает {code: {weight, length, width, height}} (граммы, мм).
-    """
     dims: dict[str, dict] = {}
     if not SCRAPER_DATA.exists():
         log.warning(f"Габариты: файл не найден {SCRAPER_DATA}")
@@ -285,266 +313,217 @@ def load_product_dims() -> dict[str, dict]:
                 pass
 
         wb.close()
-        log.info(f"Габариты: загружено {len(dims)} позиций из scraper_data")
+        log.info(f"Габариты: загружено {len(dims)} позиций")
     except Exception as e:
         log.error(f"Габариты: ошибка чтения {SCRAPER_DATA}: {e}")
 
     return dims
 
 
-# ─── МойСклад: получение товаров + обновление цен ─────────────────────────────
-def _ms_headers(token: str) -> dict:
-    return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+# ─── Ozon API ─────────────────────────────────────────────────────────────────
+def _ozon_headers(client_id: str, api_key: str) -> dict:
+    return {
+        "Client-Id": client_id,
+        "Api-Key": api_key,
+        "Content-Type": "application/json",
+    }
 
 
-def get_ms_products(token: str) -> list[dict]:
-    """Возвращает все товары МойСклад: [{id, article, meta_href, current_price}]."""
-    result = []
-    offset = 0
+def get_ozon_prices(client_id: str, api_key: str) -> dict[str, int]:
+    """
+    Возвращает {offer_id: current_price_rub} для всех товаров Ozon.
+    Использует /v5/product/info/prices (пагинация через cursor).
+    """
+    if not client_id or not api_key:
+        log.warning("OZON credentials не заданы — текущие цены не загружены")
+        return {}
+
+    result: dict[str, int] = {}
+    cursor = ""
+
     while True:
         try:
-            r = requests.get(
-                f"{MS_BASE}/entity/product",
-                headers=_ms_headers(token),
-                params={"limit": 1000, "offset": offset, "expand": "salePrices"},
+            body: dict = {
+                "filter": {"visibility": "ALL"},
+                "limit": 1000,
+            }
+            if cursor:
+                body["cursor"] = cursor
+
+            resp = requests.post(
+                f"{OZON_API_BASE}/v5/product/info/prices",
+                headers=_ozon_headers(client_id, api_key),
+                json=body,
                 timeout=30,
             )
-            r.raise_for_status()
-            rows = r.json().get("rows", [])
-            for row in rows:
-                article = (row.get("article") or row.get("code") or "").strip()
-                # Извлекаем первую цену продажи
-                current_price = 0.0
-                for sp in row.get("salePrices", []):
-                    if sp.get("value", 0) > 0:
-                        current_price = sp["value"] / 100  # из копеек
-                        break
-                result.append({
-                    "id":       row["id"],
-                    "article":  article,
-                    "href":     row["meta"]["href"],
-                    "price":    current_price,
-                })
-            if len(rows) < 1000:
+            resp.raise_for_status()
+            data  = resp.json()
+            items = data.get("items", [])
+            for item in items:
+                offer_id  = item.get("offer_id", "")
+                price_str = item.get("price", {}).get("price", "0")
+                try:
+                    result[offer_id] = int(float(price_str))
+                except (ValueError, TypeError):
+                    pass
+            cursor = data.get("cursor", "")
+            if not cursor or len(items) < 1000:
                 break
-            offset += 1000
         except Exception as e:
-            log.error(f"МойСклад: ошибка загрузки товаров (offset={offset}): {e}")
+            log.error(f"Ozon: ошибка загрузки цен: {e}")
             break
 
-    log.info(f"МойСклад: загружено {len(result)} товаров")
+    log.info(f"Ozon: загружено {len(result)} текущих цен")
     return result
 
 
-def get_ms_price_type(token: str) -> str | None:
-    """Возвращает href первого типа цены продажи."""
-    try:
-        r = requests.get(
-            f"{MS_BASE}/context/companysettings/pricetype",
-            headers=_ms_headers(token), timeout=15,
-        )
-        r.raise_for_status()
-        types = r.json()
-        # Ищем "Цена продажи" или берём первый
-        for pt in types:
-            if "продаж" in pt.get("name", "").lower():
-                return pt["meta"]["href"]
-        return types[0]["meta"]["href"] if types else None
-    except Exception as e:
-        log.error(f"МойСклад: ошибка получения типа цены: {e}")
-        return None
-
-
-def get_ms_rub_currency(token: str) -> str | None:
-    """Возвращает href рубля."""
-    try:
-        r = requests.get(
-            f"{MS_BASE}/entity/currency",
-            headers=_ms_headers(token),
-            params={"filter": "isoCode=RUB"}, timeout=15,
-        )
-        r.raise_for_status()
-        rows = r.json().get("rows", [])
-        return rows[0]["meta"]["href"] if rows else None
-    except Exception as e:
-        log.error(f"МойСклад: ошибка получения валюты: {e}")
-        return None
-
-
-def batch_update_ms_prices(
-    token:           str,
-    updates:         list[dict],  # [{id, new_price, price_type_href, currency_href}]
+def update_ozon_prices(
+    client_id: str,
+    api_key:   str,
+    prices:    list[dict],  # [{offer_id, new_price}]
+    dry_run:   bool = False,
 ) -> tuple[int, int]:
-    """Пакетное обновление цен через POST /entity/product[].
-    Возвращает (обновлено, ошибок)."""
+    """Обновляет цены через /v1/product/import/prices. Возвращает (ok, fail)."""
+    if not client_id or not api_key:
+        log.warning("OZON_CLIENT_ID / OZON_API_KEY не заданы")
+        return 0, 0
+    if dry_run:
+        log.info(f"[DRY-RUN] Ozon: обновилось бы {len(prices)} цен")
+        return len(prices), 0
+
     ok = fail = 0
-    for i in range(0, len(updates), BATCH_SIZE):
-        chunk = updates[i : i + BATCH_SIZE]
-        payload = [
-            {
-                "id": u["id"],
-                "salePrices": [{
-                    "value":     u["new_price"] * 100,
-                    "currency":  {"meta": {"href": u["currency_href"],
-                                           "type": "currency",
-                                           "mediaType": "application/json"}},
-                    "priceType": {"meta": {"href": u["price_type_href"],
-                                           "type": "pricetype",
-                                           "mediaType": "application/json"}},
-                }],
-            }
-            for u in chunk
-        ]
+    for i in range(0, len(prices), BATCH_SIZE):
+        chunk = prices[i : i + BATCH_SIZE]
+        payload = {
+            "prices": [
+                {
+                    "offer_id":  p["offer_id"],
+                    "price":     str(p["new_price"]),
+                    "old_price": "0",
+                    "min_price": "0",
+                }
+                for p in chunk
+            ]
+        }
         try:
-            r = requests.post(
-                f"{MS_BASE}/entity/product",
-                headers=_ms_headers(token),
+            resp = requests.post(
+                f"{OZON_API_BASE}/v1/product/import/prices",
+                headers=_ozon_headers(client_id, api_key),
                 json=payload,
                 timeout=60,
             )
-            r.raise_for_status()
-            ok += len(chunk)
+            resp.raise_for_status()
+            result = resp.json().get("result", [])
+            errs   = [r for r in result if not r.get("updated")]
+            ok    += len(chunk) - len(errs)
+            fail  += len(errs)
+            for e in errs[:3]:
+                log.warning(f"  Ozon price [{e.get('offer_id')}]: {e.get('errors')}")
         except Exception as e:
-            log.error(f"МойСклад: ошибка батча [{i//BATCH_SIZE + 1}]: {e}")
+            log.error(f"Ozon: ошибка батча цен [{i // BATCH_SIZE + 1}]: {e}")
             fail += len(chunk)
+
     return ok, fail
 
 
 # ─── Один пересчёт ────────────────────────────────────────────────────────────
-def recalc_once(env: dict, dry_run: bool = False) -> None:
+def recalc_once(env: dict, dry_run: bool = False, allow_decrease: bool = False) -> None:
     log.info("═" * 55)
-    log.info(f"Пересчёт цен {'[DRY-RUN] ' if dry_run else ''}— старт")
+    log.info(f"Пересчёт цен {'[DRY-RUN] ' if dry_run else ''}(Оптимум) — старт")
 
-    ms_token = env.get("MOYSKLAD_TOKEN", "")
-    if not ms_token:
-        log.error("MOYSKLAD_TOKEN не задан — выход")
+    client_id = env.get("OZON_CLIENT_ID", "")
+    api_key   = env.get("OZON_API_KEY", "")
+    if not client_id or not api_key:
+        log.error("OZON_CLIENT_ID / OZON_API_KEY не заданы — выход")
         return
 
     # 1. Загружаем данные
-    price_db = load_mikado_price()
+    price_db = load_supplier_prices()
     dims_db  = load_product_dims()
     if not price_db:
         log.error("Прайс Mikado пуст — пересчёт отменён")
         return
 
-    # 2. Товары МойСклад
-    ms_products = get_ms_products(ms_token)
-    if not ms_products:
-        log.error("МойСклад: товары не загружены")
-        return
+    # 2. Текущие цены Ozon (нужны для защиты от резкого снижения)
+    current_prices = get_ozon_prices(client_id, api_key)
 
-    # 3. Типы цен и валюта (один раз)
-    price_type_href = get_ms_price_type(ms_token)
-    currency_href   = get_ms_rub_currency(ms_token)
-    if not price_type_href or not currency_href:
-        log.error("МойСклад: не удалось получить тип цены или валюту")
-        return
-
-    # 4. Рассчитываем цены, собираем батч
-
-    # Защита от дублей: артикулы с несколькими товарами в МойСклад пропускаем
-    art_counts = Counter(
-        p["article"].removesuffix("-con").lower()
-        for p in ms_products if p["article"]
-    )
-    dup_articles = {art for art, cnt in art_counts.items() if cnt > 1}
-    if dup_articles:
-        log.warning(
-            f"⚠ Дублирующиеся артикулы в МойСклад ({len(dup_articles)} шт.) — "
-            f"будут пропущены: {sorted(dup_articles)[:20]}"
-        )
-
-    pending: list[dict] = []
+    # 3. Рассчитываем новые цены
+    pending:   list[dict] = []
     skipped = unchanged = 0
 
-    for prod in ms_products:
-        article = prod["article"]
-        mk_code = article.removesuffix("-con")
-        mk_key  = mk_code.lower()  # ключ для поиска (прайс Mikado хранит строчными)
+    for offer_id, cur_price in current_prices.items():
+        mk_code = offer_id.removesuffix("-con")
+        mk_key  = mk_code.lower()
 
-        # Защита 1: ручной список исключений (ложные совпадения кодов)
         if mk_key in SKIP_CODES:
             skipped += 1
             continue
 
-        # Защита 2: дублирующийся артикул в МойСклад
-        if mk_key in dup_articles:
-            log.warning(
-                f"  {mk_code}: дублирующийся артикул ({art_counts[mk_key]} товара) — пропущен"
-            )
-            skipped += 1
-            continue
+        # Жёсткая привязка: если для этого кода задан конкретный Prodnum — используем его
+        lookup_key = CODE_ALIASES.get(mk_key, mk_key)
 
-        purchase = price_db.get(mk_key)
+        purchase = price_db.get(lookup_key) or price_db.get(_price_key(lookup_key))
         if not purchase:
             skipped += 1
             continue
 
         dims = dims_db.get(mk_code)
         if dims:
-            logistics = calc_logistics(
-                dims["weight"], dims["length"], dims["width"], dims["height"]
-            )
+            logistics = calc_logistics(dims["weight"], dims["length"], dims["width"], dims["height"])
         else:
             logistics = DEFAULT_LOGISTICS
 
         new_price = find_rec_price(purchase, logistics)
         if new_price is None:
-            log.warning(f"  {mk_code}: не удалось подобрать цену (закупка={purchase:.0f} ₽)")
+            alias_note = f" [алиас: {lookup_key}]" if lookup_key != mk_key else ""
+            log.warning(f"  {mk_code}{alias_note}: не удалось подобрать цену (закупка={purchase:.0f} ₽)")
             skipped += 1
             continue
 
-        # Защита 2: расчётная маржа не может быть ниже минимального порога
+        # Защита 1: маржа не ниже минимального порога
         margin = calc_profit(purchase, new_price, logistics) / new_price
         if margin < MIN_MARGIN_FLOOR:
-            log.warning(
-                f"  {mk_code}: маржа {margin*100:.1f}% < {MIN_MARGIN_FLOOR*100:.0f}% — пропущен"
+            log.warning(f"  {mk_code}: маржа {margin*100:.1f}% < {MIN_MARGIN_FLOOR*100:.0f}% — пропущен")
+            skipped += 1
+            continue
+
+        # Защита 2: никогда не снижать цену автоматически
+        if not allow_decrease and cur_price > 0 and new_price < cur_price:
+            log.info(
+                f"  {mk_code}: цена не снижается ({cur_price} → {new_price} ₽) — пропущен"
             )
             skipped += 1
             continue
 
-        # Защита 3: не снижать цену более чем на 30% за один пересчёт
-        cur = prod["price"]
-        if cur > 0 and new_price < cur * PRICE_DROP_LIMIT:
-            log.warning(
-                f"  {mk_code}: подозрительное снижение {cur:.0f} → {new_price} ₽ "
-                f"(−{(1 - new_price/cur)*100:.0f}%, лимит 30%) — пропущен"
-            )
-            skipped += 1
-            continue
-
-        if int(cur) == new_price:
+        if cur_price == new_price:
             unchanged += 1
             continue
 
+        markup     = get_optimal_markup(purchase)
+        profit_val = calc_profit(purchase, new_price, logistics)
+        alias_note = f" [{lookup_key}]" if lookup_key != mk_key else ""
         log.info(
-            f"  {mk_code:<16}  закупка={purchase:.0f} ₽  "
-            f"лог={logistics:.0f} ₽  маржа={margin*100:.0f}%  "
-            f"цена: {cur:.0f} → {new_price} ₽"
+            f"  {mk_code:<16}{alias_note}  закупка={purchase:.0f} ₽  "
+            f"лог={logistics:.0f} ₽  наценка={markup*100:.0f}%  "
+            f"цена: {cur_price} → {new_price} ₽  прибыль={profit_val:.0f} ₽"
         )
+        pending.append({"offer_id": offer_id, "new_price": new_price})
 
-        if not dry_run:
-            pending.append({
-                "id":              prod["id"],
-                "new_price":       new_price,
-                "price_type_href": price_type_href,
-                "currency_href":   currency_href,
-            })
-
-    # 5. Пакетная отправка в МойСклад
-    updated = 0
-    if not dry_run and pending:
-        updated, fail = batch_update_ms_prices(ms_token, pending)
+    # 4. Отправляем в Ozon
+    updated = fail = 0
+    if pending:
+        updated, fail = update_ozon_prices(client_id, api_key, pending, dry_run=dry_run)
         skipped += fail
-        batches = math.ceil(len(pending) / BATCH_SIZE)
-        log.info(
-            f"МойСклад: отправлено {batches} батч(ей) — обновлено {updated}, ошибок {fail}"
-        )
-    elif dry_run:
+        log.info(f"Ozon: обновлено {updated}, ошибок {fail}")
+    else:
+        log.info("Нет изменений для отправки")
+
+    if dry_run:
         updated = len(pending)
 
     log.info(
-        f"Пересчёт завершён: обновлено={updated}  без изменений={unchanged}  пропущено={skipped}"
+        f"Пересчёт завершён: обновлено={updated}  "
+        f"без изменений={unchanged}  пропущено={skipped}"
     )
 
     # Сохраняем лог последнего пересчёта
@@ -552,9 +531,9 @@ def recalc_once(env: dict, dry_run: bool = False) -> None:
         PRICE_LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
         PRICE_LOG_FILE.write_text(
             json.dumps({
-                "ts":       datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "updated":  updated,
-                "skipped":  skipped,
+                "ts":        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "updated":   updated,
+                "skipped":   skipped,
                 "unchanged": unchanged,
             }, ensure_ascii=False),
             encoding="utf-8",
@@ -562,46 +541,58 @@ def recalc_once(env: dict, dry_run: bool = False) -> None:
     except Exception:
         pass
 
-    # Telegram
     if _TG_OK and env.get("TG_BOT_TOKEN") and not dry_run:
         tg_price_done(env["TG_BOT_TOKEN"], env.get("TG_CHAT_ID", ""), updated, skipped)
 
 
-# ─── Планировщик: ждёт 00:01 ──────────────────────────────────────────────────
-def _seconds_until_0001() -> float:
-    """Сколько секунд до следующего 00:01."""
-    now   = datetime.now()
-    today = now.replace(hour=0, minute=1, second=0, microsecond=0)
-    if now >= today:
-        today += timedelta(days=1)
-    return (today - now).total_seconds()
+# ─── Планировщик: 01:10, 07:10, 13:10, 19:10 ─────────────────────────────────
+# Сдвинуто на 1 час раньше исходной сетки (02/08/14/20) — синхронизировано
+# со сдвигом ozon_stock_sync.py, чтобы обойти окно ~08:00-08:15.
+_RECALC_HOURS = [1, 7, 13, 19]
+_RECALC_MIN   = 10
+
+
+def _seconds_until_next_slot() -> float:
+    now     = datetime.now()
+    cur_min = now.hour * 60 + now.minute
+    for h in _RECALC_HOURS:
+        slot_min = h * 60 + _RECALC_MIN
+        if slot_min > cur_min:
+            return (slot_min - cur_min) * 60 - now.second
+    first_tomorrow = _RECALC_HOURS[0] * 60 + _RECALC_MIN
+    return (24 * 60 - cur_min + first_tomorrow) * 60 - now.second
 
 
 # ─── Точка входа ──────────────────────────────────────────────────────────────
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Ежедневный пересчёт цен Mikado → МойСклад")
+    parser = argparse.ArgumentParser(description="Пересчёт цен Mikado → Ozon (Оптимум) каждые 6 часов")
     parser.add_argument("--once",    action="store_true", help="Запустить один раз сейчас")
-    parser.add_argument("--dry-run", action="store_true", help="Без записи в МойСклад")
+    parser.add_argument("--dry-run", action="store_true", help="Без записи в Ozon")
+    parser.add_argument(
+        "--force-decrease", action="store_true",
+        help="Разрешить снижение цен при разовом принудительном пересчёте",
+    )
     args = parser.parse_args()
 
+    single_instance(__file__)
     env = load_env()
 
     if args.once or args.dry_run:
-        recalc_once(env, dry_run=args.dry_run)
+        recalc_once(env, dry_run=args.dry_run, allow_decrease=args.force_decrease)
         return
 
-    log.info("Планировщик цен запущен: пересчёт ежедневно в 00:01")
+    slots_str = ", ".join(f"{h:02d}:{_RECALC_MIN:02d}" for h in _RECALC_HOURS)
+    log.info(f"Планировщик цен запущен: пересчёт в {slots_str}")
     while True:
-        wait = _seconds_until_0001()
+        wait = _seconds_until_next_slot()
         next_run = (datetime.now() + timedelta(seconds=wait)).strftime("%d.%m %H:%M")
-        log.info(f"Следующий пересчёт в {next_run} (через {wait/3600:.1f} ч)")
+        log.info(f"Следующий пересчёт в {next_run} (через {wait / 3600:.1f} ч)")
         time.sleep(wait)
         try:
             recalc_once(env)
         except Exception:
             log.exception("Необработанная ошибка в пересчёте цен")
-        # После пересчёта ждём 2 мин чтобы не сработать дважды
-        time.sleep(120)
+        time.sleep(60)
 
 
 if __name__ == "__main__":

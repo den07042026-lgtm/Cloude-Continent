@@ -116,6 +116,32 @@ class OzonPricer:
                 return s
         return None
 
+    # ── Ценовая политика «Оптимум» ────────────────────────────────────────────
+
+    OPTIMUM_OTHER = 20  # упаковка/этикетки для расчёта наценки, ₽
+
+    def get_optimal_markup(self, purchase: float) -> float:
+        """Целевая наценка на себестоимость (profit / (purchase + other)) по тиерам."""
+        if purchase < 500:  return 0.30
+        if purchase < 1200: return 0.25
+        if purchase < 2500: return 0.22
+        if purchase < 3500: return 0.20
+        return 0.17
+
+    def find_price_optimum(self, purchase: float, logistics: float) -> int | None:
+        """
+        Оптимум: минимальная цена при которой
+        profit / (purchase + OPTIMUM_OTHER) >= get_optimal_markup(purchase).
+        Соответствует кнопке «⚡ Оптимум» в ozon_calculator.html.
+        """
+        target = self.get_optimal_markup(purchase)
+        cost   = purchase + self.OPTIMUM_OTHER
+        for s in range(50, 500_001):
+            profit = self.calc_profit(purchase, s, logistics)
+            if profit / cost >= target - 1e-6:
+                return s
+        return None
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  WILDBERRIES

@@ -63,7 +63,7 @@ CACHE_DIR  = BASE_DIR / "data" / "analytics" / "cache"
 
 MIKADO_PRICE_URL = (
     "https://mikado-parts.ru/api/Price/GetPriceExcel"
-    "?StockId=34&Key=BBE2E029-54CF-4D9E-9FAC-9FE25E85B300"
+    "?StockId=34&Key=YOUR_MIKADO_PRICE_KEY"
 )
 MPSTATS_BASE = "https://mpstats.io/api"
 WB_SEARCH_URL = "https://search.wb.ru/exactmatch/ru/common/v5/search"

@@ -1,4 +1,4 @@
-﻿"""
+"""
 wb_m2_runner.py
 ════════════════════════════════════════════════════════════════════════════
 Батч-раннер для М2 (OEM поиск WB через search.wb.ru).
@@ -47,7 +47,7 @@ IP_ROTATE_PAUSE = 15      # сек ожидания после принудит�
 
 # Мобильный прокси (Москва, Билайн) — IP меняется автоматически каждые 2 мин
 # SOCKS5 обходит блокировку search.wb.ru лучше чем HTTP прокси
-PROXY = "http://os.environ.get("PROXY_URL", "")"
+PROXY = "http://DengR7:140d10wP0@node-ru-41.astroproxy.com:10055"
 
 # Ссылка для принудительной смены IP (опционально — у нас автосмена каждые 2 мин)
 IP_ROTATE_URL = ""        # например: "https://changeip.mobileproxy.space/?proxy_key=XXX"

@@ -1,5 +1,9 @@
 # Autoparts Analytics System v1
 
+> Актуальная оперативная схема, последние решения по Ozon/Wildberries,
+> ценообразование и меры безопасности зафиксированы в
+> [CURRENT_STATE_2026-08-26.md](CURRENT_STATE_2026-08-26.md).
+
 ## Назначение
 
 Аналитическая система для управления продажами **автозапчастей** на маркетплейсах **Ozon** и **Wildberries**.
@@ -226,101 +230,3 @@ pip install -r requirements.txt
 **Для работы с карточками товаров:** смотри `prompts/00_README.md`
 
 **Все секреты** (API ключи, пароли БД) хранятся только в `.env` — никогда не в коде.
-
----
-
-## scripts/ — справочник всех скриптов
-
-### Синхронизация с маркетплейсами
-| Скрипт | Описание |
-|--------|---------|
-| `ozon_order_sync.py` | Синхронизирует заказы Ozon в локальную БД |
-| `ozon_stock_sync.py` | Синхронизирует остатки на складах Ozon |
-| `wb_order_sync.py` | Синхронизирует заказы Wildberries |
-| `wb_stock_sync.py` | Синхронизирует остатки Wildberries |
-| `wb_price_recalc.py` | Пересчитывает и обновляет цены на WB |
-| `wb_get_cookie.py` | Получает/обновляет куки для WB API |
-
-### Обогащение данными поставщиков
-| Скрипт | Описание |
-|--------|---------|
-| `mikado_scraper.py` | Скрапер mikado-parts.ru: OEM, размеры, описания, фото |
-| `fetch_mikado.py` | Загрузка данных через Mikado API |
-| `mikado_match.py` | Сопоставление артикулов с базой Mikado |
-| `moskvorechie_enricher.py` | Обогащение данными от поставщика Москворечье |
-| `emex_enricher.py` | Обогащение данными с emex.ru |
-| `rossko_enricher.py` | Обогащение данными Rossko |
-| `rossko_batch.py` | Пакетная обработка Rossko |
-| `batch_rossko.py` | Альтернативный батч-запуск Rossko |
-| `autoliga_loader.py` | Загрузка позиций от поставщика Автолига |
-| `autoliga_mail_fetcher.py` | Парсинг прайсов Автолига из email |
-| `autoliga_top500.py` | Топ-500 позиций Автолига |
-
-### AI-заполнители карточек
-| Скрипт | Описание |
-|--------|---------|
-| `gemini_dimensions_filler.py` | Заполняет габариты/вес через Gemini API |
-| `chatgpt_dimensions_filler.py` | То же через ChatGPT |
-| `deepseek_dimensions_filler.py` | То же через DeepSeek |
-| `gigachat_dimensions_filler.py` | То же через GigaChat |
-| `gpt_dimensions_filler.py` | Универсальный GPT-заполнитель габаритов |
-| `gpt_oem_filler.py` | Заполняет OEM-номера через GPT |
-| `gpt_wb_filler.py` | Заполняет поля карточки WB через GPT |
-| `deepseek_description_generator.py` | Генерирует описания товаров через DeepSeek |
-| `add_ozon_descriptions.py` | Добавляет описания в карточки Ozon v1 |
-| `add_ozon_descriptions_2.py` | То же, v2 (улучшенный) |
-| `fix_wrong_descriptions.py` | Исправляет некорректно сгенерированные описания |
-
-### Аналитика Wildberries
-| Скрипт | Описание |
-|--------|---------|
-| `wb_top500_analyzer.py` | Анализ топ-500 позиций WB по категории |
-| `wb_top500_combined.py` | Комбинированный анализ топов WB |
-| `wb_top500_v2.py` | Версия 2 анализатора топов |
-| `wb_niche_analyzer.py` | Анализ ниши: спрос, конкуренция, маржа |
-| `wb_catalog_analyzer.py` | Анализ каталога WB по категориям |
-| `wb_catalog_mapper.py` | Маппинг категорий WB |
-| `wb_category_scanner.py` | Сканирование категорий WB |
-| `wb_item_analyzer.py` | Детальный анализ отдельного товара WB |
-| `wb_deficit_analyzer.py` | Анализ дефицита: какие позиции заканчиваются |
-| `wb_filters_top500.py` | Фильтрация и ранжирование топ-500 |
-| `wb_consolidated.py` | Сводный отчёт по WB |
-| `wb_unified_catalog.py` | Единый каталог всех позиций WB |
-| `wb_oem_matcher.py` | Сопоставление OEM с позициями WB |
-| `wb_product_indexer.py` | Индексирование товаров WB для быстрого поиска |
-| `wb_vc_fetcher.py` | Получение данных из виртуального склада WB |
-| `wb_basket_fetcher.py` | Парсинг корзины WB для анализа |
-| `wb_m2_runner.py` | Запуск M2-анализа WB |
-
-### Ценообразование и аналитика
-| Скрипт | Описание |
-|--------|---------|
-| `pricing_engine.py` | Расчёт рекомендованной цены по unit-экономике |
-| `price_recalc.py` | Пересчёт цен после изменения себестоимости |
-| `dashboard.py` | Обновление аналитического дашборда |
-
-### Загрузка, фото, уведомления
-| Скрипт | Описание |
-|--------|---------|
-| `make_wb_upload.py` | Формирует Excel-файл для загрузки на WB |
-| `photo_processor.py` | Обработка фото: ресайз, формат, качество |
-| `extract_background.py` | Удаление фона с фото товаров |
-| `telegram_notify.py` | Отправка уведомлений в Telegram |
-| `emergency_stop.py` | Экстренная остановка всех фоновых процессов |
-
-### Исследование Emex (`_emex_*.py`)
-~25 скриптов разведки API и структуры сайта emex.ru:
-поиск эндпоинтов, перехват запросов через Playwright, парсинг HTML, поиск по OEM.  
-Все скрипты начинаются с `_emex_` и носят исследовательский характер.
-
-### Тестовые и отладочные (`_` prefix)
-| Скрипт | Описание |
-|--------|---------|
-| `_test_wb.py` / `_test_wb2.py` | Тесты WB API |
-| `_test_autodoc.py` | Тест парсинга Autodoc |
-| `_test_category_scan.py` | Тест сканирования категорий |
-| `_test_mpstats.py` | Тест MPStats API |
-| `_test_mp_endpoints.py` | Тест эндпоинтов маркетплейсов |
-| `_check_*.py` | Диагностика данных (кеш, колонки, фильтры) |
-| `_dry_run_enricher.py` | Пробный запуск обогатителя без записи |
-| `_oem_research.py` | Исследование OEM-номеров |

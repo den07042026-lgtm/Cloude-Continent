@@ -71,13 +71,13 @@ def tg_mikado_error(token: str, chat_id: str, order_id: str, failed_items: list[
     return tg_send(token, chat_id, "\n".join(lines))
 
 
-def tg_stock_done(token: str, chat_id: str, total: int, in_stock: int, ms_updated: int) -> bool:
+def tg_stock_done(token: str, chat_id: str, total: int, in_stock: int, ozon_updated: int) -> bool:
     """Итог синхронизации остатков."""
     text = (
         f"📦 <b>Остатки синхронизированы</b>\n"
         f"Позиций в прайсе: {total}\n"
         f"В наличии: {in_stock}\n"
-        f"Обновлено в МойСклад: {ms_updated}\n"
+        f"Обновлено на Ozon: {ozon_updated}\n"
         f"🕐 {_now()}"
     )
     return tg_send(token, chat_id, text)
@@ -86,8 +86,8 @@ def tg_stock_done(token: str, chat_id: str, total: int, in_stock: int, ms_update
 def tg_price_done(token: str, chat_id: str, updated: int, skipped: int) -> bool:
     """Итог ночного пересчёта цен."""
     text = (
-        f"💰 <b>Цены пересчитаны</b>\n"
-        f"Обновлено в МойСклад: {updated} товаров\n"
+        f"💰 <b>Цены пересчитаны</b> (Оптимум)\n"
+        f"Обновлено на Ozon: {updated} товаров\n"
         f"Пропущено (нет данных): {skipped}\n"
         f"🕐 {_now()}"
     )

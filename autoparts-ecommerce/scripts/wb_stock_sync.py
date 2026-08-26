@@ -16,7 +16,7 @@ wb_stock_sync.py
   vendorCode в WB = Mikado Code (без суффиксов).
   При загрузке товаров на WB устанавливать именно Mikado Code.
 
-Расписание: 01:00, 05:00, 09:00, 13:00, 17:00, 21:00 (сдвиг +1ч от Ozon).
+Расписание: ежедневно в 09:05.
 
 Запуск:
   uv run --with requests,openpyxl,xlrd scripts/wb_stock_sync.py
@@ -48,23 +48,31 @@ try:
 except ImportError:
     _TG_OK = False
 
+try:
+    from daemon_guard import single_instance, stock_safety_check
+    _GUARD_OK = True
+except ImportError:
+    _GUARD_OK = False
+    def single_instance(_): pass
+    def stock_safety_check(m, t, **kw): return True
+
+from mikado_price_fetcher import download_mikado_price_bytes
+
 # ─── Константы ────────────────────────────────────────────────────────────────
 BASE_DIR       = Path(__file__).parent.parent
 ENV_FILE       = BASE_DIR / ".env"
 LOG_FILE       = BASE_DIR / "logs" / "wb_stock_sync.log"
-PRICE_FALLBACK = Path("C:/Users/Admin/Documents/Ecommerce/mikado_price_34.xlsx")
 AUTOLIGA_DIR   = BASE_DIR / "data" / "suppliers" / "autoliga"
 
 MIKADO_PRICE_URL = (
     "https://mikado-parts.ru/api/Price/GetPriceExcel"
-    "?StockId=34&Key=BBE2E029-54CF-4D9E-9FAC-9FE25E85B300"
+    "?StockId=34&Key=YOUR_MIKADO_PRICE_KEY"
 )
 
 WB_BASE         = "https://marketplace-api.wildberries.ru"
 WB_CONTENT_BASE = "https://content-api.wildberries.ru"
 WB_BATCH_SIZE   = 1000
 
-SYNC_SLOTS = [1, 5, 9, 13, 17, 21]
 
 # ─── Логирование ──────────────────────────────────────────────────────────────
 LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
@@ -99,25 +107,10 @@ def _wb_headers(token: str) -> dict:
 # ─── Mikado: прайс ────────────────────────────────────────────────────────────
 def load_mikado_stocks() -> dict[str, int]:
     """Скачивает прайс Mikado. Возвращает {code: qty}."""
-    content = None
-    try:
-        resp = requests.get(MIKADO_PRICE_URL, timeout=60)
-        resp.raise_for_status()
-        if resp.content[:2] == b"PK":
-            content = resp.content
-            log.info(f"Mikado: прайс скачан ({len(content):,} байт)")
-    except Exception as e:
-        log.warning(f"Mikado: онлайн недоступен ({e}), берём локальный")
+    content = download_mikado_price_bytes(MIKADO_PRICE_URL, log)
 
     try:
-        src = io.BytesIO(content) if content else (
-            PRICE_FALLBACK if PRICE_FALLBACK.exists() else None
-        )
-        if src is None:
-            log.error("Mikado: прайс недоступен")
-            return {}
-
-        wb   = openpyxl.load_workbook(src, read_only=True, data_only=True)
+        wb   = openpyxl.load_workbook(io.BytesIO(content), read_only=True, data_only=True)
         ws   = wb.active
         rows = ws.iter_rows(values_only=True)
         hdr  = [str(v).strip().lower() if v else "" for v in (next(rows, []) or [])]
@@ -139,12 +132,12 @@ def load_mikado_stocks() -> dict[str, int]:
             raw = row[code_idx] if len(row) > code_idx else None
             if not raw:
                 continue
-            code = str(raw).strip()
+            code = str(raw).strip().lower()  # нормализуем в lowercase
             try:
                 qty = max(0, int(float(str(row[qty_idx])))) if qty_idx is not None and len(row) > qty_idx and row[qty_idx] else 0
             except Exception:
                 qty = 0
-            result[code] = qty
+            result[code] = max(result.get(code, 0), qty)
 
         wb.close()
         in_stock = sum(1 for q in result.values() if q > 0)
@@ -174,8 +167,8 @@ def load_autoliga_stocks() -> dict[str, int]:
 
 
 # ─── WB: список складов ───────────────────────────────────────────────────────
-def get_wb_warehouse(token: str) -> int | None:
-    """Возвращает ID первого FBS-склада WB."""
+def get_wb_warehouse(token: str, fallback_id: int | None = None) -> int | None:
+    """Возвращает ID первого FBS-склада WB. При отсутствии — использует WB_WAREHOUSE_ID из .env."""
     try:
         r = requests.get(
             f"{WB_BASE}/api/v3/warehouses",
@@ -184,15 +177,20 @@ def get_wb_warehouse(token: str) -> int | None:
         )
         r.raise_for_status()
         warehouses = r.json()
-        if not warehouses:
-            log.error("WB: нет складов в аккаунте")
-            return None
-        wh = warehouses[0]
-        log.info(f"WB: склад '{wh.get('name')}' ID={wh.get('id')}")
-        return wh["id"]
+        if warehouses:
+            wh = warehouses[0]
+            log.info(f"WB: склад '{wh.get('name')}' ID={wh.get('id')}")
+            return wh["id"]
+        log.warning("WB: /api/v3/warehouses вернул пустой список")
     except Exception as e:
-        log.error(f"WB: ошибка получения складов: {e}")
-        return None
+        log.warning(f"WB: ошибка получения складов через API: {e}")
+
+    if fallback_id:
+        log.info(f"WB: используем WB_WAREHOUSE_ID из .env → {fallback_id}")
+        return fallback_id
+
+    log.error("WB: склад не найден ни через API, ни в .env (WB_WAREHOUSE_ID)")
+    return None
 
 
 # ─── WB: карточки товаров ─────────────────────────────────────────────────────
@@ -303,7 +301,12 @@ def sync_once(env: dict, dry_run: bool = False) -> None:
         return
 
     # 2. Склад WB
-    warehouse_id = get_wb_warehouse(token)
+    fallback_wh = None
+    try:
+        fallback_wh = int(env.get("WB_WAREHOUSE_ID", "") or 0) or None
+    except ValueError:
+        pass
+    warehouse_id = get_wb_warehouse(token, fallback_id=fallback_wh)
     if not warehouse_id:
         log.error("Нет склада WB — пропускаем цикл")
         return
@@ -315,26 +318,43 @@ def sync_once(env: dict, dry_run: bool = False) -> None:
         return
 
     # 4. Строим {barcode: qty}
-    # vendorCode = Mikado code. Если Mikado имеет остаток — берём его.
-    # Если нет в Mikado (или qty=0) и есть в Автолиге — берём Автолигу.
+    # vendorCode в WB имеет суффикс -con (например abc123-con).
+    # Mikado и Автолига хранят базовый артикул (abc123) в lowercase.
     wb_stocks: dict[str, int] = {}
     matched = 0
     for vendor_code, barcodes in cards.items():
-        qty = mikado.get(vendor_code, 0)
-        if qty == 0 and vendor_code in autoliga:
-            qty = autoliga[vendor_code]
+        base = vendor_code.lower()
+        if base.endswith("-con"):
+            base = base[:-4]
+        qty = mikado.get(base, 0)
+        if qty == 0:
+            # Автолига ключи: UPPERCASE без дефисов/пробелов/точек (как _normalize в autoliga_loader)
+            al_key = base.replace("-", "").replace(" ", "").replace(".", "").upper()
+            qty = autoliga.get(al_key, 0)
         for barcode in barcodes:
             wb_stocks[barcode] = qty
         if qty > 0:
             matched += 1
 
+    zeroed = len(cards) - matched
     log.info(
         f"Сопоставление: {len(cards)} карточек WB | "
         f"с остатком: {matched} | "
         f"итого баркодов: {len(wb_stocks)}"
     )
+    if zeroed:
+        log.info(f"Обнулено {zeroed} карточек — код отсутствует в прайсах Mikado и Автолиги")
 
-    # 5. Обновляем WB
+    # 5. Защита от массового обнуления
+    if not stock_safety_check(matched, len(cards), min_ratio=0.40, label="WB"):
+        tg_tok = env.get("TG_BOT_TOKEN", "")
+        tg_cid = env.get("TG_CHAT_ID", "")
+        if _TG_OK and tg_tok:
+            tg_alert(tg_tok, tg_cid, "⚠ WB: защита от обнуления",
+                     f"Найдено {matched}/{len(cards)} позиций. Обновление отменено.")
+        return
+
+    # 6. Обновляем WB
     updated, errors = update_wb_stocks(token, warehouse_id, wb_stocks, dry_run)
 
     # 6. Telegram
@@ -347,20 +367,18 @@ def sync_once(env: dict, dry_run: bool = False) -> None:
             f"Обновлено баркодов: {updated}"
             + (f" | ошибок: {errors}" if errors else "")
         )
-        tg_alert(tg_tok, tg_cid, msg)
+        tg_alert(tg_tok, tg_cid, "WB остатки", msg)
 
     log.info(f"Цикл завершён: обновлено {updated}, ошибок {errors}")
 
 
 # ─── Расписание ───────────────────────────────────────────────────────────────
-def _seconds_until_next_slot() -> float:
-    now     = datetime.now()
-    cur_min = now.hour * 60 + now.minute
-    for h in SYNC_SLOTS:
-        slot_min = h * 60
-        if slot_min > cur_min:
-            return (slot_min - cur_min) * 60 - now.second
-    return (24 * 60 + SYNC_SLOTS[0] * 60 - cur_min) * 60 - now.second
+def _seconds_until_0905() -> float:
+    now    = datetime.now()
+    target = now.replace(hour=9, minute=5, second=0, microsecond=0)
+    if now >= target:
+        target += timedelta(days=1)
+    return (target - now).total_seconds()
 
 
 # ─── Точка входа ──────────────────────────────────────────────────────────────
@@ -372,20 +390,16 @@ def main() -> None:
 
     env = load_env()
 
+    single_instance(__file__)
+
     if args.once or args.dry_run:
         sync_once(env, dry_run=args.dry_run)
         return
 
-    slots_str = ", ".join(f"{h:02d}:00" for h in SYNC_SLOTS)
-    log.info(f"Планировщик запущен: синхронизация в {slots_str}")
-
-    try:
-        sync_once(env)
-    except Exception:
-        log.exception("Ошибка при первоначальной синхронизации")
+    log.info("Планировщик запущен: синхронизация ежедневно в 09:05")
 
     while True:
-        wait = _seconds_until_next_slot()
+        wait = _seconds_until_0905()
         next_dt = datetime.now() + timedelta(seconds=wait)
         log.info(f"Следующий запуск: {next_dt.strftime('%d.%m %H:%M')}")
         time.sleep(wait)

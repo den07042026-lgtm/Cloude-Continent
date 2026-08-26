@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
@@ -86,8 +86,6 @@
   .rec-be td{background:#FFF8EB}
   .apply-btn{padding:4px 10px;background:var(--blue);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
   .apply-btn:hover{background:#0045CC}
-  .zone-pill{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
-  .zone-badge{display:inline-block;padding:3px 12px;border-radius:10px;font-size:12px;font-weight:600}
 </style>
 </head>
 <body>
@@ -179,12 +177,8 @@
   <div class="sep">Расходы и налоги</div>
   <div class="row2">
     <div class="field">
-      <label>Эквайринг Озона, %</label>
-      <input type="number" id="acquiring" value="1.5" min="0" max="5" step="0.1" oninput="calculate()">
-    </div>
-    <div class="field">
       <label>Прочие расходы, &#x20BD;</label>
-      <input type="number" id="other" value="30" min="0" step="5" oninput="calculate()">
+      <input type="number" id="other" value="20" min="0" step="5" oninput="calculate()">
       <p class="hint">Упаковка, этикетки</p>
     </div>
   </div>
@@ -196,6 +190,13 @@
     <div class="field">
       <label>Налог, % (от выручки Озона)</label>
       <input type="number" id="tax" value="6" min="0" max="30" step="1" oninput="calculate()">
+    </div>
+  </div>
+  <div class="row2">
+    <div class="field">
+      <label>ДРР — реклама, %</label>
+      <input type="number" id="drr" value="0" min="0" max="80" step="0.5" oninput="calculate()">
+      <p class="hint">% от цены продажи</p>
     </div>
   </div>
 
@@ -237,17 +238,16 @@
   </div>
 
   <div class="card" id="recCard" style="display:none">
-    <h2>Ценовая политика &#x2014; рекомендованные цены</h2>
-    <div class="zone-pill" id="zonePill"></div>
+    <h2>Ценовая политика &#x2014; наценка от закупки</h2>
     <div class="breakdown" style="margin-bottom:10px">
       <table class="rec-tbl">
         <thead>
           <tr>
-            <th>Цель</th>
+            <th>Цель (прибыль/закупка)</th>
             <th style="text-align:right">Цена</th>
-            <th style="text-align:right">Наценка</th>
+            <th style="text-align:right">×Множитель</th>
             <th style="text-align:right">Прибыль/шт</th>
-            <th style="text-align:right">Маржа</th>
+            <th style="text-align:right">Наценка факт</th>
             <th></th>
           </tr>
         </thead>
@@ -858,21 +858,22 @@ function fmtRub(n,plus){
 }
 function pct(n){return (n*100).toFixed(1)+'%'}
 
-function calcAll(type,model,purchase,sell,logistics,reverse,storage,acqPct,other,retRate,taxPct){
+function calcAll(type,model,purchase,sell,logistics,reverse,storage,acqPct,other,retRate,taxPct,drrPct){
   const commRate   = getRate(type,model,sell);
   const commission = r2(sell*commRate);
   const acquiring  = r2(sell*acqPct);
+  const advertising= r2(sell*(drrPct||0));
   const returnLoss = r2(retRate*(logistics+reverse));
   const proceeds   = r2(sell-commission-acquiring-logistics);
   const tax        = r2(Math.max(0,proceeds)*taxPct);
-  const totalCost  = r2(purchase+commission+acquiring+logistics+returnLoss+storage+other+tax);
+  const totalCost  = r2(purchase+commission+acquiring+logistics+returnLoss+storage+other+advertising+tax);
   const profit     = r2(sell-totalCost);
-  return {commRate,commission,acquiring,returnLoss,tax,profit,totalCost};
+  return {commRate,commission,acquiring,returnLoss,advertising,tax,profit,totalCost};
 }
 
-function findBE(type,model,purchase,logistics,reverse,storage,acqPct,other,retRate,taxPct){
+function findBE(type,model,purchase,logistics,reverse,storage,acqPct,other,retRate,taxPct,drrPct){
   for(let s=50;s<=100000;s++){
-    if(calcAll(type,model,purchase,s,logistics,reverse,storage,acqPct,other,retRate,taxPct).profit>=0) return s;
+    if(calcAll(type,model,purchase,s,logistics,reverse,storage,acqPct,other,retRate,taxPct,drrPct).profit>=0) return s;
   }
   return '>100 000';
 }
@@ -885,14 +886,15 @@ function calculate(){
   const logistics= parseFloat(document.getElementById('logistics').value)||0;
   const reverse  = parseFloat(document.getElementById('reverse').value)||0;
   const storage  = parseFloat(document.getElementById('storage').value)||0;
-  const acqPct   = parseFloat(document.getElementById('acquiring').value)/100||0;
+  const acqPct   = 0.015;
   const other    = parseFloat(document.getElementById('other').value)||0;
   const retRate  = parseFloat(document.getElementById('returns').value)/100||0;
   const taxPct   = parseFloat(document.getElementById('tax').value)/100||0;
+  const drrPct   = parseFloat(document.getElementById('drr').value)/100||0;
   if(!sell) return;
 
-  const {commRate,commission,acquiring,returnLoss,tax,profit} =
-    calcAll(selectedType,model,purchase,sell,logistics,reverse,storage,acqPct,other,retRate,taxPct);
+  const {commRate,commission,acquiring,returnLoss,advertising,tax,profit} =
+    calcAll(selectedType,model,purchase,sell,logistics,reverse,storage,acqPct,other,retRate,taxPct,drrPct);
   const totalOzonFees = r2(commission+acquiring+logistics);
   const margin = sell>0 ? profit/sell : 0;
   const roi    = purchase>0 ? profit/purchase : 0;
@@ -917,22 +919,23 @@ function calculate(){
     {cls:'sub cst', a:'\u2514 \u042D\u043A\u0432\u0430\u0439\u0440\u0438\u043D\u0433 ('+(acqPct*100).toFixed(1)+'%)', b:fmtRub(acquiring)},
     {cls:'sub cst', a:'\u2514 \u041B\u043E\u0433\u0438\u0441\u0442\u0438\u043A\u0430', b:fmtRub(logistics)},
   ];
-  if(returnLoss>0) rows.push({cls:'sub cst', a:'\u2514 \u041F\u043E\u0442\u0435\u0440\u0438 \u043D\u0430 \u0432\u043E\u0437\u0432\u0440\u0430\u0442\u0430\u0445 ('+(retRate*100).toFixed(1)+'%)', b:fmtRub(returnLoss)});
-  if(storage>0)    rows.push({cls:'sub cst', a:'\u2514 \u0425\u0440\u0430\u043D\u0435\u043D\u0438\u0435 FBO', b:fmtRub(storage)});
-  if(other>0)      rows.push({cls:'sub cst', a:'\u2514 \u041F\u0440\u043E\u0447\u0438\u0435 \u0440\u0430\u0441\u0445\u043E\u0434\u044B', b:fmtRub(other)});
-  if(tax>0)        rows.push({cls:'sub cst', a:'\u2514 \u041D\u0430\u043B\u043E\u0433 ('+(taxPct*100).toFixed(0)+'%)', b:fmtRub(tax)});
+  if(returnLoss>0)   rows.push({cls:'sub cst', a:'\u2514 \u041F\u043E\u0442\u0435\u0440\u0438 \u043D\u0430 \u0432\u043E\u0437\u0432\u0440\u0430\u0442\u0430\u0445 ('+(retRate*100).toFixed(1)+'%)', b:fmtRub(returnLoss)});
+  if(storage>0)      rows.push({cls:'sub cst', a:'\u2514 \u0425\u0440\u0430\u043D\u0435\u043D\u0438\u0435 FBO', b:fmtRub(storage)});
+  if(other>0)        rows.push({cls:'sub cst', a:'\u2514 \u041F\u0440\u043E\u0447\u0438\u0435 \u0440\u0430\u0441\u0445\u043E\u0434\u044B', b:fmtRub(other)});
+  if(advertising>0)  rows.push({cls:'sub cst', a:'\u2514 \u0420\u0435\u043A\u043B\u0430\u043C\u0430 (\u0414\u0420\u0420 '+(drrPct*100).toFixed(1)+'%)', b:fmtRub(advertising)});
+  if(tax>0)          rows.push({cls:'sub cst', a:'\u2514 \u041D\u0430\u043B\u043E\u0433 ('+(taxPct*100).toFixed(0)+'%)', b:fmtRub(tax)});
   rows.push({cls:'tot', a:'\u0427\u0438\u0441\u0442\u0430\u044F \u043F\u0440\u0438\u0431\u044B\u043B\u044C', b:fmtRub(profit,true)});
 
   document.getElementById('breakdownBody').innerHTML = rows.map(r=>
     '<tr class="'+r.cls+'"><td>'+r.a+'</td><td>'+r.b+'</td></tr>'
   ).join('');
 
-  const be = findBE(selectedType,model,purchase,logistics,reverse,storage,acqPct,other,retRate,taxPct);
+  const be = findBE(selectedType,model,purchase,logistics,reverse,storage,acqPct,other,retRate,taxPct,drrPct);
   document.getElementById('breakevenVal').textContent = typeof be==='number' ? be+' \u20BD' : be;
 
   const mods=['fbo','fbs','rfbs'], mNames={fbo:'FBO',fbs:'FBS',rfbs:'realFBS'};
   const cmpRows = mods.map(m=>{
-    const {commRate:cr,profit:prf}=calcAll(selectedType,m,purchase,sell,logistics,reverse,storage,acqPct,other,retRate,taxPct);
+    const {commRate:cr,profit:prf}=calcAll(selectedType,m,purchase,sell,logistics,reverse,storage,acqPct,other,retRate,taxPct,drrPct);
     const mrg=(prf/sell*100).toFixed(1);
     const col=prf>0?'#00A441':'#E05252';
     const isCur=m===model;
@@ -993,22 +996,15 @@ function updateLogistics(){
   calculate();
 }
 
-function findRecPrice(type,model,purchase,logistics,reverse,storage,acqPct,other,retRate,taxPct,targetPct){
+function findRecPrice(type,model,purchase,logistics,reverse,storage,acqPct,other,retRate,taxPct,drrPct,targetPct){
+  if(!purchase)return null;
   for(let s=50;s<=500000;s++){
-    const{profit}=calcAll(type,model,purchase,s,logistics,reverse,storage,acqPct,other,retRate,taxPct);
-    if(s>0&&profit/s>=targetPct-0.0001)return s;
+    const{profit}=calcAll(type,model,purchase,s,logistics,reverse,storage,acqPct,other,retRate,taxPct,drrPct);
+    if(profit/(purchase+other)>=targetPct-0.0001)return s;
   }
   return null;
 }
 
-function getPriceZone(p){
-  if(p<800) return{range:'500–800 ₽', note:'Тонкая маржа — только мелкие детали с закупкой до 100 ₽',ok:false};
-  if(p<1500)return{range:'800–1 500 ₽',note:'Работает при закупке 150–380 ₽',ok:true};
-  if(p<2500)return{range:'1 500–2 500 ₽',note:'Хорошая зона. Целиться в множитель ×3.2',ok:true};
-  if(p<4000)return{range:'2 500–4 000 ₽',note:'✦ Оптимальная зона прибыльности',ok:true};
-  if(p<6000)return{range:'4 000–6 000 ₽',note:'Хороший абсолютный доход за единицу',ok:true};
-  return     {range:'6 000–9 000 ₽',note:'Максимальный доход/шт — не снижай зря',ok:true};
-}
 
 function updateRecPrice(){
   if(!selectedType||!CATS[selectedType])return;
@@ -1017,55 +1013,77 @@ function updateRecPrice(){
   const logistics=parseFloat(document.getElementById('logistics').value)||0;
   const reverse =parseFloat(document.getElementById('reverse').value)||0;
   const storage =parseFloat(document.getElementById('storage').value)||0;
-  const acqPct  =parseFloat(document.getElementById('acquiring').value)/100||0;
+  const acqPct  =0.015;
   const other   =parseFloat(document.getElementById('other').value)||0;
   const retRate =parseFloat(document.getElementById('returns').value)/100||0;
   const taxPct  =parseFloat(document.getElementById('tax').value)/100||0;
+  const drrPct  =parseFloat(document.getElementById('drr').value)/100||0;
   const card=document.getElementById('recCard');
   if(!purchase){card.style.display='none';return;}
   card.style.display='';
 
   const targets=[
     {label:'Точка безубыточности',  pct:0,    cls:'rec-be',  bold:false},
-    {label:'Вход (5%)',             pct:0.05,  cls:'',        bold:false},
-    {label:'Стандарт (10%)',        pct:0.10,  cls:'',        bold:false},
-    {label:'Рекомендуемая (12%) ★',pct:0.12,cls:'rec-best',bold:true},
-    {label:'Премиум (15%)',         pct:0.15,  cls:'',        bold:false},
+    {label:'Наценка 10%',           pct:0.10,  cls:'',        bold:false},
+    {label:'Наценка 15%',           pct:0.15,  cls:'',        bold:false},
+    {label:'Наценка 20% ★',        pct:0.20,  cls:'rec-best',bold:true},
+    {label:'Наценка 25%',           pct:0.25,  cls:'',        bold:false},
   ];
 
   const rows=targets.map(t=>{
-    const price=findRecPrice(selectedType,model,purchase,logistics,reverse,storage,acqPct,other,retRate,taxPct,t.pct);
+    const price=findRecPrice(selectedType,model,purchase,logistics,reverse,storage,acqPct,other,retRate,taxPct,drrPct,t.pct);
     if(!price)return`<tr class="${t.cls}"><td>${t.label}</td><td colspan="5" style="color:var(--gray);text-align:center">не достигается</td></tr>`;
-    const{profit}=calcAll(selectedType,model,purchase,price,logistics,reverse,storage,acqPct,other,retRate,taxPct);
-    const markup=purchase>0?Math.round((price/purchase-1)*100):0;
+    const{profit}=calcAll(selectedType,model,purchase,price,logistics,reverse,storage,acqPct,other,retRate,taxPct,drrPct);
+    const mult=purchase>0?'×'+(price/purchase).toFixed(2):'—';
     const fw=t.bold?'font-weight:700':'';
-    const pc=(profit/price*100).toFixed(1);
+    const pc=(profit/(purchase+other)*100).toFixed(1);
     const profCol=profit>0?'var(--green)':'var(--red)';
     return`<tr class="${t.cls}">
       <td style="${fw}">${t.label}</td>
       <td style="${fw}">${price.toLocaleString('ru-RU')} ₽</td>
-      <td>+${markup}%</td>
+      <td>${mult}</td>
       <td style="color:${profCol}">${profit>=0?'+':''}${Math.round(profit)} ₽</td>
       <td>${pc}%</td>
       <td><button class="apply-btn" onclick="applyRecPrice(${price})">Применить</button></td>
     </tr>`;
   }).join('');
-  document.getElementById('recBody').innerHTML=rows;
+  const btnRow='<tr><td colspan="6" style="padding:8px 8px 4px"><button onclick="applyOptimum()" style="width:100%;padding:8px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;transition:background .2s" onmouseover="this.style.background=\'#007A30\'" onmouseout="this.style.background=\'var(--green)\'">&#9889; Оптимум — авторасчёт по закупке</button></td></tr>';
+  document.getElementById('recBody').innerHTML=btnRow+rows;
 
-  const p12=findRecPrice(selectedType,model,purchase,logistics,reverse,storage,acqPct,other,retRate,taxPct,0.12);
-  if(p12){
-    const z=getPriceZone(p12);
-    const bg=z.ok?'#C6EFCE':'#FFC7CE',tc=z.ok?'#276221':'#9C0006';
-    document.getElementById('zonePill').innerHTML=
-      `<span class="zone-badge" style="background:${bg};color:${tc}">Зона: ${z.range}</span>`+
-      `<span style="font-size:12px;color:var(--text2)">${z.note}</span>`;
-    const mult=(p12/purchase).toFixed(1);
+  const p20=findRecPrice(selectedType,model,purchase,logistics,reverse,storage,acqPct,other,retRate,taxPct,drrPct,0.20);
+  if(p20){
+    const multN=(p20/purchase).toFixed(1);
     const fixedStr=Math.round(logistics+other);
     document.getElementById('recNote').innerHTML=
-      `<b>Правило для этой закупки:</b> множитель ≈ <b>×${mult}</b>. `+
-      `Быстрый расчёт: <b>(закупка + ${fixedStr} ₽) × ${mult}</b>. `+
-      `Если конкуренты ниже рекомендованной — ориентируйся на «Стандарт (10%)».`;
+      `<b>Правило для этой закупки:</b> множитель ≈ <b>×${multN}</b>. `+
+      `Быстрый расчёт: закупка × <b>${multN}</b>. `+
+      `Если конкуренты дешевле — ориентируйся на «Наценка 15%».`;
   }
+}
+
+function getOptimalMarkup(purchase){
+  if(purchase<500)  return 0.25;
+  if(purchase<1200) return 0.20;
+  if(purchase<2500) return 0.17;
+  if(purchase<3500) return 0.15;
+  return 0.12;
+}
+
+function applyOptimum(){
+  const purchase=parseFloat(document.getElementById('purchase').value)||0;
+  if(!purchase||!selectedType)return;
+  const model   =document.querySelector('input[name=model]:checked').value;
+  const logistics=parseFloat(document.getElementById('logistics').value)||0;
+  const reverse =parseFloat(document.getElementById('reverse').value)||0;
+  const storage =parseFloat(document.getElementById('storage').value)||0;
+  const acqPct  =0.015;
+  const other   =parseFloat(document.getElementById('other').value)||0;
+  const retRate =parseFloat(document.getElementById('returns').value)/100||0;
+  const taxPct  =parseFloat(document.getElementById('tax').value)/100||0;
+  const drrPct  =parseFloat(document.getElementById('drr').value)/100||0;
+  const markup  =getOptimalMarkup(purchase);
+  const price   =findRecPrice(selectedType,model,purchase,logistics,reverse,storage,acqPct,other,retRate,taxPct,drrPct,markup);
+  if(price)applyRecPrice(price);
 }
 
 function applyRecPrice(price){

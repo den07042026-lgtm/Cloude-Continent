@@ -9,7 +9,7 @@ moskvorechie_enricher.py — дополнение Excel данными с portal
 Запуск:
   uv run --with requests,openpyxl scripts/moskvorechie_enricher.py --file mikado_data.xlsx
   uv run --with requests,openpyxl scripts/moskvorechie_enricher.py --file mikado_data.xlsx --rows 2-50
-  uv run --with requests,openpyxl scripts/moskvorechie_enricher.py --file data.xlsx --out result.xlsx --login controlvlz1 --password k0nshin
+  uv run --with requests,openpyxl scripts/moskvorechie_enricher.py --file data.xlsx --out result.xlsx --login controlvlz1 --password YOUR_MSK_PASSWORD
 
 Аргументы:
   --file      Путь к Excel файлу для обогащения  [обязательный]

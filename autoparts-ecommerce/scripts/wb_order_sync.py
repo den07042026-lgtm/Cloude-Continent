@@ -61,17 +61,23 @@ try:
 except ImportError:
     _TG_OK = False
 
+try:
+    from daemon_guard import single_instance
+except ImportError:
+    def single_instance(_): pass
+
+from mikado_price_fetcher import download_mikado_price_bytes
+
 # ─── Константы ────────────────────────────────────────────────────────────────
 BASE_DIR       = Path(__file__).parent.parent
 ENV_FILE       = BASE_DIR / ".env"
 STATE_FILE     = BASE_DIR / "data" / "wb_order_state.json"
 LOG_FILE       = BASE_DIR / "logs" / "wb_order_sync.log"
 ORDERS_DIR     = BASE_DIR / "data" / "orders_wb"
-PRICE_FALLBACK = Path("C:/Users/Admin/Documents/Ecommerce/mikado_price_34.xlsx")
 
 MIKADO_PRICE_URL  = (
     "https://mikado-parts.ru/api/Price/GetPriceExcel"
-    "?StockId=34&Key=BBE2E029-54CF-4D9E-9FAC-9FE25E85B300"
+    "?StockId=34&Key=YOUR_MIKADO_PRICE_KEY"
 )
 MIKADO_LOGIN_URL  = "https://mikado-parts.ru/office/SECURE.asp"
 MIKADO_SEARCH_URL = "https://mikado-parts.ru/office/galleyp.asp"
@@ -219,22 +225,8 @@ def create_wb_supply(token: str, order_ids: list[int], dry_run: bool = False) ->
 # ─── Mikado: прайс ────────────────────────────────────────────────────────────
 def load_mikado_price() -> dict[str, dict]:
     """Возвращает {code: {qty, price, name}}."""
-    content = None
-    try:
-        resp = requests.get(MIKADO_PRICE_URL, timeout=60)
-        resp.raise_for_status()
-        if resp.content[:2] == b"PK":
-            content = resp.content
-    except Exception as e:
-        log.warning(f"Mikado прайс онлайн: {e}, берём локальный")
-
-    if content:
-        wb_file = openpyxl.load_workbook(io.BytesIO(content), read_only=True, data_only=True)
-    elif PRICE_FALLBACK.exists():
-        wb_file = openpyxl.load_workbook(PRICE_FALLBACK, read_only=True, data_only=True)
-    else:
-        log.error("Mikado: прайс недоступен")
-        return {}
+    content = download_mikado_price_bytes(MIKADO_PRICE_URL, log)
+    wb_file = openpyxl.load_workbook(io.BytesIO(content), read_only=True, data_only=True)
 
     ws     = wb_file.active
     rows   = ws.iter_rows(values_only=True)
@@ -565,6 +557,7 @@ def main() -> None:
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
+    single_instance(__file__)
     env = load_env()
 
     if args.once or args.dry_run:

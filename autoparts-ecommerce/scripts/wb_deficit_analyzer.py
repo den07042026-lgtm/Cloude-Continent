@@ -490,7 +490,7 @@ def load_supplier_brands() -> set[str]:
         import io, openpyxl as ox
         price_url = (
             "https://mikado-parts.ru/api/Price/GetPriceExcel"
-            "?StockId=34&Key=BBE2E029-54CF-4D9E-9FAC-9FE25E85B300"
+            "?StockId=34&Key=YOUR_MIKADO_PRICE_KEY"
         )
         resp = requests.get(price_url, timeout=60)
         if resp.ok and resp.content[:2] == b"PK":
@@ -545,7 +545,7 @@ def load_catalog_brand_info() -> dict[str, dict]:
         import io, openpyxl as ox
         resp = requests.get(
             "https://mikado-parts.ru/api/Price/GetPriceExcel"
-            "?StockId=34&Key=BBE2E029-54CF-4D9E-9FAC-9FE25E85B300",
+            "?StockId=34&Key=YOUR_MIKADO_PRICE_KEY",
             timeout=60,
         )
         if resp.ok and resp.content[:2] == b"PK":

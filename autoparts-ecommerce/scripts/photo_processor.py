@@ -86,9 +86,7 @@ def read_data(xlsx_path: Path) -> dict[str, dict]:
     Возвращает словарь {артикул: {name, brand, params, row, ...}}.
     Поле row — номер строки в Excel (начиная с 2).
     """
-    # Some standards-compliant XLSX writers omit cached worksheet dimensions.
-    # Normal mode lets openpyxl calculate them reliably for those files.
-    wb = openpyxl.load_workbook(xlsx_path, read_only=False, data_only=True)
+    wb = openpyxl.load_workbook(xlsx_path, read_only=True, data_only=True)
     ws = wb.active
 
     # Заголовки из строки 1
@@ -417,19 +415,13 @@ def make_info_photo(img: Image.Image, item: dict, logo: Image.Image | None,
     # ── Слой 2: исходное фото ────────────────────────────────────────────────
     # Концепция: верхняя граница полосы артикула = верхняя граница нижней
     # оранжевой полосы. Лого и текст — в оставшейся зоне сверху.
-    # Keep a real header even for square/portrait supplier photos. Previously
-    # width-only scaling could consume the whole canvas and hide title/logo.
-    min_header_h = 300
-    max_photo_h = h - STRIPE_H - min_header_h
-    scale       = min(w / img.width, max_photo_h / img.height)
-    new_w       = max(1, int(img.width * scale))
-    new_h       = max(1, int(img.height * scale))
-    resized     = img.resize((new_w, new_h), Image.LANCZOS)
+    scale   = w / img.width
+    new_h   = int(img.height * scale)
+    resized = img.resize((w, new_h), Image.LANCZOS)
 
     # Нижний край фото касается верхней границы нижней оранжевой полосы
     y_img = (h - STRIPE_H) - new_h
-    x_img = (w - new_w) // 2
-    canvas.paste(resized, (x_img, y_img))
+    canvas.paste(resized, (0, y_img))
 
     # Свободная зона для лого и текста — между верхней полосой и фото
     header_top = STRIPE_H
@@ -438,7 +430,7 @@ def make_info_photo(img: Image.Image, item: dict, logo: Image.Image | None,
     # ── Слой 3а: лого — верхний левый угол, 1/2 от прежнего размера ──────────
     draw = ImageDraw.Draw(canvas)
     logo_resized = None
-    if logo and header_h > 40:
+    if logo:
         logo_copy  = logo.copy()
         target_h   = int(HEADER_H * 3 / 5 * 2 * 0.8)      # фиксированный, одинаковый на обоих фото
         max_logo_w = w // 2 - LOGO_MARGIN * 2
@@ -465,21 +457,7 @@ def make_info_photo(img: Image.Image, item: dict, logo: Image.Image | None,
     zone_cx    = (zone_x1 + zone_x2) // 2
     max_text_w = zone_x2 - zone_x1
 
-    # Auto-fit long article numbers inside the text zone. A fixed 72 px font
-    # overflowed for long OEM/supplier codes and clipped the yellow badge.
-    font_code = None
-    for code_size in range(72, 27, -2):
-        candidate = ImageFont.truetype("C:/Windows/Fonts/ariblk.ttf", code_size)
-        if not code:
-            font_code = candidate
-            break
-        code_box = draw.textbbox((0, 0), code.upper(), font=candidate)
-        code_width = code_box[2] - code_box[0]
-        if code_width + 24 <= max_text_w:
-            font_code = candidate
-            break
-    if font_code is None:
-        font_code = ImageFont.truetype("C:/Windows/Fonts/ariblk.ttf", 28)
+    font_code  = ImageFont.truetype("C:/Windows/Fonts/ariblk.ttf", 72)
 
     def wrap_text(text, font, max_w):
         words, lines, buf = text.split(), [], ""
@@ -497,20 +475,19 @@ def make_info_photo(img: Image.Image, item: dict, logo: Image.Image | None,
     # Автоподбор размера шрифта: уменьшаем пока весь блок не уместится в header_h
     code_lh = draw.textbbox((0, 0), "АЙ", font=font_code)[3] + 4
     font_name = None
-    for size in [52, 46, 40, 34, 28, 22, 20, 18, 16]:
+    for size in [52, 46, 40, 34, 28, 22]:
         f = ImageFont.truetype("C:/Windows/Fonts/arialbd.ttf", size)
         lines = wrap_text(name, f, max_text_w)
         lh    = draw.textbbox((0, 0), "АЙ", font=f)[3] + 4
         gap   = lh * 2
         bh    = lh * len(lines) + (gap + code_lh if code else 0)
-        widest = max((draw.textbbox((0, 0), line, font=f)[2] for line in lines), default=0)
-        if bh <= header_h and widest <= max_text_w:
+        if bh <= header_h:
             font_name  = f
             name_lines = lines
             name_lh    = lh
             break
     if font_name is None:   # крайний случай: берём минимальный размер
-        font_name  = ImageFont.truetype("C:/Windows/Fonts/arialbd.ttf", 16)
+        font_name  = ImageFont.truetype("C:/Windows/Fonts/arialbd.ttf", 22)
         name_lines = wrap_text(name, font_name, max_text_w)
         name_lh    = draw.textbbox((0, 0), "АЙ", font=font_name)[3] + 4
 

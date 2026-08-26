@@ -9,14 +9,20 @@ dashboard.py
 
 import sys
 import json
-import re
 import shutil
 import subprocess
 import threading
 from pathlib import Path
 from datetime import datetime
+from tkinter import messagebox
 
 sys.stdout.reconfigure(encoding="utf-8")
+
+try:
+    import requests as _req
+    _REQUESTS_OK = True
+except ImportError:
+    _REQUESTS_OK = False
 
 try:
     import customtkinter as ctk
@@ -25,15 +31,33 @@ except ImportError:
     print('  uv run --with "customtkinter,openpyxl,anthropic" scripts/dashboard.py')
     sys.exit(1)
 
-BASE_DIR   = Path(__file__).parent.parent
-STATE_FILE = BASE_DIR / "data" / "dashboard_state.json"
+BASE_DIR         = Path(__file__).parent.parent
+STATE_FILE       = BASE_DIR / "data" / "dashboard_state.json"
+LOCK_FILE        = BASE_DIR / "data" / "dashboard.lock"
+DAEMON_LOCKS_DIR = BASE_DIR / "data" / "locks"
+CLEARED_AT_FILE  = BASE_DIR / "data" / "sync_cleared_at.txt"
 STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
+
+# Одна копия дашборда за раз
+import os
+if LOCK_FILE.exists():
+    try:
+        old_pid = int(LOCK_FILE.read_text())
+        import subprocess as _sp
+        r = _sp.run(["tasklist", "/FI", f"PID eq {old_pid}", "/NH"],
+                    capture_output=True, text=True)
+        if str(old_pid) in r.stdout:
+            print(f"Дашборд уже запущен (PID {old_pid}). Закройте его перед повторным запуском.")
+            sys.exit(0)
+    except Exception:
+        pass
+LOCK_FILE.write_text(str(os.getpid()))
 
 # ─── Управляемые скрипты ──────────────────────────────────────────────────────
 MANAGED_SCRIPTS = [
     {
         "id":   "stock_sync",
-        "name": "Синхронизация остатков",
+        "name": "Ozon: остатки (кажд. 6ч)",
         "path": BASE_DIR / "scripts" / "ozon_stock_sync.py",
         "deps": "requests,openpyxl",
         "log":  BASE_DIR / "logs" / "ozon_stock_sync.log",
@@ -47,21 +71,21 @@ MANAGED_SCRIPTS = [
     },
     {
         "id":   "price_recalc",
-        "name": "Пересчёт цен (00:01)",
+        "name": "Ozon: цены (кажд. 6ч)",
         "path": BASE_DIR / "scripts" / "price_recalc.py",
         "deps": "requests,openpyxl",
         "log":  BASE_DIR / "logs" / "price_recalc.log",
     },
     {
         "id":   "autoliga_fetcher",
-        "name": "Прайс Автолиги (06:15)",
+        "name": "Прайс Автолиги (09:00)",
         "path": BASE_DIR / "scripts" / "autoliga_mail_fetcher.py",
         "deps": "requests",
         "log":  BASE_DIR / "logs" / "autoliga_fetcher.log",
     },
     {
         "id":   "wb_stock_sync",
-        "name": "WB: остатки (кажд. 4ч)",
+        "name": "WB: остатки (09:05)",
         "path": BASE_DIR / "scripts" / "wb_stock_sync.py",
         "deps": "requests,openpyxl,xlrd",
         "log":  BASE_DIR / "logs" / "wb_stock_sync.log",
@@ -75,20 +99,27 @@ MANAGED_SCRIPTS = [
     },
     {
         "id":   "wb_price_recalc",
-        "name": "WB: цены (00:01)",
+        "name": "WB: цены (09:10)",
         "path": BASE_DIR / "scripts" / "wb_price_recalc.py",
         "deps": "requests,openpyxl",
         "log":  BASE_DIR / "logs" / "wb_price_recalc.log",
     },
 ]
 
+OZON_IDS = {"stock_sync", "order_sync", "price_recalc"}
+WB_IDS   = {"wb_stock_sync", "wb_order_sync", "wb_price_recalc", "autoliga_fetcher"}
+
 REFRESH_MS = 5_000
 LOG_TAIL   = 300
-SYNC_SLOTS = [0, 4, 8, 12, 16, 20]
 
 
-def _uv() -> str:
-    return shutil.which("uv") or "uv"
+VENV_PYTHON = BASE_DIR / ".venv" / "Scripts" / "python.exe"
+
+
+def _python() -> str:
+    if VENV_PYTHON.exists():
+        return str(VENV_PYTHON)
+    return shutil.which("python") or "python"
 
 
 def _pid_alive(pid: int) -> bool:
@@ -112,15 +143,6 @@ def _read_log(path: Path, n: int = LOG_TAIL) -> list[str]:
         return []
 
 
-def _next_slot_str() -> str:
-    now = datetime.now()
-    cur_min = now.hour * 60 + now.minute
-    for h in SYNC_SLOTS:
-        if h * 60 + 1 > cur_min:
-            return f"{h:02d}:01"
-    return "00:01"
-
-
 def _get_last_cycle(lines: list[str]) -> list[str]:
     """Возвращает строки от последнего разделителя цикла (─── или ═══) до конца лога."""
     last_sep = 0
@@ -130,57 +152,34 @@ def _get_last_cycle(lines: list[str]) -> list[str]:
     return lines[last_sep:] if lines else []
 
 
-def _parse_stats(lines: list[str]) -> dict:
-    s = {
-        "last_sync":  "—",
-        "next_sync":  "",
-        "price":      "—",
-        "instock":    "",
-        "ozon_upd":   "—",
-        "ozon_err":   "—",
-        "cycle_errs": 0,
-    }
-    for line in reversed(lines):
-        if s["last_sync"] == "—" and "Синхронизация" in line and "INFO" in line:
-            m = re.match(r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})", line)
-            if m:
-                dt = datetime.strptime(m.group(1), "%Y-%m-%d %H:%M:%S")
-                s["last_sync"] = dt.strftime("%d.%m  %H:%M")
-                s["next_sync"] = "след: " + _next_slot_str()
-        if s["price"] == "—" and "Прайс:" in line and "позиций" in line:
-            m = re.search(r"Прайс.*?(\d[\d ]*) позиций.*?наличии: (\d+)", line)
-            if m:
-                s["price"]   = m.group(1).replace(" ", "")
-                s["instock"] = "в наличии: " + m.group(2)
+def _log_tag(line: str) -> str:
+    if " ERROR " in line:   return "err"
+    if " WARNING " in line: return "warn"
+    if ("─" * 4 in line or "═" * 4 in line
+            or "Следующий" in line
+            or "Планировщик" in line
+            or "нет данных" in line):
+        return "dim"
+    if ("обновлено" in line.lower()
+            or "завершён" in line.lower()
+            or "синхронизация" in line.lower()
+            or "✓" in line):
+        return "ok"
+    return ""
 
-    # Находим последний цикл синхронизации
-    last_idx = None
-    for i, line in enumerate(lines):
-        if "Синхронизация" in line and "INFO" in line:
-            last_idx = i
-    if last_idx is not None:
-        cycle = lines[last_idx:]
-        s["cycle_errs"] = sum(1 for l in cycle if " ERROR " in l)
 
-        # Считаем оприходовано + списано в этом цикле
-        total_upd = 0
-        found_delta = False
-        for cl in cycle:
-            m = re.search(r"оприходовано (\d+) позиций", cl)
-            if m:
-                total_upd += int(m.group(1))
-                found_delta = True
-            m = re.search(r"списано (\d+) позиций", cl)
-            if m:
-                total_upd += int(m.group(1))
-                found_delta = True
-        if found_delta:
-            s["ozon_upd"] = str(total_upd)
-            s["ozon_err"] = str(s["cycle_errs"])
-        elif any("остатки актуальны" in cl for cl in cycle):
-            s["ozon_upd"] = "0"
-            s["ozon_err"] = "0"
-    return s
+def _filter_log_after(lines: list[str], since: "datetime") -> list[str]:
+    """Оставляет только строки лога с временной меткой >= since."""
+    result: list[str] = []
+    for line in lines:
+        try:
+            ts = datetime.strptime(line[:19], "%Y-%m-%d %H:%M:%S")
+            if ts >= since:
+                result.append(line)
+        except (ValueError, IndexError):
+            if result:          # строки продолжения без метки
+                result.append(line)
+    return result
 
 
 def _load_env() -> dict:
@@ -195,6 +194,110 @@ def _load_env() -> dict:
     return env
 
 
+# ─── Экстренное обнуление остатков ────────────────────────────────────────────
+
+def _api_zero_ozon(env: dict, log_fn) -> str:
+    """Обнуляет FBS-остатки всех товаров на Ozon."""
+    client_id  = env.get("OZON_CLIENT_ID", "")
+    api_key    = env.get("OZON_API_KEY", "")
+    wh_id      = int(env.get("OZON_WAREHOUSE_ID", 0))
+    headers    = {"Client-Id": client_id, "Api-Key": api_key,
+                  "Content-Type": "application/json"}
+
+    # Собираем все offer_id по страницам
+    log_fn("  Получаю список товаров Ozon...")
+    offer_ids: list[str] = []
+    last_id = ""
+    while True:
+        r = _req.post(
+            "https://api-seller.ozon.ru/v2/product/list",
+            headers=headers,
+            json={"filter": {}, "last_id": last_id, "limit": 1000},
+            timeout=30,
+        )
+        r.raise_for_status()
+        items = r.json().get("result", {}).get("items", [])
+        offer_ids.extend(i["offer_id"] for i in items)
+        last_id = r.json().get("result", {}).get("last_id", "")
+        if not items or not last_id:
+            break
+    if not offer_ids:
+        return "Ozon: товары не найдены — ничего не обнулено"
+
+    log_fn(f"  Обнуляю {len(offer_ids)} позиций на Ozon...")
+    stocks = [{"offer_id": oid, "stock": 0, "warehouse_id": wh_id}
+              for oid in offer_ids]
+    # API принимает до 100 за раз
+    total_upd = 0
+    for i in range(0, len(stocks), 100):
+        r = _req.post(
+            "https://api-seller.ozon.ru/v2/products/stocks",
+            headers=headers,
+            json={"stocks": stocks[i:i+100]},
+            timeout=30,
+        )
+        r.raise_for_status()
+        results = r.json().get("result", [])
+        total_upd += sum(1 for x in results if x.get("updated"))
+    return f"Ozon: обнулено {total_upd} из {len(offer_ids)} позиций"
+
+
+def _api_zero_wb(env: dict, log_fn) -> str:
+    """Обнуляет FBS-остатки всех товаров на WB."""
+    token = env.get("WB_API_KEY", "")
+    headers = {"Authorization": token, "Content-Type": "application/json"}
+
+    # Определяем склад
+    fallback_wh = int(env.get("WB_WAREHOUSE_ID", 0))
+    log_fn("  Получаю склады WB...")
+    r = _req.get("https://marketplace-api.wildberries.ru/api/v3/warehouses",
+                 headers=headers, timeout=30)
+    r.raise_for_status()
+    whs = r.json()
+    wh_id = whs[0]["id"] if whs else fallback_wh
+    if not wh_id:
+        return "WB: не удалось определить склад — ничего не обнулено"
+
+    # Собираем все штрихкоды через карточки
+    log_fn("  Получаю список товаров WB...")
+    barcodes: list[str] = []
+    cursor: dict = {}
+    while True:
+        body: dict = {"settings": {"cursor": {**cursor, "limit": 100},
+                                   "filter": {"withPhoto": -1}}}
+        r = _req.post(
+            "https://content-api.wildberries.ru/content/v2/get/cards/list",
+            headers=headers,
+            json=body,
+            timeout=30,
+        )
+        r.raise_for_status()
+        data   = r.json()
+        cards  = data.get("cards", [])
+        for card in cards:
+            for sz in card.get("sizes", []):
+                barcodes.extend(sz.get("skus", []))
+        cur = data.get("cursor", {})
+        if len(cards) < 100:
+            break
+        cursor = {"updatedAt": cur.get("updatedAt"), "nmID": cur.get("nmID")}
+
+    if not barcodes:
+        return "WB: штрихкоды не найдены — ничего не обнулено"
+
+    log_fn(f"  Обнуляю {len(barcodes)} штрихкодов на WB...")
+    stocks = [{"sku": bc, "amount": 0} for bc in barcodes]
+    for i in range(0, len(stocks), 100):
+        r = _req.put(
+            f"https://marketplace-api.wildberries.ru/api/v3/stocks/{wh_id}",
+            headers=headers,
+            json={"stocks": stocks[i:i+100]},
+            timeout=30,
+        )
+        r.raise_for_status()
+    return f"WB: обнулено {len(barcodes)} штрихкодов"
+
+
 # ─── Главное окно ──────────────────────────────────────────────────────────────
 class Dashboard(ctk.CTk):
 
@@ -203,7 +306,7 @@ class Dashboard(ctk.CTk):
         ctk.set_appearance_mode("dark")
         ctk.set_default_color_theme("blue")
 
-        self.title("Центр Управления")
+        self.title("Центр Управления Продажами")
         self.geometry("1100x780")
         self.minsize(900, 640)
 
@@ -211,10 +314,12 @@ class Dashboard(ctk.CTk):
         self._orphans: dict[str, int] = {}
         self._lock = threading.Lock()
 
+        self._event_lines:    list[tuple[str, str]] = []  # (текст, тег)
+        self._log_cleared_at: "datetime | None"     = self._load_cleared_at()
+
         self._chat_history: list[dict] = []  # [{role, content}]
         self._ai_typing = False
 
-        self._calc_mode = "ozon"
 
         self._build_ui()
         self._restore_state()
@@ -229,102 +334,122 @@ class Dashboard(ctk.CTk):
         # Колонка 0 (ИИ Советник) ~30%, колонка 1 (вкладки) ~70%
         self.grid_columnconfigure(0, weight=3)
         self.grid_columnconfigure(1, weight=7)
-        self.grid_rowconfigure(3, weight=1)
+        self.grid_rowconfigure(2, weight=1)
 
         # Шапка (на оба столбца)
         hdr = ctk.CTkFrame(self, fg_color="transparent")
         hdr.grid(row=0, column=0, columnspan=2, sticky="ew", padx=24, pady=(18, 4))
         hdr.grid_columnconfigure(1, weight=1)
-        ctk.CTkLabel(hdr, text="⚙  ЦЕНТР УПРАВЛЕНИЯ",
+        ctk.CTkLabel(hdr, text="⚙  ЦЕНТР УПРАВЛЕНИЯ ПРОДАЖАМИ",
                      font=ctk.CTkFont(size=22, weight="bold")).grid(row=0, column=0, sticky="w")
-        self._lbl_status = ctk.CTkLabel(
-            hdr, text="● Остановлено",
-            font=ctk.CTkFont(size=13), text_color="#666666",
+        status_f = ctk.CTkFrame(hdr, fg_color="transparent")
+        status_f.grid(row=0, column=2, sticky="e")
+        self._lbl_ozon = ctk.CTkLabel(
+            status_f, text="Ozon ●", font=ctk.CTkFont(size=13), text_color="#555555",
         )
-        self._lbl_status.grid(row=0, column=2, sticky="e")
+        self._lbl_ozon.grid(row=0, column=0, padx=(0, 16))
+        self._lbl_wb = ctk.CTkLabel(
+            status_f, text="WB ●", font=ctk.CTkFont(size=13), text_color="#555555",
+        )
+        self._lbl_wb.grid(row=0, column=1)
 
         # Кнопки (на оба столбца)
         bf = ctk.CTkFrame(self, fg_color="transparent")
-        bf.grid(row=1, column=0, columnspan=2, sticky="ew", padx=24, pady=10)
-        bf.grid_columnconfigure((0, 1), weight=1)
-        self._btn_start = ctk.CTkButton(
-            bf, text="▶   ЗАПУСТИТЬ ПРОДАЖИ",
-            font=ctk.CTkFont(size=15, weight="bold"),
-            fg_color="#1b6e1b", hover_color="#228b22", height=52,
-            command=self.start_all,
-        )
-        self._btn_start.grid(row=0, column=0, sticky="ew", padx=(0, 6))
-        self._btn_stop = ctk.CTkButton(
-            bf, text="■   ОСТАНОВИТЬ ПРОДАЖИ",
-            font=ctk.CTkFont(size=15, weight="bold"),
-            fg_color="#7a1a1a", hover_color="#9b2222", height=52,
-            command=self.stop_all,
-        )
-        self._btn_stop.grid(row=0, column=1, sticky="ew", padx=(6, 0))
+        bf.grid(row=1, column=0, columnspan=2, sticky="ew", padx=24, pady=(8, 4))
+        bf.grid_columnconfigure((0, 1, 2, 3), weight=1)
 
-        # Карточки статистики (на оба столбца)
-        sf = ctk.CTkFrame(self)
-        sf.grid(row=2, column=0, columnspan=2, sticky="ew", padx=24, pady=(4, 6))
-        sf.grid_columnconfigure((0, 1, 2, 3), weight=1)
-        self._c_sync   = self._stat_card(sf, 0, "Последняя синхронизация")
-        self._c_price  = self._stat_card(sf, 1, "В прайсе / в наличии")
-        self._c_ozon   = self._stat_card(sf, 2, "Обновлено МойСклад / ошибок")
-        self._c_prices = self._stat_card(sf, 3, "Пересчёт цен")
+        self._btn_ozon_start = ctk.CTkButton(
+            bf, text="▶  Ozon",
+            font=ctk.CTkFont(size=14, weight="bold"),
+            fg_color="#1b6e1b", hover_color="#228b22", height=44,
+            command=self.start_ozon,
+        )
+        self._btn_ozon_start.grid(row=0, column=0, sticky="ew", padx=(0, 4))
+
+        self._btn_ozon_stop = ctk.CTkButton(
+            bf, text="■  Ozon",
+            font=ctk.CTkFont(size=14, weight="bold"),
+            fg_color="#7a1a1a", hover_color="#9b2222", height=44,
+            command=self.stop_ozon,
+        )
+        self._btn_ozon_stop.grid(row=0, column=1, sticky="ew", padx=(4, 12))
+
+        self._btn_wb_start = ctk.CTkButton(
+            bf, text="▶  WB",
+            font=ctk.CTkFont(size=14, weight="bold"),
+            fg_color="#1b4a7a", hover_color="#1e5fa0", height=44,
+            command=self.start_wb,
+        )
+        self._btn_wb_start.grid(row=0, column=2, sticky="ew", padx=(12, 4))
+
+        self._btn_wb_stop = ctk.CTkButton(
+            bf, text="■  WB",
+            font=ctk.CTkFont(size=14, weight="bold"),
+            fg_color="#4a2a6a", hover_color="#5e3585", height=44,
+            command=self.stop_wb,
+        )
+        self._btn_wb_stop.grid(row=0, column=3, sticky="ew", padx=(4, 0))
+
+        self._btn_ozon_update = ctk.CTkButton(
+            bf, text="↺  Обновить цены и остатки Ozon",
+            font=ctk.CTkFont(size=13),
+            fg_color="#2a4a2a", hover_color="#336633", height=34,
+            command=self._run_ozon_update,
+        )
+        self._btn_ozon_update.grid(row=1, column=0, columnspan=2, sticky="ew", padx=(0, 12), pady=(6, 0))
+
+        self._btn_wb_update = ctk.CTkButton(
+            bf, text="↺  Обновить цены и остатки WB",
+            font=ctk.CTkFont(size=13),
+            fg_color="#1a2a4a", hover_color="#1e3a6e", height=34,
+            command=self._run_wb_update,
+        )
+        self._btn_wb_update.grid(row=1, column=2, columnspan=2, sticky="ew", padx=(12, 0), pady=(6, 0))
 
         # ИИ Советник (левая колонка, всегда виден)
         ai_panel = ctk.CTkFrame(self)
-        ai_panel.grid(row=3, column=0, sticky="nsew", padx=(24, 8), pady=(0, 18))
+        ai_panel.grid(row=2, column=0, sticky="nsew", padx=(24, 8), pady=(0, 18))
         ai_panel.grid_columnconfigure(0, weight=1)
         ai_panel.grid_rowconfigure(1, weight=1)
         self._build_ai_panel(ai_panel)
 
         # Вкладки (правая колонка)
         tabs = ctk.CTkTabview(self)
-        tabs.grid(row=3, column=1, sticky="nsew", padx=(0, 24), pady=(0, 18))
-        tabs.add("  Заказы  ")
+        tabs.grid(row=2, column=1, sticky="nsew", padx=(0, 24), pady=(0, 18))
         tabs.add("  Синхронизация  ")
-        tabs.add("  Калькулятор  ")
+        tabs.add("  Заказы Ozon  ")
+        tabs.add("  Заказы WB  ")
 
-        self._build_tab_orders(tabs.tab("  Заказы  "))
         self._build_tab_sync(tabs.tab("  Синхронизация  "))
-        self._build_tab_calc(tabs.tab("  Калькулятор  "))
+        self._ozon_order_log = self._build_order_tab(tabs.tab("  Заказы Ozon  "))
+        self._wb_order_log   = self._build_order_tab(tabs.tab("  Заказы WB  "))
 
-    def _stat_card(self, parent, col: int, title: str):
-        f = ctk.CTkFrame(parent)
-        f.grid(row=0, column=col, sticky="ew", padx=5, pady=8)
-        ctk.CTkLabel(f, text=title,
-                     font=ctk.CTkFont(size=11), text_color="#888888").pack(pady=(10, 2))
-        val = ctk.CTkLabel(f, text="—", font=ctk.CTkFont(size=20, weight="bold"))
-        val.pack()
-        sub = ctk.CTkLabel(f, text="", font=ctk.CTkFont(size=11), text_color="#888888")
-        sub.pack(pady=(0, 10))
-        return val, sub
+    # ── Вкладки заказов (универсальный билдер) ───────────────────────────────
 
-    # ── Вкладка «Заказы» ──────────────────────────────────────────────────────
-
-    def _build_tab_orders(self, tab):
+    def _build_order_tab(self, tab) -> ctk.CTkTextbox:
         tab.grid_columnconfigure(0, weight=1)
         tab.grid_rowconfigure(1, weight=1)
         oh = ctk.CTkFrame(tab, fg_color="transparent")
         oh.grid(row=0, column=0, sticky="ew", pady=(4, 0))
         oh.grid_columnconfigure(0, weight=1)
+        log_box = ctk.CTkTextbox(
+            tab, font=ctk.CTkFont(family="Consolas", size=12),
+            wrap="none", state="disabled",
+        )
         ctk.CTkButton(
             oh, text="Очистить", width=80, height=24,
             font=ctk.CTkFont(size=11),
             fg_color="transparent", border_width=1, border_color="#444",
             hover_color="#2a2a2a",
-            command=lambda: self._clear_textbox(self._order_log),
+            command=lambda lb=log_box: self._clear_textbox(lb),
         ).grid(row=0, column=1, sticky="e")
-        self._order_log = ctk.CTkTextbox(
-            tab, font=ctk.CTkFont(family="Consolas", size=12),
-            wrap="none", state="disabled",
-        )
-        self._order_log.grid(row=1, column=0, sticky="nsew", pady=(4, 6))
-        tb = self._order_log._textbox
+        log_box.grid(row=1, column=0, sticky="nsew", pady=(4, 6))
+        tb = log_box._textbox
         tb.tag_configure("err",  foreground="#ff6666")
         tb.tag_configure("warn", foreground="#ffaa44")
         tb.tag_configure("ok",   foreground="#88dd88")
         tb.tag_configure("dim",  foreground="#888888")
+        return log_box
 
     # ── Вкладка «Синхронизация» ───────────────────────────────────────────────
 
@@ -339,7 +464,7 @@ class Dashboard(ctk.CTk):
             font=ctk.CTkFont(size=11),
             fg_color="transparent", border_width=1, border_color="#444",
             hover_color="#2a2a2a",
-            command=lambda: self._clear_textbox(self._sync_log),
+            command=self._clear_sync,
         ).grid(row=0, column=1, sticky="e")
         self._sync_log = ctk.CTkTextbox(
             tab, font=ctk.CTkFont(family="Consolas", size=11),
@@ -349,188 +474,8 @@ class Dashboard(ctk.CTk):
         stb = self._sync_log._textbox
         stb.tag_configure("err",  foreground="#ff6666")
         stb.tag_configure("warn", foreground="#ffaa44")
+        stb.tag_configure("ok",   foreground="#88dd88")
         stb.tag_configure("dim",  foreground="#888888")
-
-    # ── Вкладка «Калькулятор» ─────────────────────────────────────────────────
-
-    def _build_tab_calc(self, tab):
-        tab.grid_columnconfigure(0, weight=1)
-        tab.grid_rowconfigure(1, weight=1)
-
-        # Переключатель маркетплейса
-        top = ctk.CTkFrame(tab, fg_color="transparent")
-        top.grid(row=0, column=0, sticky="ew", pady=(12, 0))
-        top.grid_columnconfigure(1, weight=1)
-
-        ctk.CTkLabel(top, text="Маркетплейс:",
-                     font=ctk.CTkFont(size=13)).grid(row=0, column=0, padx=(0, 12))
-        self._calc_seg = ctk.CTkSegmentedButton(
-            top, values=["Ozon", "WB", "Сравнение"],
-            command=self._on_calc_mode,
-            font=ctk.CTkFont(size=13),
-        )
-        self._calc_seg.set("Ozon")
-        self._calc_seg.grid(row=0, column=1, sticky="w")
-
-        # Основная область
-        body = ctk.CTkScrollableFrame(tab, fg_color="transparent")
-        body.grid(row=1, column=0, sticky="nsew", pady=(10, 0))
-        body.grid_columnconfigure((0, 1), weight=1)
-
-        # ── Поля ввода ────────────────────────────────────────────────────────
-        inputs = ctk.CTkFrame(body)
-        inputs.grid(row=0, column=0, sticky="nsew", padx=(0, 8), pady=(0, 10))
-        inputs.grid_columnconfigure(1, weight=1)
-
-        ctk.CTkLabel(inputs, text="Данные товара",
-                     font=ctk.CTkFont(size=14, weight="bold")).grid(
-            row=0, column=0, columnspan=2, pady=(12, 8), padx=16, sticky="w")
-
-        fields = [
-            ("Закупочная цена, ₽",  "purchase"),
-            ("Вес упаковки, г",      "weight"),
-            ("Длина, мм",            "length"),
-            ("Ширина, мм",           "width"),
-            ("Высота, мм",           "height"),
-        ]
-        self._calc_entries: dict[str, ctk.CTkEntry] = {}
-        for i, (label, key) in enumerate(fields):
-            ctk.CTkLabel(inputs, text=label,
-                         font=ctk.CTkFont(size=12)).grid(
-                row=i + 1, column=0, sticky="w", padx=16, pady=4)
-            e = ctk.CTkEntry(inputs, width=120, font=ctk.CTkFont(size=13))
-            e.grid(row=i + 1, column=1, sticky="ew", padx=16, pady=4)
-            self._calc_entries[key] = e
-
-        ctk.CTkButton(
-            inputs, text="Рассчитать",
-            font=ctk.CTkFont(size=14, weight="bold"),
-            height=40, command=self._run_calc,
-        ).grid(row=len(fields) + 1, column=0, columnspan=2,
-               sticky="ew", padx=16, pady=(16, 16))
-
-        # ── Результаты ────────────────────────────────────────────────────────
-        self._calc_result = ctk.CTkFrame(body)
-        self._calc_result.grid(row=0, column=1, sticky="nsew", padx=(8, 0), pady=(0, 10))
-        self._calc_result.grid_columnconfigure((0, 1), weight=1)
-
-        ctk.CTkLabel(self._calc_result, text="Результат",
-                     font=ctk.CTkFont(size=14, weight="bold")).grid(
-            row=0, column=0, columnspan=2, pady=(12, 8), padx=16, sticky="w")
-
-        self._calc_out = ctk.CTkTextbox(
-            self._calc_result,
-            font=ctk.CTkFont(family="Consolas", size=12),
-            state="disabled", height=320,
-        )
-        self._calc_out.grid(row=1, column=0, columnspan=2,
-                            sticky="nsew", padx=16, pady=(0, 16))
-
-        self._on_calc_mode("Ozon")
-
-    def _on_calc_mode(self, mode: str):
-        self._calc_mode = mode.lower()
-
-    def _run_calc(self):
-        try:
-            from pricing_engine import OzonPricer, WBPricer
-        except ImportError:
-            self._set_calc_out("Ошибка: pricing_engine.py не найден")
-            return
-
-        def _get(key: str) -> float:
-            try:
-                return float(self._calc_entries[key].get().replace(",", "."))
-            except Exception:
-                return 0.0
-
-        purchase = _get("purchase")
-        weight   = _get("weight")
-        length   = _get("length")
-        width    = _get("width")
-        height   = _get("height")
-
-        if purchase <= 0:
-            self._set_calc_out("Введите закупочную цену.")
-            return
-
-        ozon = OzonPricer()
-        wb   = WBPricer()
-
-        ozon_log   = ozon.calc_logistics(weight, length, width, height)
-        ozon_price = ozon.find_price(purchase, ozon_log)
-
-        volume_l = wb.calc_volume_l(length, width, height) if (length and width and height) else 0
-        wb_price = wb.find_price(purchase, volume_l=volume_l)
-
-        lines = []
-
-        if self._calc_mode in ("ozon", "сравнение"):
-            if ozon_price:
-                bd = ozon.breakdown(purchase, ozon_price, ozon_log)
-                lines += [
-                    "─── OZON FBS ───────────────────────",
-                    f"  Рекомендуемая цена:  {ozon_price:>8} ₽",
-                    f"  Маржа:               {bd['margin_pct']:>7.1f} %",
-                    f"  Прибыль:             {bd['profit']:>8.0f} ₽",
-                    "  ─────────────────────────────────",
-                    f"  Закупка:             {purchase:>8.0f} ₽",
-                    f"  Комиссия Ozon:       {bd['commission']:>8.0f} ₽",
-                    f"  Логистика:           {bd['logistics']:>8.0f} ₽",
-                    f"  Эквайринг:           {bd['acquiring']:>8.0f} ₽",
-                    f"  Возвраты:            {bd['return_loss']:>8.0f} ₽",
-                    f"  Прочее:              {bd['other']:>8.0f} ₽",
-                    f"  Налог УСН 6%:        {bd['tax']:>8.0f} ₽",
-                ]
-            else:
-                lines += ["─── OZON ───────────────────────────",
-                          "  Не удалось подобрать цену"]
-
-        if self._calc_mode in ("wb", "сравнение"):
-            if lines:
-                lines.append("")
-            if wb_price:
-                bd = wb.breakdown(purchase, wb_price, volume_l=volume_l)
-                vol_str = f"{bd['volume_l']:.4f} л" if volume_l else f"{wb.DEFAULT_VOLUME_L} л (дефолт)"
-                lines += [
-                    "─── WB FBS ─────────────────────────",
-                    f"  Рекомендуемая цена:  {wb_price:>8} ₽",
-                    f"  Маржа:               {bd['margin_pct']:>7.1f} %",
-                    f"  Прибыль:             {bd['profit']:>8.0f} ₽",
-                    "  ─────────────────────────────────",
-                    f"  Объём товара:        {vol_str:>12}",
-                    f"  Закупка:             {purchase:>8.0f} ₽",
-                    f"  Комиссия WB (17%):   {bd['commission']:>8.0f} ₽",
-                    f"  Логистика:           {bd['logistics']:>8.0f} ₽",
-                    f"  Эквайринг:           {bd['acquiring']:>8.0f} ₽",
-                    f"  Резерв SPP (7%):     {bd['spp']:>8.0f} ₽",
-                    f"  Возвраты (3%):       {bd['return_cost']:>8.0f} ₽",
-                    f"  Упаковка:            {bd['other']:>8.0f} ₽",
-                    f"  Налог УСН 6%:        {bd['tax']:>8.0f} ₽",
-                ]
-            else:
-                lines += ["─── WB ─────────────────────────────",
-                          "  Не удалось подобрать цену"]
-
-        if self._calc_mode == "сравнение" and ozon_price and wb_price:
-            ozon_m = ozon.calc_margin(purchase, ozon_price, ozon_log) * 100
-            wb_m   = wb.calc_margin(purchase, wb_price, volume_l=volume_l) * 100
-            winner = "Ozon" if ozon_m >= wb_m else "WB   "
-            lines += [
-                "",
-                "─── СРАВНЕНИЕ ──────────────────────",
-                f"  Ozon: {ozon_price} ₽  маржа {ozon_m:.1f}%",
-                f"  WB:   {wb_price} ₽  маржа {wb_m:.1f}%",
-                f"  Выгоднее: {winner}  (+{abs(ozon_m - wb_m):.1f}%)",
-            ]
-
-        self._set_calc_out("\n".join(lines))
-
-    def _set_calc_out(self, text: str):
-        self._calc_out.configure(state="normal")
-        self._calc_out.delete("1.0", "end")
-        self._calc_out.insert("1.0", text)
-        self._calc_out.configure(state="disabled")
 
     # ── ИИ Советник (постоянная правая панель) ────────────────────────────────
 
@@ -704,58 +649,199 @@ class Dashboard(ctk.CTk):
     # Управление процессами
     # ══════════════════════════════════════════════════════════════════════════
 
-    def start_all(self):
-        uv = _uv()
+    def _start_platform(self, ids: set[str], label: str):
+        python = _python()
         for s in MANAGED_SCRIPTS:
+            if s["id"] not in ids:
+                continue
             if self._running(s["id"]):
+                continue
+
+            # Если daemon_guard уже держит живой процесс — усыновить его
+            lock_file = DAEMON_LOCKS_DIR / f"{s['path'].stem}.pid"
+            if lock_file.exists():
+                try:
+                    old_pid = int(lock_file.read_text().strip())
+                    if _pid_alive(old_pid):
+                        with self._lock:
+                            self._orphans[s["id"]] = old_pid
+                        self._append_sync_log(
+                            f"[Dashboard] [{label}] {s['name']} уже запущен (PID {old_pid})", "dim"
+                        )
+                        continue
+                except Exception:
+                    pass
+
+            if not s["path"].exists():
+                self._append_sync_log(
+                    f"[Dashboard] [{label}] Скрипт не найден: {s['path'].name}", "warn"
+                )
                 continue
             try:
                 proc = subprocess.Popen(
-                    [uv, "run", "--with", s["deps"], str(s["path"])],
+                    [python, str(s["path"])],
                     cwd=str(BASE_DIR),
                     creationflags=subprocess.CREATE_NO_WINDOW,
                 )
                 with self._lock:
                     self._procs[s["id"]] = proc
                 self._append_sync_log(
-                    f"[Dashboard] Запущен {s['name']}  (PID {proc.pid})", "dim"
+                    f"[Dashboard] [{label}] Запущен {s['name']}  (PID {proc.pid})", "dim"
                 )
             except Exception as e:
-                self._append_sync_log(f"[Dashboard] Ошибка запуска {s['name']}: {e}", "err")
+                self._append_sync_log(
+                    f"[Dashboard] [{label}] Ошибка запуска {s['name']}: {e}", "err"
+                )
         self._save_state()
         self._refresh_ui()
 
-    def stop_all(self):
+    def _stop_platform(self, ids: set[str], label: str):
         with self._lock:
-            procs_snapshot = list(self._procs.values())
-            self._procs.clear()
-        orphans_snapshot = list(self._orphans.values())
-        self._orphans.clear()
+            to_kill = {sid: p for sid, p in self._procs.items() if sid in ids}
+            for sid in ids:
+                self._procs.pop(sid, None)
 
-        for proc in procs_snapshot:
+        for sid, proc in to_kill.items():
             try:
-                subprocess.run(
-                    ["taskkill", "/PID", str(proc.pid), "/T", "/F"],
-                    capture_output=True, timeout=5,
-                )
+                subprocess.run(["taskkill", "/PID", str(proc.pid), "/T", "/F"],
+                               capture_output=True, timeout=5)
             except Exception:
+                try: proc.kill()
+                except Exception: pass
+
+        for sid in ids:
+            pid = self._orphans.pop(sid, None)
+            if pid:
                 try:
-                    proc.kill()
+                    subprocess.run(["taskkill", "/PID", str(pid), "/T", "/F"],
+                                   capture_output=True, timeout=5)
                 except Exception:
                     pass
 
-        for pid in orphans_snapshot:
-            try:
-                subprocess.run(["taskkill", "/PID", str(pid), "/T", "/F"],
-                               capture_output=True, timeout=5)
-            except Exception:
-                pass
-        try:
-            STATE_FILE.write_text("{}", encoding="utf-8")
-        except Exception:
-            pass
-        self._append_sync_log("[Dashboard] Все скрипты остановлены", "warn")
+        self._save_state()
+        self._append_sync_log(f"[Dashboard] [{label}] Остановлен", "warn")
         self._refresh_ui()
+
+    def start_ozon(self): self._start_platform(OZON_IDS, "Ozon")
+    def start_wb(self):   self._start_platform(WB_IDS,   "WB")
+
+    def stop_ozon(self):
+        if not messagebox.askyesno(
+            "Экстренная остановка Ozon",
+            "Обнулить остатки ВСЕХ товаров на Ozon\nи остановить все Ozon-скрипты?",
+            icon="warning", default="no",
+        ):
+            return
+        self._stop_platform(OZON_IDS, "Ozon")
+        if not _REQUESTS_OK:
+            self._append_sync_log("[Dashboard] [Ozon] Модуль requests недоступен — остатки не обнулены", "err")
+            return
+        self._append_sync_log("[Dashboard] [Ozon] Обнуляю остатки на Ozon...", "warn")
+        threading.Thread(target=self._do_zero_ozon, daemon=True).start()
+
+    def _do_zero_ozon(self):
+        def log(m): self.after(0, self._append_sync_log, f"[Dashboard] [Ozon] {m}", "warn")
+        try:
+            env    = _load_env()
+            result = _api_zero_ozon(env, log)
+            self.after(0, self._append_sync_log, f"[Dashboard] [Ozon] {result}", "ok")
+        except Exception as e:
+            self.after(0, self._append_sync_log, f"[Dashboard] [Ozon] Ошибка API: {e}", "err")
+
+    def stop_wb(self):
+        if not messagebox.askyesno(
+            "Экстренная остановка WB",
+            "Обнулить остатки ВСЕХ товаров на Wildberries\nи остановить все WB-скрипты?",
+            icon="warning", default="no",
+        ):
+            return
+        self._stop_platform(WB_IDS, "WB")
+        if not _REQUESTS_OK:
+            self._append_sync_log("[Dashboard] [WB] Модуль requests недоступен — остатки не обнулены", "err")
+            return
+        self._append_sync_log("[Dashboard] [WB] Обнуляю остатки на WB...", "warn")
+        threading.Thread(target=self._do_zero_wb, daemon=True).start()
+
+    def _do_zero_wb(self):
+        def log(m): self.after(0, self._append_sync_log, f"[Dashboard] [WB] {m}", "warn")
+        try:
+            env    = _load_env()
+            result = _api_zero_wb(env, log)
+            self.after(0, self._append_sync_log, f"[Dashboard] [WB] {result}", "ok")
+        except Exception as e:
+            self.after(0, self._append_sync_log, f"[Dashboard] [WB] Ошибка API: {e}", "err")
+
+    def _run_ozon_update(self):
+        script = BASE_DIR / "scripts" / "ozon_direct_update.py"
+        if not script.exists():
+            self._append_sync_log("[Dashboard] Скрипт ozon_direct_update.py не найден", "warn")
+            return
+        python = _python()
+        self._append_sync_log("[Dashboard] [Ozon] Запуск обновления цен и остатков...", "dim")
+        self._btn_ozon_update.configure(state="disabled", text="Обновление Ozon...")
+
+        def run():
+            try:
+                proc = subprocess.Popen(
+                    [python, str(script), "--once"],
+                    cwd=str(BASE_DIR),
+                    creationflags=subprocess.CREATE_NO_WINDOW,
+                )
+                proc.wait()
+                if proc.returncode == 0:
+                    self.after(0, self._append_sync_log,
+                               "[Dashboard] [Ozon] Обновление завершено", "")
+                else:
+                    self.after(0, self._append_sync_log,
+                               f"[Dashboard] [Ozon] Обновление завершилось с ошибкой (код {proc.returncode})", "warn")
+            except Exception as e:
+                self.after(0, self._append_sync_log,
+                           f"[Dashboard] [Ozon] Ошибка запуска: {e}", "err")
+            finally:
+                self.after(0, lambda: self._btn_ozon_update.configure(
+                    state="normal", text="↺  Обновить цены и остатки Ozon"
+                ))
+
+        threading.Thread(target=run, daemon=True).start()
+
+    def _run_wb_update(self):
+        python = _python()
+        stock_script = BASE_DIR / "scripts" / "wb_stock_sync.py"
+        price_script = BASE_DIR / "scripts" / "wb_price_recalc.py"
+        for s in (stock_script, price_script):
+            if not s.exists():
+                self._append_sync_log(f"[Dashboard] Скрипт {s.name} не найден", "warn")
+                return
+        self._append_sync_log("[Dashboard] [WB] Запуск обновления остатков и цен...", "dim")
+        self._btn_wb_update.configure(state="disabled", text="Обновление WB...")
+
+        def run():
+            try:
+                for script, label in ((stock_script, "остатки"), (price_script, "цены")):
+                    self.after(0, self._append_sync_log,
+                               f"[Dashboard] [WB] Обновляем {label}...", "dim")
+                    proc = subprocess.Popen(
+                        [python, str(script), "--once"],
+                        cwd=str(BASE_DIR),
+                        creationflags=subprocess.CREATE_NO_WINDOW,
+                    )
+                    proc.wait()
+                    if proc.returncode != 0:
+                        self.after(0, self._append_sync_log,
+                                   f"[Dashboard] [WB] {label}: завершилось с ошибкой (код {proc.returncode})", "warn")
+                    else:
+                        self.after(0, self._append_sync_log,
+                                   f"[Dashboard] [WB] {label}: готово", "")
+                self.after(0, self._append_sync_log, "[Dashboard] [WB] Обновление завершено", "")
+            except Exception as e:
+                self.after(0, self._append_sync_log,
+                           f"[Dashboard] [WB] Ошибка: {e}", "err")
+            finally:
+                self.after(0, lambda: self._btn_wb_update.configure(
+                    state="normal", text="↺  Обновить цены и остатки WB"
+                ))
+
+        threading.Thread(target=run, daemon=True).start()
 
     def _running(self, sid: str) -> bool:
         with self._lock:
@@ -763,10 +849,21 @@ class Dashboard(ctk.CTk):
             if proc is not None and proc.poll() is None:
                 return True
         pid = self._orphans.get(sid)
-        return bool(pid and _pid_alive(pid))
-
-    def _any_running(self) -> bool:
-        return any(self._running(s["id"]) for s in MANAGED_SCRIPTS)
+        if pid and _pid_alive(pid):
+            return True
+        # Последний рубеж: проверить lock-файл daemon_guard
+        script = next((s for s in MANAGED_SCRIPTS if s["id"] == sid), None)
+        if script:
+            lock_file = DAEMON_LOCKS_DIR / f"{script['path'].stem}.pid"
+            if lock_file.exists():
+                try:
+                    lock_pid = int(lock_file.read_text().strip())
+                    if _pid_alive(lock_pid):
+                        self._orphans[sid] = lock_pid
+                        return True
+                except Exception:
+                    pass
+        return False
 
     # ══════════════════════════════════════════════════════════════════════════
     # Состояние
@@ -809,70 +906,30 @@ class Dashboard(ctk.CTk):
         self.after(REFRESH_MS, self._schedule_refresh)
 
     def _refresh_ui(self):
-        running = self._any_running()
-        self._lbl_status.configure(
-            text="● Работает" if running else "● Остановлено",
-            text_color="#22cc22" if running else "#666666",
-        )
-        self._btn_start.configure(state="disabled" if running else "normal")
-        self._btn_stop.configure(state="normal" if running else "disabled")
+        ozon_on = any(self._running(sid) for sid in OZON_IDS)
+        wb_on   = any(self._running(sid) for sid in WB_IDS)
 
-        stock = next((s for s in MANAGED_SCRIPTS if s["id"] == "stock_sync"), None)
-        if stock:
-            self._update_stats(_parse_stats(_read_log(stock["log"])))
+        self._lbl_ozon.configure(text_color="#22cc22" if ozon_on else "#555555")
+        self._lbl_wb.configure(text_color="#22cc22" if wb_on else "#555555")
+
+        self._btn_ozon_start.configure(state="disabled" if ozon_on else "normal")
+        self._btn_ozon_stop.configure(state="normal"   if ozon_on else "disabled")
+        self._btn_wb_start.configure(state="disabled"  if wb_on   else "normal")
+        self._btn_wb_stop.configure(state="normal"     if wb_on   else "disabled")
 
         self._update_sync_log()
 
-        self._update_price_card()
+        ozon_order = next((s for s in MANAGED_SCRIPTS if s["id"] == "order_sync"), None)
+        if ozon_order:
+            self._fill_log_textbox(self._ozon_order_log, _read_log(ozon_order["log"]))
 
-        order = next((s for s in MANAGED_SCRIPTS if s["id"] == "order_sync"), None)
-        if order:
-            self._update_order_log(_read_log(order["log"]))
+        wb_order = next((s for s in MANAGED_SCRIPTS if s["id"] == "wb_order_sync"), None)
+        if wb_order:
+            self._fill_log_textbox(self._wb_order_log, _read_log(wb_order["log"]))
 
-    def _update_stats(self, s: dict):
-        sync_val, sync_sub = self._c_sync
-        sync_val.configure(text=s["last_sync"])
-        sync_sub.configure(text=s["next_sync"])
-
-        price_val, price_sub = self._c_price
-        price_val.configure(text=s["price"])
-        price_sub.configure(text=s["instock"])
-
-        ozon_val, ozon_sub = self._c_ozon
-        err_n = s["ozon_err"]
-        if err_n not in ("—", "0"):
-            color = "#ff5555"
-        elif s["ozon_upd"] != "—":
-            color = "#22cc22"
-        else:
-            color = "#888888"
-        ozon_val.configure(text=f"{s['ozon_upd']} / {err_n}", text_color=color)
-        ozon_sub.configure(
-            text=f"ошибок в цикле: {s['cycle_errs']}" if s["cycle_errs"] else ""
-        )
-
-    def _update_price_card(self):
-        val, sub = self._c_prices
-        price_log = BASE_DIR / "data" / "price_recalc_last.json"
-        if not price_log.exists():
-            val.configure(text="—")
-            sub.configure(text="ещё не запускался")
-            return
-        try:
-            d = json.loads(price_log.read_text(encoding="utf-8"))
-            ts  = d.get("ts", "")
-            upd = d.get("updated", "—")
-            skp = d.get("skipped", 0)
-            dt  = datetime.strptime(ts, "%Y-%m-%d %H:%M:%S")
-            val.configure(text=dt.strftime("%d.%m  %H:%M"))
-            sub.configure(text=f"обновлено: {upd}  пропущено: {skp}")
-        except Exception:
-            val.configure(text="—")
-            sub.configure(text="ошибка чтения")
-
-    def _update_order_log(self, lines: list[str]):
-        tb = self._order_log._textbox
-        self._order_log.configure(state="normal")
+    def _fill_log_textbox(self, widget: ctk.CTkTextbox, lines: list[str]):
+        tb = widget._textbox
+        widget.configure(state="normal")
         tb.delete("1.0", "end")
         for line in lines:
             if " ERROR " in line:
@@ -887,42 +944,72 @@ class Dashboard(ctk.CTk):
                 tag = ""
             tb.insert("end", line + "\n", tag)
         tb.see("end")
-        self._order_log.configure(state="disabled")
+        widget.configure(state="disabled")
+
+    @staticmethod
+    def _load_cleared_at() -> "datetime | None":
+        try:
+            return datetime.fromisoformat(CLEARED_AT_FILE.read_text().strip())
+        except Exception:
+            return None
+
+    def _clear_sync(self):
+        self._event_lines.clear()
+        self._log_cleared_at = datetime.now()
+        try:
+            CLEARED_AT_FILE.write_text(self._log_cleared_at.isoformat())
+        except Exception:
+            pass
+        self._update_sync_log()
 
     def _update_sync_log(self):
         tb = self._sync_log._textbox
+        yview     = tb.yview()
+        at_bottom = yview[1] >= 0.99
+
         self._sync_log.configure(state="normal")
         tb.delete("1.0", "end")
 
+        # ── События дашборда ──────────────────────────────────────────────
+        for text, tag in self._event_lines:
+            tb.insert("end", text + "\n", tag)
+        if self._event_lines:
+            tb.insert("end", "\n")
+
+        # ── Логи скриптов ─────────────────────────────────────────────────
         for s in MANAGED_SCRIPTS:
             name   = s["name"]
-            header = f"── {name} " + "─" * max(2, 56 - len(name))
+            header = f"── {name} " + "─" * max(2, 54 - len(name))
             tb.insert("end", header + "\n", "dim")
 
-            log_lines = _read_log(s["log"], 150)
+            log_lines = _read_log(s["log"], 200)
             if not log_lines:
                 tb.insert("end", "  нет данных\n\n", "dim")
                 continue
 
-            for line in _get_last_cycle(log_lines):
-                if " ERROR " in line:
-                    tag = "err"
-                elif " WARNING " in line:
-                    tag = "warn"
-                else:
-                    tag = ""
-                tb.insert("end", line + "\n", tag)
+            cycle = _get_last_cycle(log_lines)
+            if self._log_cleared_at is not None:
+                cycle = _filter_log_after(cycle, self._log_cleared_at)
+
+            if not cycle:
+                tb.insert("end", "  нет новых данных\n\n", "dim")
+                continue
+
+            for line in cycle:
+                tb.insert("end", line + "\n", _log_tag(line))
             tb.insert("end", "\n")
 
-        tb.see("end")
+        if at_bottom:
+            tb.see("end")
+        else:
+            tb.yview_moveto(yview[0])
+
         self._sync_log.configure(state="disabled")
 
     def _append_sync_log(self, msg: str, tag: str = ""):
-        tb = self._sync_log._textbox
-        self._sync_log.configure(state="normal")
-        tb.insert("end", msg + "\n", tag)
-        tb.see("end")
-        self._sync_log.configure(state="disabled")
+        now = datetime.now().strftime("%H:%M:%S")
+        self._event_lines.append((f"{now}  {msg}", tag))
+        self.after(0, self._update_sync_log)
 
     def _clear_textbox(self, widget: ctk.CTkTextbox):
         widget.configure(state="normal")
@@ -931,6 +1018,10 @@ class Dashboard(ctk.CTk):
 
     def _on_close(self):
         self._save_state()
+        try:
+            LOCK_FILE.unlink(missing_ok=True)
+        except Exception:
+            pass
         self.destroy()
 
 

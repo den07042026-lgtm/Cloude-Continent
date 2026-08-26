@@ -10,7 +10,7 @@ autoliga_mail_fetcher.py
   4. Сохраняет в data/suppliers/autoliga/
   5. Telegram-уведомление об успехе или ошибке
 
-Запуск (демон, срабатывает ежедневно в 06:15):
+Запуск (демон, срабатывает ежедневно в 09:00):
   uv run scripts/autoliga_mail_fetcher.py
 
 Разовый запуск:
@@ -39,6 +39,11 @@ try:
     _TG_OK = True
 except ImportError:
     _TG_OK = False
+
+try:
+    from daemon_guard import single_instance
+except ImportError:
+    def single_instance(_): pass
 
 # ─── Пути ─────────────────────────────────────────────────────────────────────
 BASE_DIR   = Path(__file__).parent.parent
@@ -89,8 +94,12 @@ def _decode_header(raw: str) -> str:
 
 
 # ─── Основная функция ─────────────────────────────────────────────────────────
-def fetch_once(env: dict, days_back: int = 0) -> bool:
-    """Скачивает прайс. days_back=0 — сегодня, 1 — вчера, и т.д."""
+def fetch_once(env: dict, days_back: int = 0, alert_on_fail: bool = True) -> bool:
+    """
+    Скачивает прайс. days_back=0 — сегодня, 1 — вчера, и т.д.
+    alert_on_fail=False подавляет Telegram-алерт при неудаче (используется
+    при автоматических повторах каждые 10 минут, чтобы не спамить).
+    """
     user     = env.get("GMAIL_USER", "")
     password = env.get("GMAIL_APP_PASSWORD", "").replace(" ", "")
     sender   = env.get("AUTOLIGA_SENDER", "")
@@ -108,7 +117,8 @@ def fetch_once(env: dict, days_back: int = 0) -> bool:
         mail.login(user, password)
     except Exception as e:
         log.error(f"Gmail: ошибка входа — {e}")
-        _notify_error(env, f"Ошибка входа в Gmail: {e}")
+        if alert_on_fail:
+            _notify_error(env, f"Ошибка входа в Gmail: {e}")
         return False
 
     mail.select("INBOX")
@@ -123,7 +133,8 @@ def fetch_once(env: dict, days_back: int = 0) -> bool:
 
     if not ids:
         log.warning(f"Автолига: писем от {sender} сегодня не найдено")
-        _notify_error(env, f"Прайс Автолиги не найден в почте (ожидался от {sender})")
+        if alert_on_fail:
+            _notify_error(env, f"Прайс Автолиги не найден в почте (ожидался от {sender})")
         mail.logout()
         return False
 
@@ -162,7 +173,8 @@ def fetch_once(env: dict, days_back: int = 0) -> bool:
 
     if not saved_path:
         log.error("Автолига: вложение .xls не найдено в письме")
-        _notify_error(env, "Письмо от Автолиги найдено, но вложение .xls отсутствует")
+        if alert_on_fail:
+            _notify_error(env, "Письмо от Автолиги найдено, но вложение .xls отсутствует")
         return False
 
     # Telegram-уведомление об успехе
@@ -191,10 +203,14 @@ def _notify_error(env: dict, msg_text: str):
             pass
 
 
-# ─── Планировщик: ждёт 06:15 ──────────────────────────────────────────────────
-def _seconds_until_0615() -> float:
+# ─── Планировщик: ждёт 09:00, затем ретрай каждые 10 мин до успеха ──────────
+RETRY_MINUTES           = 10
+ESCALATE_AFTER_MINUTES  = 180   # один эскалирующий алерт, если ждём дольше 3 часов
+
+
+def _seconds_until_0900() -> float:
     now    = datetime.now()
-    target = now.replace(hour=6, minute=15, second=0, microsecond=0)
+    target = now.replace(hour=9, minute=0, second=0, microsecond=0)
     if now >= target:
         target += timedelta(days=1)
     return (target - now).total_seconds()
@@ -208,22 +224,40 @@ def main():
                         help="Искать письма начиная с N дней назад (умолч. 0 = сегодня)")
     args = parser.parse_args()
 
+    single_instance(__file__)
     env = load_env()
 
     if args.once:
         fetch_once(env, days_back=args.days_back)
         return
 
-    log.info("Планировщик Автолиги запущен: загрузка ежедневно в 06:15")
+    log.info("Планировщик Автолиги запущен: загрузка ежедневно в 09:00 (ретрай каждые 10 мин до результата)")
     while True:
-        wait = _seconds_until_0615()
+        wait = _seconds_until_0900()
         next_run = (datetime.now() + timedelta(seconds=wait)).strftime("%d.%m %H:%M")
         log.info(f"Следующая загрузка в {next_run} (через {wait / 3600:.1f} ч)")
         time.sleep(wait)
-        try:
-            fetch_once(env)
-        except Exception:
-            log.exception("Необработанная ошибка при загрузке прайса")
+
+        elapsed_min = 0
+        escalated   = False
+        while True:
+            try:
+                ok = fetch_once(env, alert_on_fail=(elapsed_min == 0))
+            except Exception:
+                log.exception("Необработанная ошибка при загрузке прайса")
+                ok = False
+            if ok:
+                break
+            if elapsed_min >= ESCALATE_AFTER_MINUTES and not escalated:
+                escalated = True
+                _notify_error(
+                    env,
+                    f"прайс не пришёл уже {elapsed_min // 60} ч — проверьте вручную "
+                    f"(автоповтор каждые {RETRY_MINUTES} мин продолжается)",
+                )
+            log.warning(f"Автолига: письма ещё нет — повтор через {RETRY_MINUTES} мин")
+            time.sleep(RETRY_MINUTES * 60)
+            elapsed_min += RETRY_MINUTES
         time.sleep(120)
 
 

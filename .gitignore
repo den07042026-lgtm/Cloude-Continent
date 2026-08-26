@@ -18,6 +18,8 @@ __pycache__/
 # Данные (могут быть большими)
 data/raw/
 data/processed/
+autoparts-ecommerce/data/
+autoparts-ecommerce/reports/
 mikado_output/
 *.xlsx
 *.csv
@@ -25,6 +27,11 @@ mikado_output/
 # Логи
 logs/
 *.log
+
+# Локальные доступы и выгрузки поставщиков
+*token*.txt
+*токен*.txt
+*.xls
 
 # Chrome профиль (содержит авторизацию)
 chrome_profile/

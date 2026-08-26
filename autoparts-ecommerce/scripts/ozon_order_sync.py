@@ -1,26 +1,27 @@
 """
 ozon_order_sync.py
 ══════════════════════════════════════════════════════════════════════════════
-Мониторит новые заказы в МойСклад (куда Ozon автоматически передаёт заказы
-через интеграцию) и размещает заказ у Микадо.
+Мониторит новые FBS-заказы напрямую из Ozon API и размещает заказ у Микадо.
 
 Поток:
-  Ozon → МойСклад (автосинк) → [этот скрипт] → Микадо + Telegram
+  Ozon API (awaiting_packaging) → [этот скрипт] → Микадо + Telegram
 
 Логика (каждые POLL_INTERVAL_MINUTES минут):
-  1. GET /entity/customerorder — заказы, созданные с момента последней проверки
-  2. Для каждого нового заказа:
-     a. Извлечь позиции: article без суффикса "-con" → код Mikado
+  1. GET /v3/posting/fbs/list?status=awaiting_packaging — все неупакованные заказы
+  2. Фильтруем уже обработанные по posting_number (хранится в data/order_sync_state.json)
+  3. Для каждого нового заказа:
+     a. Извлечь позиции: offer_id без суффикса "-con" → код Mikado
      b. Проверить наличие по актуальному прайсу Mikado
      c. Авторизоваться на mikado-parts.ru → для каждой позиции:
         - ввести каталожный номер в поиск → перейти на карточку
         - проверить наличие Волгоград → заполнить «Заказ:» → нажать «Заказать»
      d. Отправить уведомление в Telegram (заказ + результат)
      e. При ошибке Mikado → Telegram-алерт для ручной обработки
-  3. Сохранить обработанные ID и timestamp
+  4. Сохранить обработанные posting_number
 
 Переменные .env:
-    MOYSKLAD_TOKEN=...
+    OZON_CLIENT_ID=...
+    OZON_API_KEY=...
     MIKADO_CODE=35275
     MIKADO_PASSWORD=...
     TG_BOT_TOKEN=...
@@ -66,25 +67,32 @@ try:
 except ImportError:
     _TG_OK = False
 
+try:
+    from daemon_guard import single_instance
+except ImportError:
+    def single_instance(_): pass
+
+from mikado_price_fetcher import download_mikado_price_bytes
+
 # ─── Константы ────────────────────────────────────────────────────────────────
 BASE_DIR       = Path(__file__).parent.parent
 ENV_FILE       = BASE_DIR / ".env"
 STATE_FILE     = BASE_DIR / "data" / "order_sync_state.json"
 LOG_FILE       = BASE_DIR / "logs" / "ozon_order_sync.log"
 ORDERS_DIR     = BASE_DIR / "data" / "orders"
-PRICE_FALLBACK = Path("C:/Users/Admin/Documents/Ecommerce/mikado_price_34.xlsx")
 
 MIKADO_PRICE_URL  = (
     "https://mikado-parts.ru/api/Price/GetPriceExcel"
-    "?StockId=34&Key=BBE2E029-54CF-4D9E-9FAC-9FE25E85B300"
+    "?StockId=34&Key=YOUR_MIKADO_PRICE_KEY"
 )
 MIKADO_LOGIN_URL  = "https://mikado-parts.ru/office/SECURE.asp"
 MIKADO_SEARCH_URL = "https://mikado-parts.ru/office/galleyp.asp"
-MIKADO_ORDER_URL  = "https://mikado-parts.ru/office/pp0.asp"       # AJAX-эндпоинт оформления заказа
+MIKADO_ORDER_URL  = "https://mikado-parts.ru/office/pp0.asp"
 
-MS_BASE        = "https://api.moysklad.ru/api/remap/1.2"
-ARTICLE_SUFFIX = "-con"
+OZON_API_BASE         = "https://api-seller.ozon.ru"
+ARTICLE_SUFFIX        = "-con"
 POLL_INTERVAL_MINUTES = 15
+MAX_PROCESSED_RECORDS = 5000  # не хранить больше N posting_number в state
 
 # ─── Логирование ──────────────────────────────────────────────────────────────
 for d in (LOG_FILE.parent, ORDERS_DIR, STATE_FILE.parent):
@@ -115,21 +123,13 @@ def load_env() -> dict:
 
 
 # ─── State ────────────────────────────────────────────────────────────────────
-def _default_moment() -> str:
-    return (datetime.now() - timedelta(hours=24)).strftime("%Y-%m-%d %H:%M:%S.000")
-
-
 def load_state() -> dict:
     if not STATE_FILE.exists():
-        return {"processed": [], "last_moment": _default_moment()}
+        return {"processed": []}
     try:
-        state = json.loads(STATE_FILE.read_text(encoding="utf-8"))
-        # Защита от невалидной даты (эпоха 1970)
-        if state.get("last_moment", "").startswith("1970"):
-            state["last_moment"] = _default_moment()
-        return state
+        return json.loads(STATE_FILE.read_text(encoding="utf-8"))
     except Exception:
-        return {"processed": [], "last_moment": _default_moment()}
+        return {"processed": []}
 
 
 def save_state(state: dict) -> None:
@@ -142,105 +142,89 @@ def save_state(state: dict) -> None:
         log.error(f"Ошибка сохранения state: {e}")
 
 
-# ─── МойСклад: получение заказов ──────────────────────────────────────────────
-def _ms_headers(token: str) -> dict:
-    return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+# ─── Ozon: получение заказов ──────────────────────────────────────────────────
+def _ozon_headers(client_id: str, api_key: str) -> dict:
+    return {
+        "Client-Id": client_id,
+        "Api-Key": api_key,
+        "Content-Type": "application/json",
+    }
 
 
-def get_ms_orders(token: str, since_moment: str) -> list[dict]:
+def get_ozon_new_orders(client_id: str, api_key: str) -> list[dict]:
     """
-    Возвращает customerorder, созданные после since_moment.
-    since_moment формат: '2024-05-10 12:00:00.000'
+    Возвращает все FBS-отправления со статусом awaiting_packaging.
+    Это заказы, которые нужно упаковать → именно их нужно закупить у Mikado.
     """
-    if not token:
-        log.warning("MOYSKLAD_TOKEN не задан — пропускаем опрос МойСклад")
+    if not client_id or not api_key:
+        log.warning("OZON_CLIENT_ID / OZON_API_KEY не заданы — пропускаем опрос Ozon")
         return []
 
-    all_orders: list[dict] = []
+    from datetime import timezone
+
+    all_postings: list[dict] = []
     offset = 0
-    limit  = 100
+    # Ozon API требует диапазон дат; берём последние 30 дней
+    now_utc   = datetime.now(timezone.utc)
+    since_str = (now_utc - timedelta(days=30)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    to_str    = now_utc.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     while True:
         try:
-            r = requests.get(
-                f"{MS_BASE}/entity/customerorder",
-                headers=_ms_headers(token),
-                params={
-                    "filter": f"moment>{since_moment}",
-                    "expand": "positions,positions.assortment",
-                    "order":  "moment,asc",
-                    "limit":  limit,
+            resp = requests.post(
+                f"{OZON_API_BASE}/v3/posting/fbs/list",
+                headers=_ozon_headers(client_id, api_key),
+                json={
+                    "dir":    "asc",
+                    "filter": {
+                        "status": "awaiting_packaging",
+                        "since":  since_str,
+                        "to":     to_str,
+                    },
+                    "limit":  50,
                     "offset": offset,
+                    "with":   {"analytics_data": False, "financial_data": False},
                 },
                 timeout=30,
             )
-            r.raise_for_status()
-            rows = r.json().get("rows", [])
-            all_orders.extend(rows)
-            if len(rows) < limit:
+            resp.raise_for_status()
+            result   = resp.json().get("result", {})
+            postings = result.get("postings", [])
+            all_postings.extend(postings)
+            if not result.get("has_next"):
                 break
-            offset += limit
+            offset += 50
         except Exception as e:
-            log.error(f"МойСклад: ошибка получения заказов: {e}")
+            log.error(f"Ozon: ошибка получения заказов: {e}")
             break
 
-    log.info(f"МойСклад: получено заказов — {len(all_orders)}")
-    return all_orders
+    log.info(f"Ozon: получено {len(all_postings)} заказов (awaiting_packaging)")
+    return all_postings
 
 
-def parse_ms_items(order: dict) -> list[dict]:
-    """
-    Извлекает позиции из customerorder.
-    МойСклад хранит article как offer_id ('a22025-con').
-    """
+def parse_ozon_items(posting: dict) -> list[dict]:
+    """Извлекает позиции из Ozon-отправления."""
     items = []
-    positions_data = order.get("positions", {})
-
-    if isinstance(positions_data, dict):
-        rows = positions_data.get("rows", [])
-    else:
-        rows = []
-
-    for pos in rows:
-        assortment = pos.get("assortment", {})
-        article    = str(assortment.get("article") or assortment.get("code") or "").strip()
-        name       = assortment.get("name", "")
-        quantity   = int(pos.get("quantity", 1))
-        price_kop  = int(pos.get("price", 0))   # цена в копейках
-
-        if not article:
+    for prod in posting.get("products", []):
+        offer_id = str(prod.get("offer_id", "")).strip()
+        if not offer_id:
             continue
-
-        mikado_code = article.removesuffix(ARTICLE_SUFFIX)
+        mikado_code = offer_id.removesuffix(ARTICLE_SUFFIX)
         items.append({
-            "offer_id":    article,
+            "offer_id":    offer_id,
             "mikado_code": mikado_code,
-            "name":        name,
-            "quantity":    quantity,
-            "price_rub":   price_kop / 100,
+            "name":        prod.get("name", ""),
+            "quantity":    int(prod.get("quantity", 1)),
+            "price_rub":   float(prod.get("price", 0)),
         })
     return items
 
 
 # ─── Прайс Mikado ─────────────────────────────────────────────────────────────
 def load_mikado_price() -> dict[str, dict]:
-    """Загружает прайс (онлайн → локальный). Возвращает {code: {qty, price, name}}."""
-    content = None
-    try:
-        resp = requests.get(MIKADO_PRICE_URL, timeout=60)
-        resp.raise_for_status()
-        if resp.content[:2] == b"PK":
-            content = resp.content
-    except Exception as e:
-        log.warning(f"Mikado прайс онлайн: {e}, берём локальный")
-
-    if content:
-        wb = openpyxl.load_workbook(io.BytesIO(content), read_only=True, data_only=True)
-    elif PRICE_FALLBACK.exists():
-        wb = openpyxl.load_workbook(PRICE_FALLBACK, read_only=True, data_only=True)
-    else:
-        log.error("Mikado: прайс недоступен")
-        return {}
+    """Загружает прайс. Возвращает {code: {qty, price, name}}."""
+    content = download_mikado_price_bytes(MIKADO_PRICE_URL, log)
+    wb = openpyxl.load_workbook(io.BytesIO(content), read_only=True, data_only=True)
 
     ws     = wb.active
     rows   = ws.iter_rows(values_only=True)
@@ -315,12 +299,10 @@ def mikado_search_and_order(
 ) -> dict:
     """
     Полный цикл заказа одной позиции у Микадо:
-      1. POST galleyp.asp CODE=<код> → редирект на SearchCodeG.asp (список аналогов)
-      2. Берём первую ссылку галейп (galleyp.asp?code=...) — первый результат
-      3. GET карточки товара
-      4. Если «Волгоград» отсутствует в HTML → нет на складе → алерт
-      5. MaxQTY из скрытого поля = количество в Волгограде
-      6. POST pp0.asp?MODE=AddOrd — реальное оформление заказа (AJAX-эндпоинт)
+      1. POST galleyp.asp CODE=<код> → редирект на SearchCodeG.asp
+      2. Берём первую ссылку на карточку товара
+      3. Проверяем наличие Волгоград
+      4. POST pp0.asp?MODE=AddOrd — оформление заказа
 
     Возвращает:
       {"ok": bool, "volgograd_qty": int, "ordered": int, "message": str}
@@ -330,7 +312,6 @@ def mikado_search_and_order(
 
     office_base = "https://mikado-parts.ru/office/"
 
-    # ── Шаг 1: поиск по коду ─────────────────────────────────────────────────
     try:
         r = session.post(
             MIKADO_SEARCH_URL,
@@ -343,8 +324,6 @@ def mikado_search_and_order(
         return {"ok": False, "volgograd_qty": 0, "ordered": 0,
                 "message": f"Ошибка поиска: {e}"}
 
-    # ── Шаг 2: первая ссылка на карточку товара ───────────────────────────────
-    # На странице SearchCodeG.asp ссылки вида: href='galleyp.asp?code=f%2Da22025'
     m = re.search(r"href='(galleyp\.asp\?code=[^']+)'", html, re.IGNORECASE)
     if not m:
         return {"ok": False, "volgograd_qty": 0, "ordered": 0,
@@ -352,7 +331,6 @@ def mikado_search_and_order(
 
     product_url = urljoin(office_base, m.group(1))
 
-    # ── Шаг 3: открыть карточку товара ───────────────────────────────────────
     try:
         r2 = session.get(product_url, timeout=20)
         r2.raise_for_status()
@@ -361,13 +339,10 @@ def mikado_search_and_order(
         return {"ok": False, "volgograd_qty": 0, "ordered": 0,
                 "message": f"Ошибка страницы товара: {e}"}
 
-    # ── Шаг 4: проверка наличия Волгоград ────────────────────────────────────
-    # Если строки «Волгоград» нет вообще → нет на складе (ноль не показывается)
     if "Волгоград" not in html2:
         return {"ok": False, "volgograd_qty": 0, "ordered": 0,
                 "message": f"Нет на складе Волгоград: {code}"}
 
-    # MaxQTY = количество в Волгограде (скрытое поле формы)
     mq = re.search(r'name=MaxQTY[^>]+value=(\d+)', html2, re.IGNORECASE)
     max_qty = int(mq.group(1)) if mq else 0
     if max_qty == 0:
@@ -380,10 +355,6 @@ def mikado_search_and_order(
         return {"ok": True, "volgograd_qty": max_qty, "ordered": order_qty,
                 "message": f"[DRY-RUN] Волгоград {max_qty} шт — заказали бы {order_qty}"}
 
-    # ── Шаг 5: собрать все поля формы formADD ────────────────────────────────
-    # Форма: action=zakaz.asp но реально JS постит на pp0.asp?MODE=AddOrd
-    # Поля: json, VOLUME, COMMAND=ADD, OEMID, CODE=f-a22025, INSERT,
-    #        MaxQTY, ExprList, EXPR, ExpressID, StockID=34
     form_data: dict = {}
     for hm in re.finditer(r'<input[^>]+>', html2, re.IGNORECASE):
         tag = hm.group(0)
@@ -392,12 +363,10 @@ def mikado_search_and_order(
         if nm:
             form_data[nm.group(2)] = vl.group(2) if vl else ""
 
-    # Перезаписываем нужные поля
     form_data["VOLUME"] = str(order_qty)
     form_data["INSERT"] = "Заказать"
-    form_data.pop("searchcode", None)   # убираем поле строки поиска шапки
+    form_data.pop("searchcode", None)
 
-    # ── Шаг 6: POST pp0.asp?MODE=AddOrd (AJAX-эндпоинт заказа) ──────────────
     try:
         r3 = session.post(
             MIKADO_ORDER_URL,
@@ -419,7 +388,7 @@ def mikado_search_and_order(
                 "message": f"Ошибка отправки заказа: {e}"}
 
 
-# ─── Excel-отчёт (fallback и для архива) ─────────────────────────────────────
+# ─── Excel-отчёт ──────────────────────────────────────────────────────────────
 def save_order_report(order_id: str, items: list[dict], price_db: dict) -> Path:
     wb  = openpyxl.Workbook()
     ws  = wb.active
@@ -432,7 +401,7 @@ def save_order_report(order_id: str, items: list[dict], price_db: dict) -> Path:
     NO_FILL = PatternFill("solid", fgColor="FFC7CE")
 
     for col, h in enumerate(
-        ["Код Mikado", "Название (МойСклад)", "Название (Mikado)",
+        ["Код Mikado", "Название (Ozon)", "Название (Mikado)",
          "Нужно, шт.", "Наличие Mikado", "Цена закупки", "Статус"], 1
     ):
         c = ws.cell(1, col, h)
@@ -473,20 +442,19 @@ def save_order_report(order_id: str, items: list[dict], price_db: dict) -> Path:
 
 # ─── Обработка одного заказа ─────────────────────────────────────────────────
 def process_order(
-    order:          dict,
+    posting:        dict,
     price_db:       dict,
     mikado_session: "requests.Session | None",
     env:            dict,
     dry_run:        bool,
 ) -> bool:
-    order_id = order.get("name") or order.get("id", "—")
-    items    = parse_ms_items(order)
+    order_id = posting.get("posting_number", "—")
+    items    = parse_ozon_items(posting)
 
     if not items:
         log.warning(f"[{order_id}] Заказ пустой — пропускаем")
         return True
 
-    # Обогащаем позиции данными из прайса
     for it in items:
         info = price_db.get(it["mikado_code"], {})
         it["mikado_qty"]   = info.get("qty", 0)
@@ -508,7 +476,6 @@ def process_order(
             f"{it['name'][:45]}"
         )
 
-    # Telegram: уведомление о заказе
     tg_tok = env.get("TG_BOT_TOKEN", "")
     tg_cid = env.get("TG_CHAT_ID", "")
     if _TG_OK and tg_tok:
@@ -517,7 +484,6 @@ def process_order(
         except Exception as e:
             log.warning(f"[{order_id}] Telegram уведомление не отправлено: {e}")
 
-    # Mikado: поиск + проверка Волгоград + заказ (по одной позиции)
     failed_items: list[dict] = []
 
     if not mikado_session:
@@ -537,13 +503,11 @@ def process_order(
                 )
                 it["ordered_qty"] = result["ordered"]
                 if result["ordered"] < it["quantity"]:
-                    # заказали меньше чем нужно — частичный алерт
                     failed_items.append({**it, "_reason": f"Частично: заказано {result['ordered']} из {it['quantity']}"})
             else:
                 log.warning(f"  ✗ {it['mikado_code']:<16}  {msg}")
                 failed_items.append({**it, "_reason": msg})
 
-    # Алерт если есть проблемные позиции
     problem_items = failed_items + low_stock + no_stock
     if problem_items and _TG_OK and tg_tok:
         try:
@@ -556,7 +520,6 @@ def process_order(
             f"есть {it['mikado_qty']} шт."
         )
 
-    # Excel-отчёт (всегда для архива)
     try:
         report = save_order_report(order_id, items, price_db)
         log.info(f"[{order_id}] Отчёт: {report.name}")
@@ -569,26 +532,27 @@ def process_order(
 # ─── Один цикл ────────────────────────────────────────────────────────────────
 def sync_once(env: dict, dry_run: bool = False) -> None:
     log.info("─" * 55)
-    log.info(f"Опрос заказов МойСклад {'[DRY-RUN] ' if dry_run else ''}")
+    log.info(f"Опрос заказов Ozon {'[DRY-RUN] ' if dry_run else ''}")
 
-    state        = load_state()
-    since_moment = state.get("last_moment", "1970-01-01 00:00:00.000")
-    processed    = set(state.get("processed", []))
+    client_id = env.get("OZON_CLIENT_ID", "")
+    api_key   = env.get("OZON_API_KEY", "")
+    if not client_id or not api_key:
+        log.error("OZON_CLIENT_ID / OZON_API_KEY не заданы — выход")
+        return
 
-    # 1. Заказы из МойСклад
-    orders = get_ms_orders(env.get("MOYSKLAD_TOKEN", ""), since_moment)
-    if not orders:
+    state     = load_state()
+    processed = set(state.get("processed", []))
+
+    # 1. Заказы из Ozon
+    postings = get_ozon_new_orders(client_id, api_key)
+    if not postings:
         log.info("Новых заказов нет")
         return
 
-    # 2. Фильтр обработанных
-    new_orders = [o for o in orders if o.get("id") not in processed]
-    log.info(f"Новых необработанных: {len(new_orders)} из {len(orders)}")
-    if not new_orders:
-        # Сдвигаем cursor на последний moment
-        if orders:
-            state["last_moment"] = orders[-1].get("moment", since_moment)
-            save_state(state)
+    # 2. Фильтр уже обработанных
+    new_postings = [p for p in postings if p.get("posting_number") not in processed]
+    log.info(f"Новых необработанных: {len(new_postings)} из {len(postings)}")
+    if not new_postings:
         return
 
     # 3. Прайс Mikado
@@ -600,19 +564,18 @@ def sync_once(env: dict, dry_run: bool = False) -> None:
         mikado_session = mikado_login(env["MIKADO_CODE"], env["MIKADO_PASSWORD"])
 
     # 5. Обработка
-    for order in new_orders:
-        oid = order.get("id", "")
+    for posting in new_postings:
+        pnum = posting.get("posting_number", "")
         try:
-            done = process_order(order, price_db, mikado_session, env, dry_run)
+            done = process_order(posting, price_db, mikado_session, env, dry_run)
             if done:
-                processed.add(oid)
-                state["last_moment"] = order.get("moment", since_moment)
+                processed.add(pnum)
         except Exception:
-            log.exception(f"[{order.get('name', oid)}] Необработанная ошибка")
+            log.exception(f"[{pnum}] Необработанная ошибка")
 
-    # 6. Сохранить state
+    # 6. Сохранить state (обрезаем до MAX_PROCESSED_RECORDS)
     if not dry_run:
-        state["processed"] = sorted(processed)
+        state["processed"] = sorted(processed)[-MAX_PROCESSED_RECORDS:]
         save_state(state)
 
     log.info("Цикл завершён")
@@ -620,11 +583,12 @@ def sync_once(env: dict, dry_run: bool = False) -> None:
 
 # ─── Точка входа ──────────────────────────────────────────────────────────────
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Синхронизация заказов МойСклад → Mikado")
+    parser = argparse.ArgumentParser(description="Синхронизация заказов Ozon → Mikado")
     parser.add_argument("--once",    action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
+    single_instance(__file__)
     env = load_env()
 
     if args.once or args.dry_run:

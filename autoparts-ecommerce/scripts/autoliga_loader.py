@@ -10,13 +10,16 @@ autoliga_loader.py
     catalog = load_autoliga()
     # catalog["21900116401000"] → {article, brand, name, stock, price, source}
 
-Поиск файла (по приоритету):
-    1. data/suppliers/autoliga/*.xls  (свежайший по дате изменения)
-    2. C:/Users/Admin/Desktop/PriceALVLG4.xls  (fallback)
+Поиск файла:
+    data/suppliers/autoliga/*.xls, скачанный СЕГОДНЯ.
+    Старые файлы не используются — если сегодняшнего прайса ещё нет
+    (например, письмо от Автолиги пока не пришло), возвращается пустой
+    каталог, а не устаревшие данные.
 """
 
 import sys
 import logging
+from datetime import date, datetime
 from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
@@ -29,7 +32,6 @@ except ImportError:
 
 BASE_DIR  = Path(__file__).parent.parent
 SAVE_DIR  = BASE_DIR / "data" / "suppliers" / "autoliga"
-FALLBACK  = Path("C:/Users/Admin/Desktop/PriceALVLG4.xls")
 
 HEADER_ROW = 8   # нулевой индекс строки с заголовками
 DATA_ROW   = 10  # нулевой индекс первой строки данных (строка 9 пустая)
@@ -37,7 +39,7 @@ DATA_ROW   = 10  # нулевой индекс первой строки дан�
 # Индексы столбцов
 COL_BRAND   = 1  # Производитель.Марка
 COL_ARTICLE = 2  # Производитель.Код завода — фактический артикул
-COL_OEM     = 2  # Второго OEM-поля в текущем прайсе нет; индексируем артикул
+COL_OEM     = 2  # Отдельного OEM-поля в прайсе нет; индексируем артикул
 COL_INTERNAL_CODE = 3  # Внутренний код Автолиги, не OEM и не бренд
 COL_NAME    = 4
 COL_STOCK   = 6
@@ -52,17 +54,16 @@ def _normalize(s: str) -> str:
 
 
 def find_autoliga_file() -> Path | None:
-    """Ищет свежайший .xls файл в папке autoliga, fallback на Desktop."""
-    if SAVE_DIR.exists():
-        files = sorted(SAVE_DIR.glob("*.xls*"), key=lambda p: p.stat().st_mtime, reverse=True)
-        if files:
-            return files[0]
-    if FALLBACK.exists():
-        return FALLBACK
-    return None
+    """Возвращает самый свежий локальный прайс; допустимый возраст проверяет вызывающий код."""
+    if not SAVE_DIR.exists():
+        return None
+    files = list(SAVE_DIR.glob("*.xls*"))
+    if not files:
+        return None
+    return max(files, key=lambda p: p.stat().st_mtime)
 
 
-# Старое внутреннее имя оставлено для обратной совместимости.
+# Обратная совместимость для существующих импортов.
 _find_file = find_autoliga_file
 
 
@@ -105,7 +106,7 @@ def load_autoliga(path: Path | None = None) -> dict[str, dict]:
     """
     file = path or find_autoliga_file()
     if file is None:
-        log.error("Автолига: файл прайса не найден")
+        log.warning("Автолига: свежего прайса за сегодня нет — Автолига временно не используется")
         return {}
 
     log.info(f"Автолига: загрузка {file}")
