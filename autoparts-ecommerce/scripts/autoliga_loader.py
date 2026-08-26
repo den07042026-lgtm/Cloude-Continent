@@ -35,9 +35,10 @@ HEADER_ROW = 8   # нулевой индекс строки с заголовк�
 DATA_ROW   = 10  # нулевой индекс первой строки данных (строка 9 пустая)
 
 # Индексы столбцов
-COL_ARTICLE = 1  # Артикул (с дефисами)
-COL_OEM     = 2  # Код завода (нормализованный)
-COL_BRAND   = 3
+COL_BRAND   = 1  # Производитель.Марка
+COL_ARTICLE = 2  # Производитель.Код завода — фактический артикул
+COL_OEM     = 2  # Второго OEM-поля в текущем прайсе нет; индексируем артикул
+COL_INTERNAL_CODE = 3  # Внутренний код Автолиги, не OEM и не бренд
 COL_NAME    = 4
 COL_STOCK   = 6
 COL_PRICE   = 7
@@ -50,7 +51,7 @@ def _normalize(s: str) -> str:
     return s.replace(" ", "").replace("-", "").replace(".", "").upper().strip()
 
 
-def _find_file() -> Path | None:
+def find_autoliga_file() -> Path | None:
     """Ищет свежайший .xls файл в папке autoliga, fallback на Desktop."""
     if SAVE_DIR.exists():
         files = sorted(SAVE_DIR.glob("*.xls*"), key=lambda p: p.stat().st_mtime, reverse=True)
@@ -59,6 +60,10 @@ def _find_file() -> Path | None:
     if FALLBACK.exists():
         return FALLBACK
     return None
+
+
+# Старое внутреннее имя оставлено для обратной совместимости.
+_find_file = find_autoliga_file
 
 
 def _cell_str(ws, row: int, col: int) -> str:
@@ -98,7 +103,7 @@ def load_autoliga(path: Path | None = None) -> dict[str, dict]:
     Ключ словаря = нормализованный OEM из колонки C.
     Позиции без цены или артикула пропускаются.
     """
-    file = path or _find_file()
+    file = path or find_autoliga_file()
     if file is None:
         log.error("Автолига: файл прайса не найден")
         return {}
